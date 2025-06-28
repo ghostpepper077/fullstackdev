@@ -4,9 +4,9 @@ import { Container, AppBar, Toolbar, Typography, Box, Button } from '@mui/materi
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import MyTheme from './themes/MyTheme';
-import MyForm from './pages/MyForm';
-import Register from './pages/Register';
-import Login from './pages/Login';
+import MyForm from './pages/UserProfile/MyForm';
+import Register from './pages/UserProfile/Register';
+import Login from './pages/UserProfile/Login';
 import http from './http';
 import UserContext from './contexts/UserContext';
 
