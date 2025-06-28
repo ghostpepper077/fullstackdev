@@ -3,10 +3,10 @@ import { Box, Typography, TextField, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import http from '../http';
+import http from '../../http';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import UserContext from '../contexts/UserContext';
+import UserContext from '../../contexts/UserContext';
 
 function Login() {
     const navigate = useNavigate();
