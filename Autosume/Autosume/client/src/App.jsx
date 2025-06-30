@@ -18,14 +18,19 @@ import Sidebar from './components/Sidebar';
 
 function App() {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); // Add loading state
 
   useEffect(() => {
     if (localStorage.getItem("accessToken")) {
       http.get('/user/auth').then((res) => {
         setUser(res.data.user);
+        setLoading(false); // Set loading to false after successful auth
       }).catch(() => {
         localStorage.clear();
+        setLoading(false); // Set loading to false even if auth fails
       });
+    } else {
+      setLoading(false); // No token, so not loading anymore
     }
   }, []);
 
@@ -34,6 +39,22 @@ function App() {
     setUser(null);
     window.location = "/login";
   };
+
+  // Show loading spinner or nothing while checking authentication
+  if (loading) {
+    return (
+      <ThemeProvider theme={MyTheme}>
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          minHeight: '100vh' 
+        }}>
+          <div>Loading...</div> {/* You can replace this with a proper loading component */}
+        </Box>
+      </ThemeProvider>
+    );
+  }
 
   return (
     <UserContext.Provider value={{ user, setUser }}>

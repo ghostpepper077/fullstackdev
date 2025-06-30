@@ -90,4 +90,8 @@ router.post("/login", async (req, res) => {
     }
 });
 
+router.get("/auth", validateToken, (req, res) => {
+    res.json({ user: req.user });
+});
+
 module.exports = router;
