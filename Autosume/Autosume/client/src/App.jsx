@@ -72,8 +72,13 @@ function App() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/job-management" element={<JobManagement />} />
               <Route path="/shortlisting" element={<Shortlisting />} />
-              <Route path="/ForgotPassword" element={<ForgotPassword />} />
+              <Route path="/" element={<JobManagement />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/interview" element={<Interview />} />
+              <Route path="/form" element={<MyForm />} />
+
             </Routes>
           </Container>
         </ThemeProvider>
