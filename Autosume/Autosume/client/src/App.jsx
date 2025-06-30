@@ -7,7 +7,9 @@ import MyTheme from './themes/MyTheme';
 import MyForm from './pages/UserProfile/MyForm';
 import Register from './pages/UserProfile/Register';
 import Login from './pages/UserProfile/Login';
+import JobManagement from './pages/JobManagement/mainpage';
 import Profile from './pages/UserProfile/Profile'; // Add this import
+import ShortListing from './pages/Shortlisting/shortlisting';
 import http from './http';
 import UserContext from './contexts/UserContext';
 
@@ -66,6 +68,8 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/form" element={<MyForm />} />
+              <Route path="/shortlisting" element={<Shortlisting />} />
+              <Route path="/" element={<JobManagement />} />
             </Routes>
           </Container>
         </ThemeProvider>
