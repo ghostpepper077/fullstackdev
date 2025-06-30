@@ -1,15 +1,16 @@
 import './App.css';
 import { useState, useEffect } from 'react';
 import { Container, AppBar, Toolbar, Typography, Box, Button } from '@mui/material';
-import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import MyTheme from './themes/MyTheme';
 import MyForm from './pages/UserProfile/MyForm';
 import Register from './pages/UserProfile/Register';
 import Login from './pages/UserProfile/Login';
-import Profile from './pages/UserProfile/Profile'; // Add this import
 import http from './http';
 import UserContext from './contexts/UserContext';
+import Shortlisting from './pages/Shortlisting/shortlisting';
+
 
 function App() {
   const [user, setUser] = useState(null);
@@ -43,17 +44,17 @@ function App() {
                 {user && (
                   <>
                     <Typography>{user.name}</Typography>
-                    <Button onClick={logout}>Logout</Button>
+                    <Link to="/shortlisting" style={{ textDecoration: 'none' }}>
+                      <Button onClick="inherit">Shortlisting</Button>
+                    </Link>
+                    <Button onClick={logout} color="inherit">Logout</Button>
                   </>
-                )}
+                )
+                }
                 {!user && (
                   <>
-                    <Link to="/register">
-                      <Typography>Register</Typography>
-                    </Link>
-                    <Link to="/login">
-                      <Typography>Login</Typography>
-                    </Link>
+                    <Link to="/register" ><Typography>Register</Typography></Link>
+                    <Link to="/login" ><Typography>Login</Typography></Link>
                   </>
                 )}
               </Toolbar>
@@ -61,11 +62,13 @@ function App() {
           </AppBar>
 
           <Container>
+           {/* add your routing here */}
             <Routes>
-              <Route path="/register" element={<Register />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/form" element={<MyForm />} />
+              <Route path={"/register"} element={<Register />} />
+              <Route path={"/login"} element={<Login />} />
+              <Route path={"/form"} element={<MyForm />} />
+              <Route path="/shortlisting" element={<Shortlisting />} />
+
             </Routes>
           </Container>
         </ThemeProvider>
