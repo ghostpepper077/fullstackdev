@@ -7,7 +7,12 @@ import MyTheme from './themes/MyTheme';
 import MyForm from './pages/UserProfile/MyForm';
 import Register from './pages/UserProfile/Register';
 import Login from './pages/UserProfile/Login';
+<<<<<<< Updated upstream
 import JobManagement from './pages/JobManagement/mainpage';
+=======
+import Profile from './pages/UserProfile/Profile'; // Add this import
+import ShortlistOverview from './pages/Interview+Email/interview';
+>>>>>>> Stashed changes
 import http from './http';
 import UserContext from './contexts/UserContext';
 import Shortlisting from './pages/Shortlisting/shortlisting';
@@ -65,11 +70,19 @@ function App() {
           <Container>
            {/* add your routing here */}
             <Routes>
+<<<<<<< Updated upstream
               <Route path={"/register"} element={<Register />} />
               <Route path={"/login"} element={<Login />} />
               <Route path={"/form"} element={<MyForm />} />
               <Route path="/shortlisting" element={<Shortlisting />} />
               <Route path="/" element={<JobManagement />} />
+=======
+              <Route path="/register" element={<Register />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/interview" element={<Interview />} />
+              <Route path="/form" element={<MyForm />} />
+>>>>>>> Stashed changes
             </Routes>
           </Container>
         </ThemeProvider>
