@@ -11,7 +11,7 @@ import JobManagement from './pages/JobManagement/mainpage';
 import http from './http';
 import UserContext from './contexts/UserContext';
 import ForgotPassword from './pages/UserProfile/ForgotPassowrd';
-import Shortlisting from './pages/Shortlisting/Shortlisting';
+import Shortlisting from './pages/Shortlisting/shortlisting';
 import Profile from './pages/UserProfile/Profile';
 
 function App() {
