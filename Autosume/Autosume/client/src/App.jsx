@@ -7,10 +7,12 @@ import MyTheme from './themes/MyTheme';
 import MyForm from './pages/UserProfile/MyForm';
 import Register from './pages/UserProfile/Register';
 import Login from './pages/UserProfile/Login';
-<<<<<<< Updated upstream
 import JobManagement from './pages/JobManagement/mainpage';
 import http from './http';
 import UserContext from './contexts/UserContext';
+import ForgotPassword from './pages/UserProfile/ForgotPassowrd';
+import Shortlisting from './pages/Shortlisting/Shortlisting';
+import Profile from './pages/UserProfile/Profile';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -66,18 +68,10 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/login" element={<Login />} />
               <Route path="/form" element={<MyForm />} />
-              <Route path={"/register"} element={<Register />} />
-              <Route path={"/login"} element={<Login />} />
-              <Route path={"/form"} element={<MyForm />} />
-              <Route path="/shortlisting" element={<Shortlisting />} />
-              <Route path="/" element={<JobManagement />} />
-=======
-              <Route path="/register" element={<Register />} />
-              <Route path="/login" element={<Login />} />
               <Route path="/profile" element={<Profile />} />
-              <Route path="/interview" element={<Interview />} />
-              <Route path="/form" element={<MyForm />} />
->>>>>>> Stashed changes
+              <Route path="/job-management" element={<JobManagement />} />
+              <Route path="/shortlisting" element={<Shortlisting />} />
+              <Route path="/ForgotPassword" element={<ForgotPassword />} />
             </Routes>
           </Container>
         </ThemeProvider>

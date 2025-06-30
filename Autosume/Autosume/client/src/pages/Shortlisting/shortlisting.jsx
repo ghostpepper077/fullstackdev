@@ -1,7 +1,7 @@
 // client/src/pages/Shortlisting/shortlisting.jsx
 import React, { useState } from 'react';
 import CandidateTable from '../../components/CandidateTable';
-import CandidateDetails from '../../components/CandidateDetails';
+import CandidateDetails from '../../components/Candidate';
 import FilterBar from '../../components/FilterBar';
 import '../../App.css';
 
