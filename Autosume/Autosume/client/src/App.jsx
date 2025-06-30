@@ -11,7 +11,7 @@ import JobManagement from './pages/JobManagement/mainpage';
 import http from './http';
 import UserContext from './contexts/UserContext';
 import Shortlisting from './pages/Shortlisting/shortlisting';
-
+import ForgotPassword from './pages/UserProfile/ForgotPassword';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -65,6 +65,11 @@ function App() {
           <Container>
            {/* add your routing here */}
             <Routes>
+              <Route path="/register" element={<Register />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/forgotpassword" element={<ForgotPassword />} />
+              <Route path="/form" element={<MyForm />} />
               <Route path={"/register"} element={<Register />} />
               <Route path={"/login"} element={<Login />} />
               <Route path={"/form"} element={<MyForm />} />
