@@ -11,7 +11,7 @@ import JobManagement from './pages/JobManagement/mainpage';
 import http from './http';
 import UserContext from './contexts/UserContext';
 import ForgotPassword from './pages/UserProfile/ForgotPassowrd';
-import Shortlisting from './pages/Shortlisting/shortlisting';
+import Shortlisting from './pages/Shortlisting/Shortlisting';
 import Profile from './pages/UserProfile/Profile';
 import Interview from './pages/Interview+Email/interview';
 
@@ -72,13 +72,8 @@ function App() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/job-management" element={<JobManagement />} />
               <Route path="/shortlisting" element={<Shortlisting />} />
-              <Route path="/" element={<JobManagement />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/profile" element={<Profile />} />
+              <Route path="/ForgotPassword" element={<ForgotPassword />} />
               <Route path="/interview" element={<Interview />} />
-              <Route path="/form" element={<MyForm />} />
-
             </Routes>
           </Container>
         </ThemeProvider>
