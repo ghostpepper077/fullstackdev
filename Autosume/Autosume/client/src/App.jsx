@@ -1,16 +1,17 @@
 import './App.css';
 import { useState, useEffect } from 'react';
 import { Container, AppBar, Toolbar, Typography, Box, Button } from '@mui/material';
-import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import MyTheme from './themes/MyTheme';
 import MyForm from './pages/UserProfile/MyForm';
 import Register from './pages/UserProfile/Register';
 import Login from './pages/UserProfile/Login';
-import Profile from './pages/UserProfile/Profile';
-import ForgotPassword from './pages/UserProfile/ForgotPassword';
+import JobManagement from './pages/JobManagement/mainpage';
 import http from './http';
 import UserContext from './contexts/UserContext';
+import Shortlisting from './pages/Shortlisting/shortlisting';
+import ForgotPassword from './pages/UserProfile/ForgotPassword';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -68,6 +69,8 @@ function App() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/forgotpassword" element={<ForgotPassword />} />
               <Route path="/form" element={<MyForm />} />
+              <Route path="/shortlisting" element={<Shortlisting />} />
+              <Route path="/" element={<JobManagement />} />
             </Routes>
           </Container>
         </ThemeProvider>
