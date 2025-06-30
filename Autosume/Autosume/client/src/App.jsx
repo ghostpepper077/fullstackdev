@@ -7,7 +7,8 @@ import MyTheme from './themes/MyTheme';
 import MyForm from './pages/UserProfile/MyForm';
 import Register from './pages/UserProfile/Register';
 import Login from './pages/UserProfile/Login';
-import Profile from './pages/UserProfile/Profile'; // Add this import
+import Profile from './pages/UserProfile/Profile';
+import ForgotPassword from './pages/UserProfile/ForgotPassword';
 import http from './http';
 import UserContext from './contexts/UserContext';
 
@@ -65,6 +66,7 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/login" element={<Login />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/forgotpassword" element={<ForgotPassword />} />
               <Route path="/form" element={<MyForm />} />
             </Routes>
           </Container>
