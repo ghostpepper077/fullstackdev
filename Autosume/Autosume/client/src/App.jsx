@@ -13,6 +13,7 @@ import UserContext from './contexts/UserContext';
 import ForgotPassword from './pages/UserProfile/ForgotPassowrd';
 import Shortlisting from './pages/Shortlisting/shortlisting';
 import Profile from './pages/UserProfile/Profile';
+import Interview from './pages/Interview+Email/interview';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -72,6 +73,7 @@ function App() {
               <Route path="/job-management" element={<JobManagement />} />
               <Route path="/shortlisting" element={<Shortlisting />} />
               <Route path="/ForgotPassword" element={<ForgotPassword />} />
+              <Route path="/interview" element={<Interview />} />
             </Routes>
           </Container>
         </ThemeProvider>
