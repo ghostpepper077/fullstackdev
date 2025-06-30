@@ -1,0 +1,36 @@
+/* src/pages/Shortlisting/Shortlisting.css */
+
+/* This container will hold our main content grid (table and details) */
+.shortlisting-grid {
+  display: flex;
+  gap: 2rem; /* Increased spacing between columns */
+  margin-top: 2rem;
+}
+
+.table-column {
+  flex: 3; /* Give the table more space */
+  min-width: 0; /* Prevents flex items from overflowing */
+}
+
+.details-column {
+  flex: 2; /* Give the details card less space */
+  min-width: 0;
+}
+
+/* THE DYNAMIC/RESPONSIVE PART:
+  When the screen width is 992px or less, we switch to a single-column layout.
+*/
+@media (max-width: 992px) {
+  .shortlisting-grid {
+    flex-direction: column; /* Stack the columns vertically */
+  }
+}
+
+/* Make the filter bar wrap nicely on smaller screens */
+.filter-bar-container {
+  display: flex;
+  flex-wrap: wrap; /* Allows items to wrap to the next line */
+  gap: 20px;
+  align-items: flex-end;
+  margin-bottom: 20px;
+}
