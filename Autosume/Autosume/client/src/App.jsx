@@ -70,7 +70,6 @@ function App() {
           <Container>
            {/* add your routing here */}
             <Routes>
-<<<<<<< Updated upstream
               <Route path={"/register"} element={<Register />} />
               <Route path={"/login"} element={<Login />} />
               <Route path={"/form"} element={<MyForm />} />
