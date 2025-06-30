@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Box, Typography, TextField, Button, Link } from '@mui/material';
+import { Box, Typography, TextField, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -34,17 +34,13 @@ function Login() {
                 .then((res) => {
                     localStorage.setItem("accessToken", res.data.accessToken);
                     setUser(res.data.user);
-                    navigate("/profile");
+                    navigate("/profile"); // <-- Redirect to user profile after login
                 })
                 .catch(function (err) {
                     toast.error(`${err.response?.data?.message || "Login failed"}`);
                 });
         }
     });
-
-    const handleForgotPassword = () => {
-        navigate('/ForgotPassword');
-    };
 
     return (
         <>
@@ -81,7 +77,7 @@ function Login() {
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                     LOG IN TO CONTINUE
                 </Typography>
-                <Box component="form" sx={{ maxWidth: '500px', width: '100%' }}
+                <Box component="form" sx={{ maxWidth: '500px' }}
                     onSubmit={formik.handleSubmit}>
                     <TextField
                         fullWidth margin="dense" autoComplete="off"
@@ -103,57 +99,15 @@ function Login() {
                         error={formik.touched.password && Boolean(formik.errors.password)}
                         helperText={formik.touched.password && formik.errors.password}
                     />
-                    
-                    {/* Forgot Password Link */}
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1, mb: 2 }}>
-                        <Link
-                            component="button"
-                            type="button"
-                            onClick={handleForgotPassword}
-                            sx={{
-                                color: '#4169E1',
-                                textDecoration: 'none',
-                                fontSize: '0.875rem',
-                                '&:hover': {
-                                    textDecoration: 'underline'
-                                }
-                            }}
-                        >
-                            Forgot Password?
-                        </Link>
-                    </Box>
-
                     <Button
                         fullWidth
                         variant="contained"
-                        sx={{ mt: 1, backgroundColor: '#4169E1', '&:hover': { backgroundColor: '#365fcf' } }}
+                        sx={{ mt: 2, backgroundColor: '#4169E1', '&:hover': { backgroundColor: '#365fcf' } }}
                         type="submit"
                     >
                         LOGIN
                     </Button>
                 </Box>
-
-                {/* Additional helpful links */}
-                <Box sx={{ mt: 3, textAlign: 'center' }}>
-                    <Typography variant="body2" color="text.secondary">
-                        Don't have an account?{' '}
-                        <Link
-                            component="button"
-                            type="button"
-                            onClick={() => navigate('/register')}
-                            sx={{
-                                color: '#4169E1',
-                                textDecoration: 'none',
-                                '&:hover': {
-                                    textDecoration: 'underline'
-                                }
-                            }}
-                        >
-                            Sign up here
-                        </Link>
-                    </Typography>
-                </Box>
-
                 <ToastContainer />
             </Box>
         </>
