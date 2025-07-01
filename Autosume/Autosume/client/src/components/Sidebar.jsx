@@ -18,7 +18,8 @@ import {
   CalendarMonth as InterviewIcon,
   Settings as SettingsIcon,
   Support as SupportIcon,
-  ExitToApp as LogoutIcon
+  ExitToApp as LogoutIcon,
+  Message as ChatbotIcon
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -31,6 +32,7 @@ const Sidebar = ({ user, onLogout }) => {
     { text: 'Job Management', icon: <WorkIcon />, path: '/job-management' },
     { text: 'Resume Shortlisting', icon: <ShortlistIcon />, path: '/shortlisting' },
     { text: 'Interview Scheduling', icon: <InterviewIcon />, path: '/interview' },
+    { text: 'Chatbot', icon: <ChatbotIcon />, path: '/chatbot' },
     { text: 'Settings', icon: <SettingsIcon />, path: '/profile' },
     { text: 'Support', icon: <SupportIcon />, path: '/support' },
   ];
