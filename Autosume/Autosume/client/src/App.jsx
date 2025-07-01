@@ -11,7 +11,7 @@ import JobManagement from './pages/JobManagement/mainpage';
 import http from './http';
 import UserContext from './contexts/UserContext';
 import ChatbotPage from './pages/Chatbot/ChatbotPage';
-import ForgotPassword from './pages/UserProfile/ForgotPassowrd';
+import ForgotPassword from './pages/UserProfile/ForgotPassword';
 import Shortlisting from './pages/Shortlisting/Shortlisting';
 import Profile from './pages/UserProfile/Profile';
 import Interview from './pages/Interview+Email/shortlistoverview';
