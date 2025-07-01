@@ -156,7 +156,7 @@ function Profile() {
             {/* Header */}
             <Box
                 sx={{
-                    width: '100vw',
+                    width: '100%',
                     backgroundColor: '#E8E3E3',
                     borderRadius: 0,
                     py: 2,
@@ -164,11 +164,7 @@ function Profile() {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    position: 'relative',
-                    left: '50%',
-                    right: '50%',
-                    marginLeft: '-50vw',
-                    marginRight: '-50vw',
+                    overflowX: 'hidden', // 
                 }}
             >
                 <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#333' }}>
