@@ -111,7 +111,17 @@ function Profile() {
 
                 toast.success('Profile updated successfully!');
                 setEditMode(false);
-                setUser({ ...user, ...payload });
+
+                // UPDATE: Handle new token and user data from response
+                if (response.data.accessToken) {
+                    localStorage.setItem('accessToken', response.data.accessToken);
+                }
+
+                if (response.data.user) {
+                    setUser(response.data.user);
+                } else {
+                    setUser({ ...user, ...payload });
+                }
 
             } catch (err) {
                 if (err.response) {
@@ -126,7 +136,8 @@ function Profile() {
         }
     });
 
-    useEffect(() => {
+    // Function to reset form values to original user data
+    const resetFormValues = () => {
         if (user) {
             formik.setValues({
                 name: user.name || '',
@@ -139,7 +150,20 @@ function Profile() {
                 password: '',
                 confirmPassword: ''
             });
+            // Also reset touched and errors
+            formik.setTouched({});
+            formik.setErrors({});
         }
+    };
+
+    // Function to handle cancel action
+    const handleCancel = () => {
+        resetFormValues();
+        setEditMode(false);
+    };
+
+    useEffect(() => {
+        resetFormValues();
         // eslint-disable-next-line
     }, [user]);
 
@@ -464,10 +488,7 @@ function Profile() {
                                         variant="outlined"
                                         size="large"
                                         type="button"
-                                        onClick={() => {
-                                            setEditMode(false);
-                                            formik.resetForm();
-                                        }}
+                                        onClick={handleCancel}
                                         sx={{ px: 4 }}
                                     >
                                         Cancel

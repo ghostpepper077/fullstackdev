@@ -163,7 +163,27 @@ router.put("/profile", validateToken, async (req, res) => {
 
     await user.save();
 
-    res.json({ message: "Profile updated successfully." });
+    // CREATE NEW JWT TOKEN WITH UPDATED USER DATA
+    let updatedUserInfo = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      dateOfBirth: user.dateOfBirth,
+      gender: user.gender,
+      country: user.country,
+      language: user.language,
+      timeZone: user.timeZone,
+    };
+
+    let newAccessToken = sign(updatedUserInfo, process.env.APP_SECRET, {
+      expiresIn: process.env.TOKEN_EXPIRES_IN,
+    });
+
+    res.json({
+      message: "Profile updated successfully.",
+      accessToken: newAccessToken, // Return new token
+      user: updatedUserInfo, // Return updated user data
+    });
   } catch (err) {
     if (err.errors) {
       res.status(400).json({ errors: err.errors });
