@@ -9,7 +9,6 @@ import {
   ListItemText,
   Typography,
   Avatar,
-  Divider,
   Button
 } from '@mui/material';
 import {
@@ -19,8 +18,7 @@ import {
   CalendarMonth as InterviewIcon,
   Settings as SettingsIcon,
   Support as SupportIcon,
-  ExitToApp as LogoutIcon,
-  Person as PersonIcon
+  ExitToApp as LogoutIcon
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -46,7 +44,7 @@ const Sidebar = ({ user, onLogout }) => {
       sx={{
         width: 280,
         height: '100vh',
-        backgroundColor: '#1a1a1a',
+        backgroundColor: '#000000',
         color: 'white',
         display: 'flex',
         flexDirection: 'column',
@@ -54,55 +52,32 @@ const Sidebar = ({ user, onLogout }) => {
         left: 0,
         top: 0,
         zIndex: 1200,
-        boxShadow: '4px 0 20px rgba(0,0,0,0.1)',
+        boxShadow: '4px 0 20px rgba(0, 0, 0, 0.22)',
         overflowY: 'auto',
-        /* Hide scrollbar for Chrome, Safari and Opera */
         '&::-webkit-scrollbar': {
           display: 'none',
         },
-        /* Hide scrollbar for IE, Edge and Firefox */
         scrollbarWidth: 'none', // Firefox
         msOverflowStyle: 'none', // IE and Edge
       }}
     >
       {/* Logo Section */}
-      <Box sx={{ p: 3, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-          <Box
-            sx={{
-              width: 45,
-              height: 45,
-              backgroundColor: 'white',
-              borderRadius: '12px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              mr: 2,
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-            }}
-          >
-            <Typography sx={{
-              color: 'white',
-              fontWeight: 'bold',
-              fontSize: '1.2rem'
-            }}>
-              A
-            </Typography>
-          </Box>
-          <Typography variant="h6" sx={{
-            fontWeight: 'bold',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            backgroundClip: 'text',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
-          }}>
-            AUTOSUME
-          </Typography>
-        </Box>
+      <Box sx={{ p: 0, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+        <img
+          src="src\assets\autosume_logo.png"
+          alt="Autosume Logo"
+          style={{
+            width: '100%',
+            height: 180, 
+            objectFit: 'cover',
+            display: 'block',
+            background: 'linear-gradient(135deg,hsl(229, 75.90%, 65.90%) 0%, #764ba2 100%)'
+          }}
+        />
       </Box>
 
       {/* User Profile Section */}
-      <Box sx={{ p: 3, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+      <Box sx={{ p: 3, borderBottom: '1px solid rgba(0, 0, 0, 0.1)' }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Avatar
             sx={{
