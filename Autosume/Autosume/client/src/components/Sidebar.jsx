@@ -54,7 +54,15 @@ const Sidebar = ({ user, onLogout }) => {
         left: 0,
         top: 0,
         zIndex: 1200,
-        boxShadow: '4px 0 20px rgba(0,0,0,0.1)'
+        boxShadow: '4px 0 20px rgba(0,0,0,0.1)',
+        overflowY: 'auto',
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        '&::-webkit-scrollbar': {
+          display: 'none',
+        },
+        /* Hide scrollbar for IE, Edge and Firefox */
+        scrollbarWidth: 'none', // Firefox
+        msOverflowStyle: 'none', // IE and Edge
       }}
     >
       {/* Logo Section */}
@@ -73,15 +81,15 @@ const Sidebar = ({ user, onLogout }) => {
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
             }}
           >
-            <Typography sx={{ 
-              color: 'white', 
-              fontWeight: 'bold', 
-              fontSize: '1.2rem' 
+            <Typography sx={{
+              color: 'white',
+              fontWeight: 'bold',
+              fontSize: '1.2rem'
             }}>
               A
             </Typography>
           </Box>
-          <Typography variant="h6" sx={{ 
+          <Typography variant="h6" sx={{
             fontWeight: 'bold',
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             backgroundClip: 'text',
@@ -109,14 +117,14 @@ const Sidebar = ({ user, onLogout }) => {
             {user?.name?.charAt(0)?.toUpperCase() || 'U'}
           </Avatar>
           <Box>
-            <Typography variant="subtitle1" sx={{ 
+            <Typography variant="subtitle1" sx={{
               fontWeight: 600,
               color: 'white',
               fontSize: '1rem'
             }}>
               {user?.name || 'User'}
             </Typography>
-            <Typography variant="body2" sx={{ 
+            <Typography variant="body2" sx={{
               color: 'rgba(255,255,255,0.7)',
               fontSize: '0.85rem'
             }}>
@@ -142,8 +150,8 @@ const Sidebar = ({ user, onLogout }) => {
                     backgroundColor: isActive ? 'rgba(102, 126, 234, 0.2)' : 'transparent',
                     border: isActive ? '1px solid rgba(102, 126, 234, 0.3)' : '1px solid transparent',
                     '&:hover': {
-                      backgroundColor: isActive 
-                        ? 'rgba(102, 126, 234, 0.3)' 
+                      backgroundColor: isActive
+                        ? 'rgba(102, 126, 234, 0.3)'
                         : 'rgba(255,255,255,0.05)',
                       transform: 'translateX(4px)',
                       transition: 'all 0.2s ease'
@@ -151,13 +159,13 @@ const Sidebar = ({ user, onLogout }) => {
                     transition: 'all 0.2s ease'
                   }}
                 >
-                  <ListItemIcon sx={{ 
+                  <ListItemIcon sx={{
                     color: isActive ? '#667eea' : 'rgba(255,255,255,0.7)',
                     minWidth: 40
                   }}>
                     {item.icon}
                   </ListItemIcon>
-                  <ListItemText 
+                  <ListItemText
                     primary={item.text}
                     sx={{
                       '& .MuiListItemText-primary': {
