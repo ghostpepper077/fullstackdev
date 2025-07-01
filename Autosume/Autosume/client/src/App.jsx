@@ -12,6 +12,7 @@ import Profile from './pages/UserProfile/Profile'; // Add this import
 import ShortListing from './pages/Shortlisting/shortlisting';
 import http from './http';
 import UserContext from './contexts/UserContext';
+import ChatbotPage from './pages/Chatbot/ChatbotPage';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -70,6 +71,7 @@ function App() {
               <Route path="/form" element={<MyForm />} />
               <Route path="/shortlisting" element={<Shortlisting />} />
               <Route path="/" element={<JobManagement />} />
+              <Route path="/chatbot" element={<ChatbotPage />} />
             </Routes>
           </Container>
         </ThemeProvider>
