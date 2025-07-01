@@ -14,7 +14,7 @@ import ChatbotPage from './pages/Chatbot/ChatbotPage';
 import ForgotPassword from './pages/UserProfile/ForgotPassowrd';
 import Shortlisting from './pages/Shortlisting/Shortlisting';
 import Profile from './pages/UserProfile/Profile';
-import Interview from './pages/Interview+Email/interview';
+import Interview from './pages/Interview+Email/shortlistoverview';
 import Sidebar from './components/Sidebar';
 
 function App() {
@@ -78,7 +78,7 @@ function App() {
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/job-management" element={<JobManagement />} />
                     <Route path="/shortlisting" element={<Shortlisting />} />
-                    <Route path="/interview" element={<Interview />} />
+                    <Route path="/shortlistoverview" element={<Interview />} />
                     <Route path="/chatbot" element={<ChatbotPage />} />
                     <Route path="/" element={<Navigate to="/dashboard" />} />
                     <Route path="/login" element={<Navigate to="/dashboard" />} />

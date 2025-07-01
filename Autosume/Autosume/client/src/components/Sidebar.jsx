@@ -31,7 +31,7 @@ const Sidebar = ({ user, onLogout }) => {
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
     { text: 'Job Management', icon: <WorkIcon />, path: '/job-management' },
     { text: 'Resume Shortlisting', icon: <ShortlistIcon />, path: '/shortlisting' },
-    { text: 'Interview Scheduling', icon: <InterviewIcon />, path: '/interview' },
+    { text: 'Interview Scheduling', icon: <InterviewIcon />, path: '/shortlistoverview' },
     { text: 'Chatbot', icon: <ChatbotIcon />, path: '/chatbot' },
     { text: 'Settings', icon: <SettingsIcon />, path: '/profile' },
     { text: 'Support', icon: <SupportIcon />, path: '/support' },
