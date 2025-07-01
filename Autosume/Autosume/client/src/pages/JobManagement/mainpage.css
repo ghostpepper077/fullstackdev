@@ -2,82 +2,86 @@
 .job-management {
   font-family: Arial, sans-serif;
   padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.layout {
-  display: flex;
-  gap: 20px;
+.search-container {
+  margin-bottom: 30px;
+  width: 100%;
 }
 
-.sidebar {
+.search-box {
   width: 250px;
 }
 
 .search-box input {
   width: 100%;
-  padding: 8px;
-  margin-bottom: 20px;
+  padding: 10px 15px;
   border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.3s;
 }
 
-.menu {
-  list-style: none;
-  padding: 0;
-}
-
-.menu li {
-  padding: 10px;
-  cursor: pointer;
-}
-
-.menu li.active {
-  background-color: #f0f0f0;
-  font-weight: bold;
-  border-radius: 4px;
-}
-
-.content {
-  flex: 1;
+.search-box input:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
 }
 
 .user-actions {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 20px;
 }
 
 .create-job {
   background: #4CAF50;
   color: white;
   border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
+  padding: 10px 20px;
+  border-radius: 6px;
   cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.create-job:hover {
+  background-color: #3d8b40;
 }
 
 .job-table {
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .table-row {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 0.5fr;
-  padding: 12px 15px;
-  border-bottom: 1px solid #eee;
+  padding: 15px 20px;
+  align-items: center;
+}
+
+.table-row:not(.header):hover {
+  background-color: #f9f9f9;
 }
 
 .table-row.header {
   background-color: #f5f5f5;
   font-weight: bold;
+  color: #555;
 }
 
 .action-btn {
@@ -85,4 +89,39 @@
   border: none;
   cursor: pointer;
   font-size: 18px;
+  color: #666;
+  transition: color 0.3s;
+}
+
+.action-btn:hover {
+  color: #4CAF50;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .table-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  
+  .table-row div:nth-child(3),
+  .table-row div:nth-child(4) {
+    grid-column: span 1;
+    text-align: right;
+  }
+  
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .user-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .search-box {
+    width: 100%;
+  }
 }

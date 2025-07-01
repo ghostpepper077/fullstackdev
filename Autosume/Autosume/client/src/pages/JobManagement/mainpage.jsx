@@ -18,19 +18,11 @@ const JobManagement = () => {
       <h1>Job Management Overview</h1>
       
       <div className="layout">
-        {/* Left sidebar */}
-        <div className="sidebar">
+        {/* Search box only (no sidebar nav) */}
+        <div className="search-container">
           <div className="search-box">
             <input type="text" placeholder="Search..." />
           </div>
-          
-          <ul className="menu">
-            <li className="active">Job Management</li>
-            <li>Resume Shortlisting</li>
-            <li>Interview Scheduling</li>
-            <li>Settings</li>
-            <li>Support</li>
-          </ul>
         </div>
         
         {/* Main content */}
@@ -38,7 +30,6 @@ const JobManagement = () => {
           <div className="header">
             <h2>Job Role</h2>
             <div className="user-actions">
-              <span>Jason Lim</span>
               <button className="create-job">Create Job</button>
             </div>
           </div>
