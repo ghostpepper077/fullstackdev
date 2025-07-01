@@ -111,7 +111,17 @@ function Profile() {
 
                 toast.success('Profile updated successfully!');
                 setEditMode(false);
-                setUser({ ...user, ...payload });
+
+                // UPDATE: Handle new token and user data from response
+                if (response.data.accessToken) {
+                    localStorage.setItem('accessToken', response.data.accessToken);
+                }
+
+                if (response.data.user) {
+                    setUser(response.data.user);
+                } else {
+                    setUser({ ...user, ...payload });
+                }
 
             } catch (err) {
                 if (err.response) {
@@ -126,7 +136,8 @@ function Profile() {
         }
     });
 
-    useEffect(() => {
+    // Function to reset form values to original user data
+    const resetFormValues = () => {
         if (user) {
             formik.setValues({
                 name: user.name || '',
@@ -139,7 +150,20 @@ function Profile() {
                 password: '',
                 confirmPassword: ''
             });
+            // Also reset touched and errors
+            formik.setTouched({});
+            formik.setErrors({});
         }
+    };
+
+    // Function to handle cancel action
+    const handleCancel = () => {
+        resetFormValues();
+        setEditMode(false);
+    };
+
+    useEffect(() => {
+        resetFormValues();
         // eslint-disable-next-line
     }, [user]);
 
@@ -156,7 +180,7 @@ function Profile() {
             {/* Header */}
             <Box
                 sx={{
-                    width: '100vw',
+                    width: '100%',
                     backgroundColor: '#E8E3E3',
                     borderRadius: 0,
                     py: 2,
@@ -164,11 +188,7 @@ function Profile() {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    position: 'relative',
-                    left: '50%',
-                    right: '50%',
-                    marginLeft: '-50vw',
-                    marginRight: '-50vw',
+                    overflowX: 'hidden', // 
                 }}
             >
                 <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#333' }}>
@@ -436,7 +456,12 @@ function Profile() {
                                 <Button
                                     variant="contained"
                                     size="large"
-                                    onClick={() => setEditMode(true)}
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setEditMode(true);
+                                    }}
                                     sx={{
                                         backgroundColor: '#4169E1',
                                         '&:hover': { backgroundColor: '#365fcf' },
@@ -462,10 +487,8 @@ function Profile() {
                                     <Button
                                         variant="outlined"
                                         size="large"
-                                        onClick={() => {
-                                            setEditMode(false);
-                                            formik.resetForm();
-                                        }}
+                                        type="button"
+                                        onClick={handleCancel}
                                         sx={{ px: 4 }}
                                     >
                                         Cancel
