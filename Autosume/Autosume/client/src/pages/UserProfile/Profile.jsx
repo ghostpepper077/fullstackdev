@@ -436,7 +436,12 @@ function Profile() {
                                 <Button
                                     variant="contained"
                                     size="large"
-                                    onClick={() => setEditMode(true)}
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setEditMode(true);
+                                    }}
                                     sx={{
                                         backgroundColor: '#4169E1',
                                         '&:hover': { backgroundColor: '#365fcf' },
@@ -462,6 +467,7 @@ function Profile() {
                                     <Button
                                         variant="outlined"
                                         size="large"
+                                        type="button"
                                         onClick={() => {
                                             setEditMode(false);
                                             formik.resetForm();
