@@ -12,33 +12,45 @@ import {
 } from '@mui/material';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const timeSlots = ['10:00 AM', '12:00 PM', '2:00 PM', '4:00 PM'];
 const interviewers = ['Gabriel Tan', 'Jace Lim', 'Amira Soh'];
 
-const candidate = {
-  name: 'Samanta Wong',
-  role: 'UI/UX Designer',
-  email: 'wongsamanta_23@gmail.com',
-  phone: '+65 8012 3040',
-  skills: ['Figma', 'UI/UX', 'Prototyping', 'Thinking', 'Design'],
-  experience: '3+ years',
-};
-
 export default function InterviewScheduling() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const candidate = location.state?.candidate;
+
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState('');
   const [selectedInterviewer, setSelectedInterviewer] = useState('');
 
   const handleSchedule = () => {
     if (selectedDate && selectedTime && selectedInterviewer) {
-      alert(
-        `Interview scheduled for ${candidate.name} on ${selectedDate.toDateString()} at ${selectedTime} with ${selectedInterviewer}`
-      );
+      navigate('/emailautomation', {
+        state: {
+          candidate,
+          interview: {
+            date: selectedDate.toDateString(),
+            time: selectedTime,
+            interviewer: selectedInterviewer,
+          },
+        },
+      });
     } else {
       alert('Please complete all fields.');
     }
   };
+
+  if (!candidate) {
+    return (
+      <Box p={5}>
+        <Typography variant="h6">No candidate selected.</Typography>
+      </Box>
+    );
+  }
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -65,7 +77,7 @@ export default function InterviewScheduling() {
                 Skills:
               </Typography>
               <Box display="flex" flexWrap="wrap" gap={1}>
-                {candidate.skills.map((s, i) => (
+                {candidate.skills?.map((s, i) => (
                   <Chip key={i} label={s} />
                 ))}
               </Box>

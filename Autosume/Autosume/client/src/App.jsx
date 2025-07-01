@@ -16,6 +16,7 @@ import Shortlisting from './pages/Shortlisting/Shortlisting';
 import Profile from './pages/UserProfile/Profile';
 import Interview from './pages/Interview+Email/shortlistoverview';
 import InterviewScheduling from './pages/Interview+Email/scheduling';
+import EmailAutomation from './pages/Interview+Email/emailautomation';
 import Sidebar from './components/Sidebar';
 
 function App() {
@@ -81,6 +82,7 @@ function App() {
                     <Route path="/shortlisting" element={<Shortlisting />} />
                     <Route path="/shortlistoverview" element={<Interview />} />
                     <Route path="/scheduling" element={<InterviewScheduling />} />
+                    <Route path="/emailautomation" element={<EmailAutomation />} />
                     <Route path="/chatbot" element={<ChatbotPage />} />
                     <Route path="/" element={<Navigate to="/dashboard" />} />
                     <Route path="/login" element={<Navigate to="/dashboard" />} />

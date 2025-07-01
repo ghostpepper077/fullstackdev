@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom'; 
 
+
 const candidates = [
   {
     name: 'Audrey Hall',
@@ -159,7 +160,7 @@ export default function ShortlistOverview() {
               <Button
                 variant="contained"
                 sx={{ mt: 3 }}
-                onClick={() => navigate(`/scheduling`)}
+                onClick={() => navigate('/scheduling', { state: { candidate: selected } })}
               >
                 Proceed to Schedule
               </Button>
