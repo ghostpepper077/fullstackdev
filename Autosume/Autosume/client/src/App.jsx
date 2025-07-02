@@ -77,6 +77,7 @@ function App() {
                 <Container maxWidth="xl" sx={{ py: 3 }}>
                   <Routes>
                     <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/support" element={<Support />} />
                     <Route path="/form" element={<MyForm />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/job-management" element={<JobManagement />} />
@@ -114,13 +115,152 @@ function App() {
   );
 }
 
-// Simple Dashboard component
+// Dashboard component - Welcome/About page
 function Dashboard() {
   return (
-    <Box>
-      <h1>Dashboard</h1>
-      <p>Welcome to your dashboard!</p>
-    </Box>
+    <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
+      <div style={{ textAlign: 'center', marginBottom: '50px' }}>
+        <h1 style={{ fontSize: '3rem', color: '#2c3e50', marginBottom: '20px' }}>Welcome to Autosume</h1>
+        <p style={{ fontSize: '1.3rem', color: '#7f8c8d', lineHeight: '1.6' }}>
+          Streamlining recruitment processes with innovative technology solutions
+        </p>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px', marginBottom: '50px' }}>
+        <div style={{ backgroundColor: '#fff', padding: '30px', borderRadius: '10px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
+          <h3 style={{ color: '#3498db', marginBottom: '15px' }}>🚀 Modern Solutions</h3>
+          <p style={{ color: '#555', lineHeight: '1.6' }}>
+            Our platform leverages cutting-edge technology to make hiring faster, smarter, and more efficient than ever before.
+          </p>
+        </div>
+        
+        <div style={{ backgroundColor: '#fff', padding: '30px', borderRadius: '10px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
+          <h3 style={{ color: '#e74c3c', marginBottom: '15px' }}>👥 Expert Team</h3>
+          <p style={{ color: '#555', lineHeight: '1.6' }}>
+            Built by recruitment professionals who understand the challenges of finding the right talent in today's competitive market.
+          </p>
+        </div>
+        
+        <div style={{ backgroundColor: '#fff', padding: '30px', borderRadius: '10px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
+          <h3 style={{ color: '#2ecc71', marginBottom: '15px' }}>📈 Proven Results</h3>
+          <p style={{ color: '#555', lineHeight: '1.6' }}>
+            Trusted by hundreds of companies worldwide, we've helped reduce hiring time by 60% while improving candidate quality.
+          </p>
+        </div>
+      </div>
+
+      <div style={{ backgroundColor: '#f8f9fa', padding: '40px', borderRadius: '15px', textAlign: 'center' }}>
+        <h2 style={{ color: '#2c3e50', marginBottom: '20px' }}>Ready to Transform Your Hiring?</h2>
+        <p style={{ fontSize: '1.1rem', color: '#666', marginBottom: '30px', lineHeight: '1.6' }}>
+          Join thousands of companies who have revolutionized their recruitment process with our comprehensive platform.
+          From job posting to candidate selection, we've got everything you need.
+        </p>
+        <button style={{
+          backgroundColor: '#3498db',
+          color: 'white',
+          padding: '15px 30px',
+          border: 'none',
+          borderRadius: '8px',
+          fontSize: '1.1rem',
+          cursor: 'pointer',
+          transition: 'background-color 0.3s'
+        }}>
+          Get Started Today
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// Support component - Help/Contact page
+function Support() {
+  return (
+    <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
+      <div style={{ textAlign: 'center', marginBottom: '50px' }}>
+        <h1 style={{ fontSize: '3rem', color: '#2c3e50', marginBottom: '20px' }}>Need Help?</h1>
+        <p style={{ fontSize: '1.3rem', color: '#7f8c8d', lineHeight: '1.6' }}>
+          We're here to support you every step of the way
+        </p>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '40px', marginBottom: '50px' }}>
+        <div style={{ backgroundColor: '#fff', padding: '40px', borderRadius: '15px', boxShadow: '0 6px 20px rgba(0,0,0,0.1)' }}>
+          <div style={{ textAlign: 'center', marginBottom: '25px' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '15px' }}>📞</div>
+            <h3 style={{ color: '#3498db', marginBottom: '15px' }}>Phone Support</h3>
+          </div>
+          <p style={{ color: '#555', lineHeight: '1.6', marginBottom: '20px' }}>
+            Speak directly with our support team for immediate assistance with any questions or issues.
+          </p>
+          <p style={{ color: '#2c3e50', fontWeight: 'bold', fontSize: '1.2rem' }}>+1 (555) 123-4567</p>
+          <p style={{ color: '#7f8c8d', fontSize: '0.9rem' }}>Monday - Friday, 9AM - 6PM EST</p>
+        </div>
+        
+        <div style={{ backgroundColor: '#fff', padding: '40px', borderRadius: '15px', boxShadow: '0 6px 20px rgba(0,0,0,0.1)' }}>
+          <div style={{ textAlign: 'center', marginBottom: '25px' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '15px' }}>✉️</div>
+            <h3 style={{ color: '#e74c3c', marginBottom: '15px' }}>Email Support</h3>
+          </div>
+          <p style={{ color: '#555', lineHeight: '1.6', marginBottom: '20px' }}>
+            Send us a detailed message and we'll get back to you within 24 hours with a comprehensive solution.
+          </p>
+          <p style={{ color: '#2c3e50', fontWeight: 'bold', fontSize: '1.2rem' }}>support@hirepro.com</p>
+          <p style={{ color: '#7f8c8d', fontSize: '0.9rem' }}>Average response time: 4 hours</p>
+        </div>
+      </div>
+
+      <div style={{ backgroundColor: '#f8f9fa', padding: '40px', borderRadius: '15px', marginBottom: '40px' }}>
+        <h2 style={{ color: '#2c3e50', marginBottom: '30px', textAlign: 'center' }}>Frequently Asked Questions</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '25px' }}>
+          <div>
+            <h4 style={{ color: '#3498db', marginBottom: '10px' }}>How do I reset my password?</h4>
+            <p style={{ color: '#666', lineHeight: '1.5' }}>Click on "Forgot Password" on the login page and follow the instructions sent to your email.</p>
+          </div>
+          <div>
+            <h4 style={{ color: '#3498db', marginBottom: '10px' }}>Can I cancel my subscription?</h4>
+            <p style={{ color: '#666', lineHeight: '1.5' }}>Yes, you can cancel anytime from your account settings or by contacting our support team.</p>
+          </div>
+          <div>
+            <h4 style={{ color: '#3498db', marginBottom: '10px' }}>How do I export my data?</h4>
+            <p style={{ color: '#666', lineHeight: '1.5' }}>Go to Settings to Data Export to download all your information in CSV or PDF format.</p>
+          </div>
+          <div>
+            <h4 style={{ color: '#3498db', marginBottom: '10px' }}>Is my data secure?</h4>
+            <p style={{ color: '#666', lineHeight: '1.5' }}>Absolutely! We use enterprise-grade encryption and follow industry best practices for data protection.</p>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ textAlign: 'center', backgroundColor: '#fff', padding: '40px', borderRadius: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.05)' }}>
+        <h2 style={{ color: '#2c3e50', marginBottom: '20px' }}>Still Need Help?</h2>
+        <p style={{ fontSize: '1.1rem', color: '#666', marginBottom: '30px', lineHeight: '1.6' }}>
+          Our dedicated support team is always ready to assist you. Don't hesitate to reach out!
+        </p>
+        <button style={{
+          backgroundColor: '#2ecc71',
+          color: 'white',
+          padding: '15px 30px',
+          border: 'none',
+          borderRadius: '8px',
+          fontSize: '1.1rem',
+          cursor: 'pointer',
+          marginRight: '15px'
+        }}>
+          Contact Support
+        </button>
+        <button style={{
+          backgroundColor: '#95a5a6',
+          color: 'white',
+          padding: '15px 30px',
+          border: 'none',
+          borderRadius: '8px',
+          fontSize: '1.1rem',
+          cursor: 'pointer'
+        }}>
+          Live Chat
+        </button>
+      </div>
+    </div>
   );
 }
 
