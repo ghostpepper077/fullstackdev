@@ -1,6 +1,6 @@
 import axios from "axios";
 
-// Use Vite environment variable for API URL, fallback to localhost if not set
+// This line is correct. It sets the base for all API calls.
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const http = axios.create({
@@ -8,7 +8,7 @@ const http = axios.create({
   timeout: 10000,
 });
 
-// Request interceptor to add auth token
+// Request interceptor to add auth token (This is correct)
 http.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");
@@ -20,13 +20,12 @@ http.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor to handle token refresh and errors
+// Response interceptor to handle token refresh and errors (This is correct)
 http.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    // Handle network errors
     if (!error.response) {
       console.error('Network Error:', error.message);
       return Promise.reject({
@@ -35,15 +34,11 @@ http.interceptors.response.use(
       });
     }
 
-    // Handle 401 Unauthorized - token expired or invalid
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-
       try {
         const refreshToken = localStorage.getItem("refreshToken");
-        if (!refreshToken) {
-          throw new Error("No refresh token");
-        }
+        if (!refreshToken) throw new Error("No refresh token");
 
         const response = await axios.post(`${API_URL}/user/refresh-token`, {
           refreshToken,
@@ -52,11 +47,9 @@ http.interceptors.response.use(
         const { accessToken } = response.data;
         localStorage.setItem("accessToken", accessToken);
 
-        // Retry original request with new token
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         return http(originalRequest);
       } catch (refreshError) {
-        // Refresh failed, redirect to login
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
         window.location.href = "/login";
@@ -64,7 +57,6 @@ http.interceptors.response.use(
       }
     }
 
-    // Return structured error object
     return Promise.reject({
       message: error.response?.data?.message || error.message || 'An error occurred',
       status: error.response?.status || 0,

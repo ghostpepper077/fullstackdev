@@ -13,7 +13,7 @@ import {
   CircularProgress,
   Alert
 } from '@mui/material';
-import http from '../../http'; // Assuming you use the same http client from App.jsx
+import http from '../../http'; // Your pre-configured http client
 
 export default function CreateCriteria() {
   // State to hold the list of jobs fetched from the database
@@ -33,15 +33,11 @@ export default function CreateCriteria() {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        // ===================================================================
-        // TODO: Replace with your actual API endpoint to get jobs
-        // This endpoint should return an array of objects, e.g., [{ _id: '1', title: 'Software Engineer' }, ...]
+        // ★★★ CHANGE IS HERE: Removed '/api' prefix ★★★
         const response = await http.get('/jobs'); 
         setJobs(response.data);
-        // ===================================================================
-
       } catch (err) {
-        setError('Failed to fetch job roles. Please try again later.');
+        setError('Failed to fetch job roles. Please ensure the server is running and you have added jobs to the database.');
         console.error(err);
       } finally {
         setLoading(false);
@@ -66,22 +62,17 @@ export default function CreateCriteria() {
     setError(null);
     setSuccess(null);
 
-    // Basic validation
     if (!formData.jobId || !formData.experience || !formData.skills) {
       setError('All fields are required.');
       return;
     }
 
     try {
-      // ===================================================================
-      // TODO: Replace with your actual API endpoint to create criteria
-      // This will send the form data to your backend to be saved in MongoDB
+      // ★★★ CHANGE IS HERE: Removed '/api' prefix ★★★
       const response = await http.post('/criteria', formData);
-      // ===================================================================
       
-      setSuccess('Criteria created successfully!');
-      // Optionally, reset the form
-      setFormData({ jobId: '', experience: '', skills: '' });
+      setSuccess('Criteria created successfully! You can now use these filters on the shortlisting page.');
+      setFormData({ jobId: '', experience: '', skills: '' }); // Reset form
 
     } catch (err) {
       setError('Failed to create criteria. Please try again.');
@@ -98,8 +89,8 @@ export default function CreateCriteria() {
         Define role requirements to guide AI-driven resume matching.
       </Typography>
 
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-      {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
+      {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+      {success && <Alert severity="success" sx={{ mb: 3 }}>{success}</Alert>}
 
       <Box component="form" onSubmit={handleSubmit}>
         <Grid container spacing={3}>
@@ -121,7 +112,6 @@ export default function CreateCriteria() {
                   </MenuItem>
                 ) : (
                   jobs.map((job) => (
-                    // Assuming job object has `_id` and `title` properties from MongoDB
                     <MenuItem key={job._id} value={job._id}>
                       {job.title}
                     </MenuItem>
