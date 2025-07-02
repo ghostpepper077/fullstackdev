@@ -1,15 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const { User } = require("../models");
 const yup = require("yup");
 const { sign } = require("jsonwebtoken");
+const MongoUser = require("../models/mongo/User");
 const { validateToken } = require("../middlewares/auth");
 require("dotenv").config();
 
+// Register
 router.post("/register", async (req, res) => {
   let data = req.body;
-  // Validate request body
+
   let validationSchema = yup.object({
     name: yup
       .string()
@@ -33,58 +34,49 @@ router.post("/register", async (req, res) => {
         "password at least 1 letter and 1 number"
       ),
   });
+
   try {
     data = await validationSchema.validate(data, { abortEarly: false });
 
-    // Check email
-    let user = await User.findOne({
-      where: { email: data.email },
-    });
+    let user = await MongoUser.findOne({ email: data.email });
     if (user) {
-      res.status(400).json({ message: "Email already exists." });
-      return;
+      return res.status(400).json({ message: "Email already exists." });
     }
 
-    // Hash passowrd
     data.password = await bcrypt.hash(data.password, 10);
-    // Create user
-    let result = await User.create(data);
+    let newUser = new MongoUser(data);
+    await newUser.save();
+
     res.json({
-      message: `Email ${result.email} was registered successfully.`,
+      message: `Email ${newUser.email} was registered successfully.`,
     });
   } catch (err) {
-    res.status(400).json({ errors: err.errors });
+    res.status(400).json({ errors: err.errors || [err.message] });
   }
 });
 
+// Login
 router.post("/login", async (req, res) => {
   let data = req.body;
-  // Validate request body
+
   let validationSchema = yup.object({
     email: yup.string().trim().lowercase().email().max(50).required(),
     password: yup.string().trim().min(8).max(50).required(),
   });
+
   try {
     data = await validationSchema.validate(data, { abortEarly: false });
 
-    // Check email and password
     let errorMsg = "Email or password is not correct.";
-    let user = await User.findOne({
-      where: { email: data.email },
-    });
-    if (!user) {
-      res.status(400).json({ message: errorMsg });
-      return;
-    }
-    let match = await bcrypt.compare(data.password, user.password);
-    if (!match) {
-      res.status(400).json({ message: errorMsg });
-      return;
-    }
 
-    // Return user info
+    let user = await MongoUser.findOne({ email: data.email });
+    if (!user) return res.status(400).json({ message: errorMsg });
+
+    let match = await bcrypt.compare(data.password, user.password);
+    if (!match) return res.status(400).json({ message: errorMsg });
+
     let userInfo = {
-      id: user.id,
+      id: user._id,
       email: user.email,
       name: user.name,
       dateOfBirth: user.dateOfBirth,
@@ -93,29 +85,27 @@ router.post("/login", async (req, res) => {
       language: user.language,
       timeZone: user.timeZone,
     };
+
     let accessToken = sign(userInfo, process.env.APP_SECRET, {
       expiresIn: process.env.TOKEN_EXPIRES_IN,
     });
-    res.json({
-      accessToken: accessToken,
-      user: userInfo,
-    });
+
+    res.json({ accessToken, user: userInfo });
   } catch (err) {
-    res.status(400).json({ errors: err.errors });
-    return;
+    res.status(400).json({ errors: err.errors || [err.message] });
   }
 });
 
+// Token auth check
 router.get("/auth", validateToken, (req, res) => {
   res.json({ user: req.user });
 });
 
-// PUT /user/profile - update user profile
+// Update profile
 router.put("/profile", validateToken, async (req, res) => {
   const userId = req.user.id;
   const data = req.body;
 
-  // Validation schema for profile update
   let validationSchema = yup.object({
     name: yup.string().trim().min(3).max(50).required(),
     email: yup.string().trim().lowercase().email().max(50).required(),
@@ -141,13 +131,9 @@ router.put("/profile", validateToken, async (req, res) => {
       abortEarly: false,
     });
 
-    // Find user
-    const user = await User.findByPk(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found." });
-    }
+    const user = await MongoUser.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found." });
 
-    // Update fields
     user.name = validated.name;
     user.email = validated.email;
     user.dateOfBirth = validated.dateOfBirth;
@@ -156,16 +142,14 @@ router.put("/profile", validateToken, async (req, res) => {
     user.language = validated.language;
     user.timeZone = validated.timeZone;
 
-    // If password is provided, hash and update
     if (validated.password) {
       user.password = await bcrypt.hash(validated.password, 10);
     }
 
     await user.save();
 
-    // CREATE NEW JWT TOKEN WITH UPDATED USER DATA
     let updatedUserInfo = {
-      id: user.id,
+      id: user._id,
       email: user.email,
       name: user.name,
       dateOfBirth: user.dateOfBirth,
@@ -181,8 +165,8 @@ router.put("/profile", validateToken, async (req, res) => {
 
     res.json({
       message: "Profile updated successfully.",
-      accessToken: newAccessToken, // Return new token
-      user: updatedUserInfo, // Return updated user data
+      accessToken: newAccessToken,
+      user: updatedUserInfo,
     });
   } catch (err) {
     if (err.errors) {

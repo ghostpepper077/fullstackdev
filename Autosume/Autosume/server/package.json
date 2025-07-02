@@ -22,6 +22,7 @@
     "express": "^4.19.2",
     "firebase-admin": "^13.4.0",
     "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.16.1",
     "mysql2": "^3.9.3",
     "sequelize": "^6.37.2",
     "yup": "^1.4.0"
