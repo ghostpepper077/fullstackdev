@@ -12,7 +12,7 @@ import {
   IconButton
 } from '@mui/material';
 import { Send as SendIcon, Psychology as BotIcon, Person as PersonIcon } from '@mui/icons-material';
-import { getChatbotResponse } from './chatbotService';
+import { getChatbotResponse } from './ChatbotService';
 
 // PageTitle Component (inline)
 const PageTitle = ({ title }) => (
