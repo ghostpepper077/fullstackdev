@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const Candidate = require('./models/Candidate');
+const scheduleRoutes = require('./routes/scheduleRoutes');
+
 require("dotenv").config();
 
 const app = express();
@@ -62,3 +64,5 @@ const jobRoutes = require('./routes/jobs'); // ← Add this
 app.use('/api/user', userRoutes);
 app.use('/api/jobs', jobRoutes);            // ← Mount this
 
+// =========================================================
+app.use('/api/schedules', scheduleRoutes);

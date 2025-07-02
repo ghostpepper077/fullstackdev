@@ -13,7 +13,12 @@
     "overview": "A skilled software engineer with experience in developing web applications using React and Node.js.",
     "experienceDetails": "Software Engineer @ Tech Solutions Inc.\n(March 2023 - Present)\n- Developed 3 successful web apps using React, Node.js and Flask.",
     "education": "Bachelor of Science in Information Technology (2023)",
-    "aiSummary": "Audrey has over three years of hands-on experience in developing dynamic and scalable web applications. Her expertise in React and Node.js makes her a strong fit for a frontend or full-stack role."
+    "aiSummary": "Audrey has over three years of hands-on experience in developing dynamic and scalable web applications. Her expertise in React and Node.js makes her a strong fit for a frontend or full-stack role.",
+    "role": "Frontend Developer",
+    "status": "Scheduled",
+    "date": "2025-07-13",
+    "time": "11:30 AM",
+    "interviewer": "Amira Soh"
   },
   {
     "name": "Johnathan Lee",
@@ -29,7 +34,12 @@
     "overview": "Experienced backend developer specializing in Python and cloud infrastructure.",
     "experienceDetails": "Backend Developer @ Cloud Innovations\n(June 2020 - Present)\n- Designed and maintained scalable backend services on AWS.",
     "education": "Bachelor of Engineering in Computer Science (2020)",
-    "aiSummary": "Johnathan is a proficient backend developer with five years of experience. His skills in Python, Django, and AWS are well-suited for roles requiring robust server-side logic."
+    "aiSummary": "Johnathan is a proficient backend developer with five years of experience. His skills in Python, Django, and AWS are well-suited for roles requiring robust server-side logic.",
+    "role": "Backend Developer",
+    "status": "Pending",
+    "date": "2025-07-09",
+    "time": "4:00 PM",
+    "interviewer": "Jace Lim"
   },
   {
     "name": "Brenda Tan",
@@ -45,7 +55,12 @@
     "overview": "Java developer with a focus on building enterprise-level microservices.",
     "experienceDetails": "Software Engineer @ Enterprise Systems\n(July 2021 - Present)\n- Contributed to a large-scale microservices architecture using Spring Boot.",
     "education": "Bachelor of Computing (2021)",
-    "aiSummary": "Brenda has four years of experience in Java and Spring Boot. While her match score is slightly lower, her specialization in microservices could be valuable for specific project needs."
+    "aiSummary": "Brenda has four years of experience in Java and Spring Boot. While her match score is slightly lower, her specialization in microservices could be valuable for specific project needs.",
+    "role": "UI/UX Designer",
+    "status": "Scheduled",
+    "date": "2025-07-13",
+    "time": "10:00 AM",
+    "interviewer": "Kelly Tan"
   },
   {
     "name": "David Chen",
@@ -62,7 +77,12 @@
     "overview": "Certified DevOps engineer with a passion for automating cloud infrastructure and CI/CD pipelines.",
     "experienceDetails": "Senior DevOps Engineer @ Global Tech\n(May 2019 - Present)\n- Managed cloud infrastructure on AWS, reducing costs by 20%.\n- Implemented a full CI/CD pipeline using Jenkins and Kubernetes.",
     "education": "Bachelor of Science in Network Engineering (2019)",
-    "aiSummary": "David is a highly experienced DevOps engineer with six years in the field. His expertise in AWS, Docker, and Kubernetes makes him ideal for managing and scaling cloud-native applications."
+    "aiSummary": "David is a highly experienced DevOps engineer with six years in the field. His expertise in AWS, Docker, and Kubernetes makes him ideal for managing and scaling cloud-native applications.",
+    "role": "DevOps Engineer",
+    "status": "Scheduled",
+    "date": "2025-07-14",
+    "time": "2:00 PM",
+    "interviewer": "Kelly Tan"
   },
   {
     "name": "Emily Lim",
@@ -79,7 +99,12 @@
     "overview": "A recent graduate with a strong foundation in frontend technologies and a desire to learn and grow.",
     "experienceDetails": "Junior Frontend Developer @ Digital Start\n(June 2024 - Present)\n- Assisted in building responsive user interfaces with React.\n- Collaborated with designers to translate Figma mockups into code.",
     "education": "Diploma in Web Development (2024)",
-    "aiSummary": "Emily is an enthusiastic junior developer with one year of experience. She has foundational skills in React and is a good candidate for an entry-level position where she can be mentored."
+    "aiSummary": "Emily is an enthusiastic junior developer with one year of experience. She has foundational skills in React and is a good candidate for an entry-level position where she can be mentored.",
+    "role": "Frontend Developer",
+    "status": "Scheduled",
+    "date": "2025-07-04",
+    "time": "4:00 PM",
+    "interviewer": "Jace Lim"
   },
   {
     "name": "Faisal Khan",
@@ -96,7 +121,12 @@
     "overview": "Data scientist with a track record of building predictive models that drive business decisions.",
     "experienceDetails": "Data Scientist @ Data Insights Co.\n(August 2020 - Present)\n- Developed a machine learning model to predict customer churn, improving retention by 15%.\n- Used Pandas and Scikit-learn for data cleaning and analysis.",
     "education": "Master of Science in Data Analytics (2020)",
-    "aiSummary": "Faisal is a top-tier data scientist with five years of experience. His expertise in Python and machine learning libraries like TensorFlow, combined with proven business impact, makes him an excellent candidate."
+    "aiSummary": "Faisal is a top-tier data scientist with five years of experience. His expertise in Python and machine learning libraries like TensorFlow, combined with proven business impact, makes him an excellent candidate.",
+    "role": "UI/UX Designer",
+    "status": "Scheduled",
+    "date": "2025-07-06",
+    "time": "10:00 AM",
+    "interviewer": "Nathan Chan"
   },
   {
     "name": "Grace Woo",
@@ -113,7 +143,12 @@
     "overview": "A strategic Product Manager skilled in leading cross-functional teams to deliver user-centric products.",
     "experienceDetails": "Product Manager @ Innovate Labs\n(January 2018 - Present)\n- Managed the entire product lifecycle from ideation to launch.\n- Defined product roadmaps and wrote detailed user stories in JIRA.",
     "education": "Bachelor of Business Administration (2017)",
-    "aiSummary": "Grace is a seasoned Product Manager with seven years of experience. Her strong background in Agile methodologies and product strategy would be a great asset for leading a product team."
+    "aiSummary": "Grace is a seasoned Product Manager with seven years of experience. Her strong background in Agile methodologies and product strategy would be a great asset for leading a product team.",
+    "role": "Product Manager",
+    "status": "Pending",
+    "date": "2025-07-16",
+    "time": "2:00 PM",
+    "interviewer": "Nathan Chan"
   },
   {
     "name": "Ms. Tracy Owens",
@@ -129,7 +164,12 @@
     "overview": "Backend Developer with experience in MongoDB, Django, Express and delivering results across multiple projects.",
     "experienceDetails": "Backend Developer @ Ortiz, Anderson and Johnson\n(2021 - Present)\n- Worked on scalable applications and team projects using MongoDB, Django, Express.",
     "education": "Diploma in Web Development (2021)",
-    "aiSummary": "Ms. Tracy Owens brings 3 years of hands-on experience as a Backend Developer. Their expertise in MongoDB, Django, Express aligns well with modern development requirements."
+    "aiSummary": "Ms. Tracy Owens brings 3 years of hands-on experience as a Backend Developer. Their expertise in MongoDB, Django, Express aligns well with modern development requirements.",
+    "role": "Backend Developer",
+    "status": "Pending",
+    "date": "2025-07-15",
+    "time": "2:00 PM",
+    "interviewer": "Jace Lim"
   },
   {
     "name": "Sandra Carey",
@@ -145,7 +185,12 @@
     "overview": "Frontend Developer with experience in CSS, JavaScript, HTML and delivering results across multiple projects.",
     "experienceDetails": "Frontend Developer @ Roberts-Abbott\n(2020 - Present)\n- Worked on scalable applications and team projects using CSS, JavaScript, HTML.",
     "education": "Bachelor of Science in Computer Science (2018)",
-    "aiSummary": "Sandra Carey brings 2 years of hands-on experience as a Frontend Developer. Their expertise in CSS, JavaScript, HTML aligns well with modern development requirements."
+    "aiSummary": "Sandra Carey brings 2 years of hands-on experience as a Frontend Developer. Their expertise in CSS, JavaScript, HTML aligns well with modern development requirements.",
+    "role": "Frontend Developer",
+    "status": "Not Sent",
+    "date": "-",
+    "time": "-",
+    "interviewer": "-"
   },
   {
     "name": "David Price",
@@ -161,7 +206,12 @@
     "overview": "Frontend Developer with experience in Tailwind, HTML, CSS and delivering results across multiple projects.",
     "experienceDetails": "Frontend Developer @ Lynch and Sons\n(2020 - Present)\n- Worked on scalable applications and team projects using Tailwind, HTML, CSS.",
     "education": "Master of Science in AI and Data Science (2020)",
-    "aiSummary": "David Price brings 1 years of hands-on experience as a Frontend Developer. Their expertise in Tailwind, HTML, CSS aligns well with modern development requirements."
+    "aiSummary": "David Price brings 1 years of hands-on experience as a Frontend Developer. Their expertise in Tailwind, HTML, CSS aligns well with modern development requirements.",
+    "role": "Frontend Developer",
+    "status": "Pending",
+    "date": "2025-07-05",
+    "time": "4:00 PM",
+    "interviewer": "Amira Soh"
   },
   {
     "name": "Brandi Thomas",
@@ -177,7 +227,12 @@
     "overview": "DevOps Engineer with experience in CI/CD, Kubernetes, AWS and delivering results across multiple projects.",
     "experienceDetails": "DevOps Engineer @ Swanson-Diaz\n(2024 - Present)\n- Worked on scalable applications and team projects using CI/CD, Kubernetes, AWS.",
     "education": "Bachelor of Business Administration (2017)",
-    "aiSummary": "Brandi Thomas brings 3 years of hands-on experience as a DevOps Engineer. Their expertise in CI/CD, Kubernetes, AWS aligns well with modern development requirements."
+    "aiSummary": "Brandi Thomas brings 3 years of hands-on experience as a DevOps Engineer. Their expertise in CI/CD, Kubernetes, AWS aligns well with modern development requirements.",
+    "role": "DevOps Engineer",
+    "status": "Scheduled",
+    "date": "2025-07-14",
+    "time": "2:00 PM",
+    "interviewer": "Kelly Tan"
   },
   {
     "name": "Gregory Brady",
@@ -193,7 +248,12 @@
     "overview": "Data Scientist with experience in Scikit-learn, Pandas, Python and delivering results across multiple projects.",
     "experienceDetails": "Data Scientist @ Taylor-Saunders\n(2024 - Present)\n- Worked on scalable applications and team projects using Scikit-learn, Pandas, Python.",
     "education": "Master of Science in AI and Data Science (2020)",
-    "aiSummary": "Gregory Brady brings 6 years of hands-on experience as a Data Scientist. Their expertise in Scikit-learn, Pandas, Python aligns well with modern development requirements."
+    "aiSummary": "Gregory Brady brings 6 years of hands-on experience as a Data Scientist. Their expertise in Scikit-learn, Pandas, Python aligns well with modern development requirements.",
+    "role": "Data Scientist",
+    "status": "Not Sent",
+    "date": "-",
+    "time": "-",
+    "interviewer": "-"
   },
   {
     "name": "Paul Thomas",
@@ -209,7 +269,12 @@
     "overview": "Backend Developer with experience in Express, Django, Node.js and delivering results across multiple projects.",
     "experienceDetails": "Backend Developer @ Lopez, Miller and Russell\n(2021 - Present)\n- Worked on scalable applications and team projects using Express, Django, Node.js.",
     "education": "Diploma in Web Development (2021)",
-    "aiSummary": "Paul Thomas brings 2 years of hands-on experience as a Backend Developer. Their expertise in Express, Django, Node.js aligns well with modern development requirements."
+    "aiSummary": "Paul Thomas brings 2 years of hands-on experience as a Backend Developer. Their expertise in Express, Django, Node.js aligns well with modern development requirements.",
+    "role": "Backend Developer",
+    "status": "Pending",
+    "date": "2025-07-15",
+    "time": "2:00 PM",
+    "interviewer": "Amira Soh"
   },
   {
     "name": "Fernando Ramos",
@@ -225,7 +290,12 @@
     "overview": "QA Tester with experience in Automation, Test Cases, Selenium and delivering results across multiple projects.",
     "experienceDetails": "QA Tester @ Burgess, Robles and Rivers\n(2021 - Present)\n- Worked on scalable applications and team projects using Automation, Test Cases, Selenium.",
     "education": "Master of Science in AI and Data Science (2020)",
-    "aiSummary": "Fernando Ramos brings 3 years of hands-on experience as a QA Tester. Their expertise in Automation, Test Cases, Selenium aligns well with modern development requirements."
+    "aiSummary": "Fernando Ramos brings 3 years of hands-on experience as a QA Tester. Their expertise in Automation, Test Cases, Selenium aligns well with modern development requirements.",
+    "role": "QA Tester",
+    "status": "Scheduled",
+    "date": "2025-07-03",
+    "time": "4:00 PM",
+    "interviewer": "Kelly Tan"
   },
   {
     "name": "Beth Powell",
@@ -241,7 +311,12 @@
     "overview": "Full Stack Developer with experience in React, Next.js, MongoDB and delivering results across multiple projects.",
     "experienceDetails": "Full Stack Developer @ Barrett, Harper and Phillips\n(2021 - Present)\n- Worked on scalable applications and team projects using React, Next.js, MongoDB.",
     "education": "Diploma in Web Development (2021)",
-    "aiSummary": "Beth Powell brings 7 years of hands-on experience as a Full Stack Developer. Their expertise in React, Next.js, MongoDB aligns well with modern development requirements."
+    "aiSummary": "Beth Powell brings 7 years of hands-on experience as a Full Stack Developer. Their expertise in React, Next.js, MongoDB aligns well with modern development requirements.",
+    "role": "Frontend Developer",
+    "status": "Not Sent",
+    "date": "-",
+    "time": "-",
+    "interviewer": "-"
   },
   {
     "name": "Julia Green",
@@ -257,7 +332,12 @@
     "overview": "Backend Developer with experience in SQL, Express, MongoDB and delivering results across multiple projects.",
     "experienceDetails": "Backend Developer @ Bowers Group\n(2020 - Present)\n- Worked on scalable applications and team projects using SQL, Express, MongoDB.",
     "education": "Master of Science in AI and Data Science (2020)",
-    "aiSummary": "Julia Green brings 5 years of hands-on experience as a Backend Developer. Their expertise in SQL, Express, MongoDB aligns well with modern development requirements."
+    "aiSummary": "Julia Green brings 5 years of hands-on experience as a Backend Developer. Their expertise in SQL, Express, MongoDB aligns well with modern development requirements.",
+    "role": "Backend Developer",
+    "status": "Not Sent",
+    "date": "-",
+    "time": "-",
+    "interviewer": "-"
   },
   {
     "name": "Michael Johnson",
@@ -273,7 +353,12 @@
     "overview": "UI/UX Designer with experience in Wireframes, Prototyping, Figma and delivering results across multiple projects.",
     "experienceDetails": "UI/UX Designer @ Davidson, Elliott and Allen\n(2021 - Present)\n- Worked on scalable applications and team projects using Wireframes, Prototyping, Figma.",
     "education": "Bachelor of Business Administration (2017)",
-    "aiSummary": "Michael Johnson brings 4 years of hands-on experience as a UI/UX Designer. Their expertise in Wireframes, Prototyping, Figma aligns well with modern development requirements."
+    "aiSummary": "Michael Johnson brings 4 years of hands-on experience as a UI/UX Designer. Their expertise in Wireframes, Prototyping, Figma aligns well with modern development requirements.",
+    "role": "UI/UX Designer",
+    "status": "Not Sent",
+    "date": "-",
+    "time": "-",
+    "interviewer": "-"
   },
   {
     "name": "Trevor Jacobs",
@@ -289,7 +374,12 @@
     "overview": "QA Tester with experience in Automation, Bug Tracking, Selenium and delivering results across multiple projects.",
     "experienceDetails": "QA Tester @ Mccarty, Johnson and Edwards\n(2021 - Present)\n- Worked on scalable applications and team projects using Automation, Bug Tracking, Selenium.",
     "education": "Diploma in Web Development (2021)",
-    "aiSummary": "Trevor Jacobs brings 1 years of hands-on experience as a QA Tester. Their expertise in Automation, Bug Tracking, Selenium aligns well with modern development requirements."
+    "aiSummary": "Trevor Jacobs brings 1 years of hands-on experience as a QA Tester. Their expertise in Automation, Bug Tracking, Selenium aligns well with modern development requirements.",
+    "role": "QA Tester",
+    "status": "Pending",
+    "date": "2025-07-07",
+    "time": "11:30 AM",
+    "interviewer": "Amira Soh"
   },
   {
     "name": "Jennifer Molina",
@@ -305,7 +395,12 @@
     "overview": "DevOps Engineer with experience in AWS, Terraform, Docker and delivering results across multiple projects.",
     "experienceDetails": "DevOps Engineer @ Webb and Sons\n(2022 - Present)\n- Worked on scalable applications and team projects using AWS, Terraform, Docker.",
     "education": "Bachelor of Science in Computer Science (2018)",
-    "aiSummary": "Jennifer Molina brings 5 years of hands-on experience as a DevOps Engineer. Their expertise in AWS, Terraform, Docker aligns well with modern development requirements."
+    "aiSummary": "Jennifer Molina brings 5 years of hands-on experience as a DevOps Engineer. Their expertise in AWS, Terraform, Docker aligns well with modern development requirements.",
+    "role": "DevOps Engineer",
+    "status": "Not Sent",
+    "date": "-",
+    "time": "-",
+    "interviewer": "-"
   },
   {
     "name": "James Bond",
@@ -321,7 +416,12 @@
     "overview": "DevOps Engineer with experience in CI/CD, Kubernetes, AWS and delivering results across multiple projects.",
     "experienceDetails": "DevOps Engineer @ Adams, Robbins and Martinez\n(2023 - Present)\n- Worked on scalable applications and team projects using CI/CD, Kubernetes, AWS.",
     "education": "Master of Science in AI and Data Science (2020)",
-    "aiSummary": "James Bond brings 4 years of hands-on experience as a DevOps Engineer. Their expertise in CI/CD, Kubernetes, AWS aligns well with modern development requirements."
+    "aiSummary": "James Bond brings 4 years of hands-on experience as a DevOps Engineer. Their expertise in CI/CD, Kubernetes, AWS aligns well with modern development requirements.",
+    "role": "DevOps Engineer",
+    "status": "Not Sent",
+    "date": "-",
+    "time": "-",
+    "interviewer": "-"
   },
   {
     "name": "Cheyenne Gaines",
@@ -337,7 +437,12 @@
     "overview": "QA Tester with experience in Bug Tracking, Test Cases, Selenium and delivering results across multiple projects.",
     "experienceDetails": "QA Tester @ Smith-Schwartz\n(2024 - Present)\n- Worked on scalable applications and team projects using Bug Tracking, Test Cases, Selenium.",
     "education": "Diploma in Web Development (2021)",
-    "aiSummary": "Cheyenne Gaines brings 4 years of hands-on experience as a QA Tester. Their expertise in Bug Tracking, Test Cases, Selenium aligns well with modern development requirements."
+    "aiSummary": "Cheyenne Gaines brings 4 years of hands-on experience as a QA Tester. Their expertise in Bug Tracking, Test Cases, Selenium aligns well with modern development requirements.",
+    "role": "QA Tester",
+    "status": "Pending",
+    "date": "2025-07-14",
+    "time": "11:30 AM",
+    "interviewer": "Kelly Tan"
   },
   {
     "name": "Kathy Thompson",
@@ -353,7 +458,12 @@
     "overview": "Data Scientist with experience in TensorFlow, Scikit-learn, Python and delivering results across multiple projects.",
     "experienceDetails": "Data Scientist @ Gomez, Rubio and Merritt\n(2021 - Present)\n- Worked on scalable applications and team projects using TensorFlow, Scikit-learn, Python.",
     "education": "Bachelor of Business Administration (2017)",
-    "aiSummary": "Kathy Thompson brings 3 years of hands-on experience as a Data Scientist. Their expertise in TensorFlow, Scikit-learn, Python aligns well with modern development requirements."
+    "aiSummary": "Kathy Thompson brings 3 years of hands-on experience as a Data Scientist. Their expertise in TensorFlow, Scikit-learn, Python aligns well with modern development requirements.",
+    "role": "Data Scientist",
+    "status": "Not Sent",
+    "date": "-",
+    "time": "-",
+    "interviewer": "-"
   },
   {
     "name": "Richard Johnson",
@@ -369,7 +479,12 @@
     "overview": "Backend Developer with experience in MongoDB, Express, Node.js and delivering results across multiple projects.",
     "experienceDetails": "Backend Developer @ Brown Group\n(2024 - Present)\n- Worked on scalable applications and team projects using MongoDB, Express, Node.js.",
     "education": "Diploma in Web Development (2021)",
-    "aiSummary": "Richard Johnson brings 3 years of hands-on experience as a Backend Developer. Their expertise in MongoDB, Express, Node.js aligns well with modern development requirements."
+    "aiSummary": "Richard Johnson brings 3 years of hands-on experience as a Backend Developer. Their expertise in MongoDB, Express, Node.js aligns well with modern development requirements.",
+    "role": "Backend Developer",
+    "status": "Not Sent",
+    "date": "-",
+    "time": "-",
+    "interviewer": "-"
   },
   {
     "name": "Christopher Tran",
@@ -385,7 +500,12 @@
     "overview": "Backend Developer with experience in Express, SQL, Node.js and delivering results across multiple projects.",
     "experienceDetails": "Backend Developer @ Gonzalez PLC\n(2020 - Present)\n- Worked on scalable applications and team projects using Express, SQL, Node.js.",
     "education": "Master of Science in AI and Data Science (2020)",
-    "aiSummary": "Christopher Tran brings 3 years of hands-on experience as a Backend Developer. Their expertise in Express, SQL, Node.js aligns well with modern development requirements."
+    "aiSummary": "Christopher Tran brings 3 years of hands-on experience as a Backend Developer. Their expertise in Express, SQL, Node.js aligns well with modern development requirements.",
+    "role": "Backend Developer",
+    "status": "Not Sent",
+    "date": "-",
+    "time": "-",
+    "interviewer": "-"
   },
   {
     "name": "Laurie Moore",
@@ -401,7 +521,12 @@
     "overview": "Frontend Developer with experience in HTML, JavaScript, React and delivering results across multiple projects.",
     "experienceDetails": "Frontend Developer @ Green, Ballard and Howell\n(2024 - Present)\n- Worked on scalable applications and team projects using HTML, JavaScript, React.",
     "education": "Bachelor of Engineering in Information Systems (2019)",
-    "aiSummary": "Laurie Moore brings 1 years of hands-on experience as a Frontend Developer. Their expertise in HTML, JavaScript, React aligns well with modern development requirements."
+    "aiSummary": "Laurie Moore brings 1 years of hands-on experience as a Frontend Developer. Their expertise in HTML, JavaScript, React aligns well with modern development requirements.",
+    "role": "Frontend Developer",
+    "status": "Pending",
+    "date": "2025-07-11",
+    "time": "4:00 PM",
+    "interviewer": "Amira Soh"
   },
   {
     "name": "Roger Ross",
@@ -417,7 +542,12 @@
     "overview": "UI/UX Designer with experience in Prototyping, Wireframes, Figma and delivering results across multiple projects.",
     "experienceDetails": "UI/UX Designer @ Kidd Group\n(2023 - Present)\n- Worked on scalable applications and team projects using Prototyping, Wireframes, Figma.",
     "education": "Master of Science in AI and Data Science (2020)",
-    "aiSummary": "Roger Ross brings 5 years of hands-on experience as a UI/UX Designer. Their expertise in Prototyping, Wireframes, Figma aligns well with modern development requirements."
+    "aiSummary": "Roger Ross brings 5 years of hands-on experience as a UI/UX Designer. Their expertise in Prototyping, Wireframes, Figma aligns well with modern development requirements.",
+    "role": "UI/UX Designer",
+    "status": "Pending",
+    "date": "2025-07-07",
+    "time": "10:00 AM",
+    "interviewer": "Amira Soh"
   },
   {
     "name": "Cody Campbell",
@@ -433,7 +563,12 @@
     "overview": "Full Stack Developer with experience in Node.js, Next.js, React and delivering results across multiple projects.",
     "experienceDetails": "Full Stack Developer @ Anderson-Solis\n(2021 - Present)\n- Worked on scalable applications and team projects using Node.js, Next.js, React.",
     "education": "Bachelor of Business Administration (2017)",
-    "aiSummary": "Cody Campbell brings 7 years of hands-on experience as a Full Stack Developer. Their expertise in Node.js, Next.js, React aligns well with modern development requirements."
+    "aiSummary": "Cody Campbell brings 7 years of hands-on experience as a Full Stack Developer. Their expertise in Node.js, Next.js, React aligns well with modern development requirements.",
+    "role": "Frontend Developer",
+    "status": "Not Sent",
+    "date": "-",
+    "time": "-",
+    "interviewer": "-"
   },
   {
     "name": "Amy Schneider",
@@ -449,7 +584,12 @@
     "overview": "Full Stack Developer with experience in React, MongoDB, Node.js and delivering results across multiple projects.",
     "experienceDetails": "Full Stack Developer @ Fisher and Sons\n(2022 - Present)\n- Worked on scalable applications and team projects using React, MongoDB, Node.js.",
     "education": "Diploma in Web Development (2021)",
-    "aiSummary": "Amy Schneider brings 7 years of hands-on experience as a Full Stack Developer. Their expertise in React, MongoDB, Node.js aligns well with modern development requirements."
+    "aiSummary": "Amy Schneider brings 7 years of hands-on experience as a Full Stack Developer. Their expertise in React, MongoDB, Node.js aligns well with modern development requirements.",
+    "role": "Frontend Developer",
+    "status": "Scheduled",
+    "date": "2025-07-08",
+    "time": "2:00 PM",
+    "interviewer": "Jace Lim"
   },
   {
     "name": "Matthew Gray",
@@ -465,7 +605,12 @@
     "overview": "UI/UX Designer with experience in Prototyping, Wireframes, Design Systems and delivering results across multiple projects.",
     "experienceDetails": "UI/UX Designer @ Martinez Group\n(2020 - Present)\n- Worked on scalable applications and team projects using Prototyping, Wireframes, Design Systems.",
     "education": "Bachelor of Business Administration (2017)",
-    "aiSummary": "Matthew Gray brings 1 years of hands-on experience as a UI/UX Designer. Their expertise in Prototyping, Wireframes, Design Systems aligns well with modern development requirements."
+    "aiSummary": "Matthew Gray brings 1 years of hands-on experience as a UI/UX Designer. Their expertise in Prototyping, Wireframes, Design Systems aligns well with modern development requirements.",
+    "role": "UI/UX Designer",
+    "status": "Pending",
+    "date": "2025-07-05",
+    "time": "2:00 PM",
+    "interviewer": "Jace Lim"
   },
   {
     "name": "Timothy Bentley",
@@ -481,7 +626,12 @@
     "overview": "UI/UX Designer with experience in Design Systems, Wireframes, Prototyping and delivering results across multiple projects.",
     "experienceDetails": "UI/UX Designer @ Hayes, Evans and Anderson\n(2023 - Present)\n- Worked on scalable applications and team projects using Design Systems, Wireframes, Prototyping.",
     "education": "Bachelor of Business Administration (2017)",
-    "aiSummary": "Timothy Bentley brings 4 years of hands-on experience as a UI/UX Designer. Their expertise in Design Systems, Wireframes, Prototyping aligns well with modern development requirements."
+    "aiSummary": "Timothy Bentley brings 4 years of hands-on experience as a UI/UX Designer. Their expertise in Design Systems, Wireframes, Prototyping aligns well with modern development requirements.",
+    "role": "UI/UX Designer",
+    "status": "Pending",
+    "date": "2025-07-05",
+    "time": "2:00 PM",
+    "interviewer": "Rachel Ong"
   },
   {
     "name": "John Scott",
@@ -497,7 +647,12 @@
     "overview": "Backend Developer with experience in Django, Express, SQL and delivering results across multiple projects.",
     "experienceDetails": "Backend Developer @ Franco, Morgan and Ramirez\n(2020 - Present)\n- Worked on scalable applications and team projects using Django, Express, SQL.",
     "education": "Bachelor of Business Administration (2017)",
-    "aiSummary": "John Scott brings 6 years of hands-on experience as a Backend Developer. Their expertise in Django, Express, SQL aligns well with modern development requirements."
+    "aiSummary": "John Scott brings 6 years of hands-on experience as a Backend Developer. Their expertise in Django, Express, SQL aligns well with modern development requirements.",
+    "role": "Backend Developer",
+    "status": "Scheduled",
+    "date": "2025-07-03",
+    "time": "4:00 PM",
+    "interviewer": "Nathan Chan"
   },
   {
     "name": "Brian Bowers",
@@ -513,7 +668,12 @@
     "overview": "DevOps Engineer with experience in AWS, Docker, CI/CD and delivering results across multiple projects.",
     "experienceDetails": "DevOps Engineer @ Mack PLC\n(2024 - Present)\n- Worked on scalable applications and team projects using AWS, Docker, CI/CD.",
     "education": "Bachelor of Engineering in Information Systems (2019)",
-    "aiSummary": "Brian Bowers brings 7 years of hands-on experience as a DevOps Engineer. Their expertise in AWS, Docker, CI/CD aligns well with modern development requirements."
+    "aiSummary": "Brian Bowers brings 7 years of hands-on experience as a DevOps Engineer. Their expertise in AWS, Docker, CI/CD aligns well with modern development requirements.",
+    "role": "DevOps Engineer",
+    "status": "Not Sent",
+    "date": "-",
+    "time": "-",
+    "interviewer": "-"
   },
   {
     "name": "Alexandria Fuller",
@@ -529,7 +689,12 @@
     "overview": "QA Tester with experience in Automation, Test Cases, Selenium and delivering results across multiple projects.",
     "experienceDetails": "QA Tester @ Smith-Baker\n(2022 - Present)\n- Worked on scalable applications and team projects using Automation, Test Cases, Selenium.",
     "education": "Master of Science in AI and Data Science (2020)",
-    "aiSummary": "Alexandria Fuller brings 5 years of hands-on experience as a QA Tester. Their expertise in Automation, Test Cases, Selenium aligns well with modern development requirements."
+    "aiSummary": "Alexandria Fuller brings 5 years of hands-on experience as a QA Tester. Their expertise in Automation, Test Cases, Selenium aligns well with modern development requirements.",
+    "role": "QA Tester",
+    "status": "Pending",
+    "date": "2025-07-13",
+    "time": "2:00 PM",
+    "interviewer": "Amira Soh"
   },
   {
     "name": "Caleb Gallagher",
@@ -545,7 +710,12 @@
     "overview": "DevOps Engineer with experience in CI/CD, Kubernetes, AWS and delivering results across multiple projects.",
     "experienceDetails": "DevOps Engineer @ Gallegos LLC\n(2024 - Present)\n- Worked on scalable applications and team projects using CI/CD, Kubernetes, AWS.",
     "education": "Bachelor of Business Administration (2017)",
-    "aiSummary": "Caleb Gallagher brings 3 years of hands-on experience as a DevOps Engineer. Their expertise in CI/CD, Kubernetes, AWS aligns well with modern development requirements."
+    "aiSummary": "Caleb Gallagher brings 3 years of hands-on experience as a DevOps Engineer. Their expertise in CI/CD, Kubernetes, AWS aligns well with modern development requirements.",
+    "role": "DevOps Engineer",
+    "status": "Pending",
+    "date": "2025-07-09",
+    "time": "4:00 PM",
+    "interviewer": "Rachel Ong"
   },
   {
     "name": "Joshua Bowen",
@@ -561,7 +731,12 @@
     "overview": "Frontend Developer with experience in CSS, Tailwind, React and delivering results across multiple projects.",
     "experienceDetails": "Frontend Developer @ Spencer, Davis and Mccarty\n(2020 - Present)\n- Worked on scalable applications and team projects using CSS, Tailwind, React.",
     "education": "Master of Science in AI and Data Science (2020)",
-    "aiSummary": "Joshua Bowen brings 6 years of hands-on experience as a Frontend Developer. Their expertise in CSS, Tailwind, React aligns well with modern development requirements."
+    "aiSummary": "Joshua Bowen brings 6 years of hands-on experience as a Frontend Developer. Their expertise in CSS, Tailwind, React aligns well with modern development requirements.",
+    "role": "Frontend Developer",
+    "status": "Not Sent",
+    "date": "-",
+    "time": "-",
+    "interviewer": "-"
   },
   {
     "name": "Leslie Cox",
@@ -577,7 +752,12 @@
     "overview": "Frontend Developer with experience in HTML, JavaScript, Tailwind and delivering results across multiple projects.",
     "experienceDetails": "Frontend Developer @ Douglas-Perkins\n(2020 - Present)\n- Worked on scalable applications and team projects using HTML, JavaScript, Tailwind.",
     "education": "Bachelor of Engineering in Information Systems (2019)",
-    "aiSummary": "Leslie Cox brings 4 years of hands-on experience as a Frontend Developer. Their expertise in HTML, JavaScript, Tailwind aligns well with modern development requirements."
+    "aiSummary": "Leslie Cox brings 4 years of hands-on experience as a Frontend Developer. Their expertise in HTML, JavaScript, Tailwind aligns well with modern development requirements.",
+    "role": "Frontend Developer",
+    "status": "Scheduled",
+    "date": "2025-07-16",
+    "time": "4:00 PM",
+    "interviewer": "Amira Soh"
   },
   {
     "name": "Jared Spencer",
@@ -593,6 +773,11 @@
     "overview": "UI/UX Designer with experience in Design Systems, Figma, Wireframes and delivering results across multiple projects.",
     "experienceDetails": "UI/UX Designer @ Barrett Group\n(2024 - Present)\n- Worked on scalable applications and team projects using Design Systems, Figma, Wireframes.",
     "education": "Master of Science in AI and Data Science (2020)",
-    "aiSummary": "Jared Spencer brings 4 years of hands-on experience as a UI/UX Designer. Their expertise in Design Systems, Figma, Wireframes aligns well with modern development requirements."
+    "aiSummary": "Jared Spencer brings 4 years of hands-on experience as a UI/UX Designer. Their expertise in Design Systems, Figma, Wireframes aligns well with modern development requirements.",
+    "role": "UI/UX Designer",
+    "status": "Pending",
+    "date": "2025-07-08",
+    "time": "10:00 AM",
+    "interviewer": "Rachel Ong"
   }
 ]
