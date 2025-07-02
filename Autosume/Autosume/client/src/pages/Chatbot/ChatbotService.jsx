@@ -2,27 +2,27 @@
 
 const rules = [
   {
-    question: "What is the dress code policy?",
+    question: "dress code policy?",
     answer: "Employees are expected to wear business casual attire from Monday to Thursday and smart casual on Fridays."
   },
   {
-    question: "How many annual leave days do I get?",
+    question: "leave days",
     answer: "Full-time staff are entitled to 14 days of annual leave per year."
   },
   {
-    question: "What is the procedure for sick leave?",
+    question: "sick leave",
     answer: "Submit your medical certificate to HR via email within 2 days of absence."
   },
   {
-    question: "What are the working hours?",
+    question: "working hours",
     answer: "Standard working hours are 9:00 AM to 6:00 PM, Monday to Friday."
   },
   {
-    question: "How do I request time off?",
+    question: "time off",
     answer: "Submit a leave request through the HR portal at least 2 weeks in advance."
   },
   {
-    question: "What is the remote work policy?",
+    question: "remote work policy",
     answer: "Employees can work remotely up to 2 days per week with manager approval."
   },
   // Add more handbook FAQs here
