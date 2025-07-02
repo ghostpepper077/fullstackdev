@@ -1,88 +1,79 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
   Table,
-  TableBody,
-  TableCell,
   TableHead,
   TableRow,
+  TableCell,
+  TableBody,
   Paper,
-  Button,
   Chip,
+  Button,
   TextField,
-} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-
-const mockInterviews = [
-  {
-    name: 'Samanta Wong',
-    role: 'UI/UX Designer',
-    date: '2024-07-08',
-    time: '10:00 AM',
-    interviewer: 'Jace Lim',
-    status: 'Scheduled',
-    email: 'wongsamanta_23@gmail.com',
-    phone: '+65 8012 3040',
-    skills: ['Figma', 'UI/UX', 'Prototyping'],
-  },
-  {
-    name: 'Jason Lim',
-    role: 'Data Scientist',
-    date: '2024-07-10',
-    time: '2:00 PM',
-    interviewer: 'Amira Soh',
-    status: 'Pending',
-    email: 'jason.lim@email.com',
-    phone: '+65 8123 9988',
-    skills: ['Python', 'Pandas', 'ML'],
-  },
-  {
-    name: 'Audrey Hall',
-    role: 'Solution Architect',
-    date: '-',
-    time: '-',
-    interviewer: '-',
-    status: 'Not Sent',
-    email: 'audrey.hall@email.com',
-    phone: '+65 9012 1234',
-    skills: ['React', 'Node.js', 'Architecture'],
-  },
-];
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const statusColor = {
-  Scheduled: 'success',
-  Pending: 'warning',
-  'Not Sent': 'error',
+  Scheduled: "success",
+  Pending: "warning",
+  "Not Sent": "error",
 };
 
 export default function InterviewDashboard() {
+  const [interviews, setInterviews] = useState([]);
+  const [search, setSearch] = useState("");
   const navigate = useNavigate();
-  const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/api/interviews/all")
+      .then((res) => setInterviews(res.data))
+      .catch((err) => console.error("❌ Failed to fetch interviews:", err));
+  }, []);
 
   const handleEdit = (row) => {
-    const route = row.status === 'Scheduled' ? '/emailautomation' : '/scheduling';
-    navigate(route, {
-      state: {
-        candidate: {
-          name: row.name,
-          role: row.role,
-          email: row.email,
-          phone: row.phone,
-          skills: row.skills,
-        },
-        interview: {
-          date: row.date,
-          time: row.time,
-          interviewer: row.interviewer,
-        },
-      },
-    });
+    const route =
+      row.status === "Scheduled" ? "/emailautomation" : "/scheduling";
+    navigate(route, { state: { candidate: row } });
+  };
+
+  const handleExportCSV = () => {
+    const headers = [
+      "Name",
+      "Role",
+      "Date",
+      "Time",
+      "Interviewer",
+      "Status",
+      "Email",
+      "Phone",
+    ];
+    const rows = interviews.map((i) =>
+      [
+        i.name,
+        i.role,
+        i.date,
+        i.time,
+        i.interviewer,
+        i.status,
+        i.email,
+        i.phone,
+      ].join(",")
+    );
+
+    const csv = [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "interview_dashboard.csv";
+    link.click();
   };
 
   return (
-    <Box p={5} bgcolor="#f5f5f5" minHeight="100vh">
-      <Typography variant="h4" fontWeight={600} gutterBottom>
+    <Box p={5} bgcolor="#f0f2f5" minHeight="100vh">
+      <Typography variant="h4" fontWeight={600} gutterBottom color="primary">
         Interview Dashboard
       </Typography>
 
@@ -95,27 +86,55 @@ export default function InterviewDashboard() {
         onChange={(e) => setSearch(e.target.value.toLowerCase())}
       />
 
+      <Button
+        variant="outlined"
+        color="success"
+        onClick={handleExportCSV}
+        sx={{ mb: 2 }}
+      >
+        ⬇️ Export CSV
+      </Button>
+
       <Paper elevation={3}>
         <Table>
-          <TableHead>
+          <TableHead sx={{ backgroundColor: "#e3f2fd" }}>
             <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Role</TableCell>
-              <TableCell>Date</TableCell>
-              <TableCell>Time</TableCell>
-              <TableCell>Interviewer</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Action</TableCell>
+              <TableCell>
+                <strong>Name</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Role</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Date</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Time</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Interviewer</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Status</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Action</strong>
+              </TableCell>
             </TableRow>
           </TableHead>
 
           <TableBody>
-            {mockInterviews
+            {interviews
               .filter(
                 (row) =>
-                  row.name.toLowerCase().includes(search) ||
-                  row.role.toLowerCase().includes(search)
+                  row.name?.toLowerCase().includes(search) ||
+                  row.role?.toLowerCase().includes(search)
               )
+              .sort((a, b) => {
+                const aDate = new Date(`${a.date} ${a.time}`);
+                const bDate = new Date(`${b.date} ${b.time}`);
+                return aDate - bDate;
+              })
               .map((row, index) => (
                 <TableRow key={index}>
                   <TableCell>{row.name}</TableCell>
@@ -124,11 +143,16 @@ export default function InterviewDashboard() {
                   <TableCell>{row.time}</TableCell>
                   <TableCell>{row.interviewer}</TableCell>
                   <TableCell>
-                    <Chip label={row.status} color={statusColor[row.status]} />
+                    <Chip
+                      label={row.status}
+                      color={statusColor[row.status] || "default"}
+                      variant="outlined"
+                    />
                   </TableCell>
                   <TableCell>
                     <Button
                       variant="outlined"
+                      color="primary"
                       size="small"
                       onClick={() => handleEdit(row)}
                     >

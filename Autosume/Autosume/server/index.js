@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const Candidate = require('./models/Candidate');
-const scheduleRoutes = require('./routes/scheduleRoutes');
+
 
 require("dotenv").config();
 
@@ -65,4 +65,9 @@ app.use('/api/user', userRoutes);
 app.use('/api/jobs', jobRoutes);            // ← Mount this
 
 // =========================================================
+const interviewRoutes = require('./routes/interviewRoutes');
+const scheduleRoutes = require('./routes/scheduleRoutes');
 app.use('/api/schedules', scheduleRoutes);
+app.use('/api/interviews', interviewRoutes);
+
+// =========================================================

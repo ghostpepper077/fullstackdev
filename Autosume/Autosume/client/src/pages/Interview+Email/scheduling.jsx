@@ -13,6 +13,7 @@ import {
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const timeSlots = ['10:00 AM', '12:00 PM', '2:00 PM', '4:00 PM'];
 const interviewers = ['Gabriel Tan', 'Jace Lim', 'Amira Soh'];
@@ -27,37 +28,67 @@ export default function InterviewScheduling() {
   const [selectedTime, setSelectedTime] = useState('');
   const [selectedInterviewer, setSelectedInterviewer] = useState('');
 
-  const handleSchedule = () => {
-    if (selectedDate && selectedTime && selectedInterviewer) {
+  const handleSchedule = async () => {
+  if (selectedDate && selectedTime && selectedInterviewer) {
+    try {
+      const payload = {
+        name: candidate.name,
+        date: selectedDate.toISOString().split('T')[0], // e.g. 2025-07-15
+        time: selectedTime,
+        interviewer: selectedInterviewer,
+      };
+
+      await axios.post('http://localhost:5000/api/interviews/schedule', payload);
+
       navigate('/emailautomation', {
         state: {
           candidate: {
             ...candidate,
-            date: selectedDate.toDateString(),
-            time: selectedTime,
-            interviewer: selectedInterviewer,
+            ...payload,
             status: 'Scheduled',
           },
         },
       });
-    } else {
-      alert('Please complete all fields.');
     }
-  };
+     catch (err) {
+      console.error('❌ Failed to save interview:', err);
+      alert('Error saving interview to database.');
+    }
+  } else {
+    alert('Please complete all fields.');
+  }
+};
 
-  const handleAutoSchedule = () => {
-    const today = new Date();
-    const randomOffset = Math.floor(Math.random() * 10) + 1;
-    const autoDate = new Date(today.setDate(today.getDate() + randomOffset));
 
-    const autoTime = timeSlots[Math.floor(Math.random() * timeSlots.length)];
-    const autoInterviewer =
-      interviewers[Math.floor(Math.random() * interviewers.length)];
+  const handleAutoSchedule = async () => {
+  try {
+    const res = await axios.get('http://localhost:5000/api/schedules/availability');
+    const taken = new Set(res.data); // example: "2025-07-14__10:00 AM__Amira Soh"
 
-    setSelectedDate(autoDate);
-    setSelectedTime(autoTime);
-    setSelectedInterviewer(autoInterviewer);
-  };
+    for (let i = 1; i <= 10; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() + i);
+      const dateStr = date.toDateString();
+
+      for (let time of timeSlots) {
+        for (let interviewer of interviewers) {
+          const key = `${dateStr}__${time}__${interviewer}`;
+          if (!taken.has(key)) {
+            setSelectedDate(date);
+            setSelectedTime(time);
+            setSelectedInterviewer(interviewer);
+            return;
+          }
+        }
+      }
+    }
+
+    alert('⚠️ No available slots found in the next 10 days.');
+  } catch (err) {
+    console.error('AI slot suggestion failed:', err);
+    alert('Error suggesting an optimal slot.');
+  }
+};
 
   if (!candidate) {
     return (
