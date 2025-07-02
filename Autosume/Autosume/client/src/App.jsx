@@ -14,13 +14,17 @@ import ChatbotPage from './pages/Chatbot/ChatbotPage';
 import ForgotPassword from './pages/UserProfile/ForgotPassword';
 import Shortlisting from './pages/Shortlisting/shortlisting';
 import CreateCriteria from './pages/Shortlisting/create-criteria';
-
 import Profile from './pages/UserProfile/Profile';
 import Interview from './pages/Interview+Email/shortlistoverview';
 import InterviewScheduling from './pages/Interview+Email/scheduling';
 import EmailAutomation from './pages/Interview+Email/emailautomation';
 import InterviewDashboard from './pages/Interview+Email/interviewdashboard';
 import Sidebar from './components/Sidebar';
+// ===================================================================
+// ★★★ 1. IMPORT THE NEW COMPONENT ★★★
+// ===================================================================
+import TriggerAIScreening from './pages/AIScreening/TriggerAIScreening';
+// ===================================================================
 
 function App() {
   const [user, setUser] = useState(null);
@@ -85,6 +89,11 @@ function App() {
                     <Route path="/job-management" element={<JobManagement />} />
                     <Route path="/shortlisting" element={<Shortlisting />} />
                     <Route path="/create-criteria" element={<CreateCriteria />} />
+                    {/* =================================================================== */}
+                    {/* ★★★ 2. ADD THE NEW ROUTE HERE ★★★ */}
+                    {/* =================================================================== */}
+                    <Route path="/trigger-ai-screening" element={<TriggerAIScreening />} />
+                    {/* =================================================================== */}
                     <Route path="/shortlistoverview" element={<Interview />} />
                     <Route path="/scheduling" element={<InterviewScheduling />} />
                     <Route path="/emailautomation" element={<EmailAutomation />} />
