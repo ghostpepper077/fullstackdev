@@ -82,5 +82,455 @@
     "experienceDetails": "Product Manager @ Innovate Labs\n(January 2018 - Present)\n- Managed the entire product lifecycle from ideation to launch.\n- Defined product roadmaps and wrote detailed user stories in JIRA.",
     "education": "Bachelor of Business Administration (2017)",
     "aiSummary": "Grace is a seasoned Product Manager with seven years of experience. Her strong background in Agile methodologies and product strategy would be a great asset for leading a product team."
+  },
+  {
+    "name": "Gabriela Lam",
+    "role": "DevOps Engineer",
+    "email": "smithjennifer@meadows.com",
+    "phone": "+65 8886 2003",
+    "match": 90,
+    "skills": [
+      "Terraform",
+      "CI/CD",
+      "Kubernetes"
+    ],
+    "experience": "5 years experience as a devops engineer",
+    "status": "Scheduled",
+    "summary": "Gabriela Lam has strong skills in Terraform, CI/CD, Kubernetes and is a great fit for a DevOps Engineer role."
+  },
+  {
+    "name": "Adrian Hoffman",
+    "role": "Backend Developer",
+    "email": "angelasmith@hurley.com",
+    "phone": "+65 9410 3040",
+    "match": 94,
+    "skills": [
+      "REST API",
+      "SQL",
+      "Node.js"
+    ],
+    "experience": "3 years experience as a backend developer",
+    "status": "Rejected",
+    "summary": "Adrian Hoffman has strong skills in REST API, SQL, Node.js and is a great fit for a Backend Developer role."
+  },
+  {
+    "name": "Daniel Smith",
+    "role": "Data Analyst",
+    "email": "jamescabrera@diaz.com",
+    "phone": "+65 9475 8349",
+    "match": 71,
+    "skills": [
+      "Power BI",
+      "Pandas",
+      "SQL"
+    ],
+    "experience": "3 years experience as a data analyst",
+    "status": "Scheduled",
+    "summary": "Daniel Smith has strong skills in Power BI, Pandas, SQL and is a great fit for a Data Analyst role."
+  },
+  {
+    "name": "Diane Carroll",
+    "role": "QA Tester",
+    "email": "jennifergomez@boone.org",
+    "phone": "+65 9532 4862",
+    "match": 76,
+    "skills": [
+      "Automation",
+      "Bug Tracking",
+      "Selenium"
+    ],
+    "experience": "4 years experience as a qa tester",
+    "status": "Rejected",
+    "summary": "Diane Carroll has strong skills in Automation, Bug Tracking, Selenium and is a great fit for a QA Tester role."
+  },
+  {
+    "name": "Kristen Castaneda",
+    "role": "DevOps Engineer",
+    "email": "williamsjeffrey@gmail.com",
+    "phone": "+65 8254 8458",
+    "match": 73,
+    "skills": [
+      "Kubernetes",
+      "Docker",
+      "CI/CD"
+    ],
+    "experience": "2 years experience as a devops engineer",
+    "status": "Pending",
+    "summary": "Kristen Castaneda has strong skills in Kubernetes, Docker, CI/CD and is a great fit for a DevOps Engineer role."
+  },
+  {
+    "name": "John Lee",
+    "role": "Data Analyst",
+    "email": "danielle18@dean.org",
+    "phone": "+65 9472 8972",
+    "match": 73,
+    "skills": [
+      "Power BI",
+      "SQL",
+      "Pandas"
+    ],
+    "experience": "1 years experience as a data analyst",
+    "status": "Scheduled",
+    "summary": "John Lee has strong skills in Power BI, SQL, Pandas and is a great fit for a Data Analyst role."
+  },
+  {
+    "name": "Mackenzie Wilson",
+    "role": "Data Analyst",
+    "email": "justin13@gmail.com",
+    "phone": "+65 9203 6362",
+    "match": 81,
+    "skills": [
+      "Pandas",
+      "Power BI",
+      "SQL"
+    ],
+    "experience": "1 years experience as a data analyst",
+    "status": "Scheduled",
+    "summary": "Mackenzie Wilson has strong skills in Pandas, Power BI, SQL and is a great fit for a Data Analyst role."
+  },
+  {
+    "name": "Mrs. Rachel Frederick DDS",
+    "role": "Software Engineer",
+    "email": "lwalker@yahoo.com",
+    "phone": "+65 9316 3913",
+    "match": 79,
+    "skills": [
+      "C++",
+      "Java",
+      "Python"
+    ],
+    "experience": "1 years experience as a software engineer",
+    "status": "Pending",
+    "summary": "Mrs. Rachel Frederick DDS has strong skills in C++, Java, Python and is a great fit for a Software Engineer role."
+  },
+  {
+    "name": "Chad Howard",
+    "role": "Software Engineer",
+    "email": "ukelley@ross.org",
+    "phone": "+65 9784 1643",
+    "match": 85,
+    "skills": [
+      "Java",
+      "Python",
+      "OOP"
+    ],
+    "experience": "4 years experience as a software engineer",
+    "status": "Rejected",
+    "summary": "Chad Howard has strong skills in Java, Python, OOP and is a great fit for a Software Engineer role."
+  },
+  {
+    "name": "Jody Roy",
+    "role": "Data Analyst",
+    "email": "wcardenas@lee.com",
+    "phone": "+65 8503 3426",
+    "match": 71,
+    "skills": [
+      "Pandas",
+      "Python",
+      "SQL"
+    ],
+    "experience": "4 years experience as a data analyst",
+    "status": "Pending",
+    "summary": "Jody Roy has strong skills in Pandas, Python, SQL and is a great fit for a Data Analyst role."
+  },
+  {
+    "name": "Logan Mendez",
+    "role": "Data Analyst",
+    "email": "fsutton@valenzuela-cardenas.com",
+    "phone": "+65 8778 8093",
+    "match": 75,
+    "skills": [
+      "Pandas",
+      "Python",
+      "Power BI"
+    ],
+    "experience": "4 years experience as a data analyst",
+    "status": "Scheduled",
+    "summary": "Logan Mendez has strong skills in Pandas, Python, Power BI and is a great fit for a Data Analyst role."
+  },
+  {
+    "name": "Rose Walker",
+    "role": "Backend Developer",
+    "email": "david09@yahoo.com",
+    "phone": "+65 8153 3359",
+    "match": 81,
+    "skills": [
+      "Node.js",
+      "REST API",
+      "SQL"
+    ],
+    "experience": "2 years experience as a backend developer",
+    "status": "Scheduled",
+    "summary": "Rose Walker has strong skills in Node.js, REST API, SQL and is a great fit for a Backend Developer role."
+  },
+  {
+    "name": "Sarah Gallegos",
+    "role": "Frontend Developer",
+    "email": "xmack@hernandez-davis.net",
+    "phone": "+65 8177 9754",
+    "match": 81,
+    "skills": [
+      "JavaScript",
+      "CSS",
+      "Tailwind"
+    ],
+    "experience": "3 years experience as a frontend developer",
+    "status": "Rejected",
+    "summary": "Sarah Gallegos has strong skills in JavaScript, CSS, Tailwind and is a great fit for a Frontend Developer role."
+  },
+  {
+    "name": "Christopher Parker",
+    "role": "Frontend Developer",
+    "email": "rileymatthew@moore.net",
+    "phone": "+65 8589 3268",
+    "match": 80,
+    "skills": [
+      "Tailwind",
+      "JavaScript",
+      "CSS"
+    ],
+    "experience": "4 years experience as a frontend developer",
+    "status": "Pending",
+    "summary": "Christopher Parker has strong skills in Tailwind, JavaScript, CSS and is a great fit for a Frontend Developer role."
+  },
+  {
+    "name": "Dillon Hale",
+    "role": "Software Engineer",
+    "email": "mariahrandall@carter-thompson.com",
+    "phone": "+65 8832 1231",
+    "match": 76,
+    "skills": [
+      "OOP",
+      "Git",
+      "Java"
+    ],
+    "experience": "4 years experience as a software engineer",
+    "status": "Pending",
+    "summary": "Dillon Hale has strong skills in OOP, Git, Java and is a great fit for a Software Engineer role."
+  },
+  {
+    "name": "Darren Wilson",
+    "role": "Frontend Developer",
+    "email": "barnesdebra@mayer-griffin.com",
+    "phone": "+65 9051 8475",
+    "match": 85,
+    "skills": [
+      "JavaScript",
+      "React",
+      "HTML"
+    ],
+    "experience": "3 years experience as a frontend developer",
+    "status": "Scheduled",
+    "summary": "Darren Wilson has strong skills in JavaScript, React, HTML and is a great fit for a Frontend Developer role."
+  },
+  {
+    "name": "Alexis Clark",
+    "role": "DevOps Engineer",
+    "email": "comptonleslie@bates-sanchez.com",
+    "phone": "+65 8513 1301",
+    "match": 77,
+    "skills": [
+      "CI/CD",
+      "Docker",
+      "Kubernetes"
+    ],
+    "experience": "4 years experience as a devops engineer",
+    "status": "Scheduled",
+    "summary": "Alexis Clark has strong skills in CI/CD, Docker, Kubernetes and is a great fit for a DevOps Engineer role."
+  },
+  {
+    "name": "Nancy Parker",
+    "role": "DevOps Engineer",
+    "email": "melissacontreras@hayes.info",
+    "phone": "+65 9388 9752",
+    "match": 74,
+    "skills": [
+      "Kubernetes",
+      "AWS",
+      "Terraform"
+    ],
+    "experience": "4 years experience as a devops engineer",
+    "status": "Pending",
+    "summary": "Nancy Parker has strong skills in Kubernetes, AWS, Terraform and is a great fit for a DevOps Engineer role."
+  },
+  {
+    "name": "Jeanette Ramos",
+    "role": "Backend Developer",
+    "email": "churchstephanie@hotmail.com",
+    "phone": "+65 9795 5327",
+    "match": 88,
+    "skills": [
+      "Node.js",
+      "Express",
+      "SQL"
+    ],
+    "experience": "1 years experience as a backend developer",
+    "status": "Scheduled",
+    "summary": "Jeanette Ramos has strong skills in Node.js, Express, SQL and is a great fit for a Backend Developer role."
+  },
+  {
+    "name": "Stephanie Durham",
+    "role": "UI/UX Designer",
+    "email": "reevesdebbie@acevedo.com",
+    "phone": "+65 8465 8705",
+    "match": 84,
+    "skills": [
+      "Prototyping",
+      "Design Systems",
+      "Figma"
+    ],
+    "experience": "2 years experience as a ui/ux designer",
+    "status": "Scheduled",
+    "summary": "Stephanie Durham has strong skills in Prototyping, Design Systems, Figma and is a great fit for a UI/UX Designer role."
+  },
+  {
+    "name": "Jordan Barnett",
+    "role": "UI/UX Designer",
+    "email": "egentry@gmail.com",
+    "phone": "+65 8548 6149",
+    "match": 90,
+    "skills": [
+      "Wireframes",
+      "Design Systems",
+      "Prototyping"
+    ],
+    "experience": "1 years experience as a ui/ux designer",
+    "status": "Rejected",
+    "summary": "Jordan Barnett has strong skills in Wireframes, Design Systems, Prototyping and is a great fit for a UI/UX Designer role."
+  },
+  {
+    "name": "Adrienne Lynch",
+    "role": "Software Engineer",
+    "email": "wwells@hotmail.com",
+    "phone": "+65 9666 2182",
+    "match": 71,
+    "skills": [
+      "Python",
+      "Git",
+      "OOP"
+    ],
+    "experience": "2 years experience as a software engineer",
+    "status": "Scheduled",
+    "summary": "Adrienne Lynch has strong skills in Python, Git, OOP and is a great fit for a Software Engineer role."
+  },
+  {
+    "name": "Kristin Allen",
+    "role": "QA Tester",
+    "email": "michael29@wells.com",
+    "phone": "+65 9162 4619",
+    "match": 72,
+    "skills": [
+      "Automation",
+      "Bug Tracking",
+      "Test Cases"
+    ],
+    "experience": "5 years experience as a qa tester",
+    "status": "Pending",
+    "summary": "Kristin Allen has strong skills in Automation, Bug Tracking, Test Cases and is a great fit for a QA Tester role."
+  },
+  {
+    "name": "Meredith Baker",
+    "role": "Data Analyst",
+    "email": "marknixon@kelley.com",
+    "phone": "+65 9423 4911",
+    "match": 91,
+    "skills": [
+      "Excel",
+      "Power BI",
+      "Pandas"
+    ],
+    "experience": "5 years experience as a data analyst",
+    "status": "Pending",
+    "summary": "Meredith Baker has strong skills in Excel, Power BI, Pandas and is a great fit for a Data Analyst role."
+  },
+  {
+    "name": "Adrian Ferguson",
+    "role": "Product Manager",
+    "email": "hlewis@ingram.com",
+    "phone": "+65 9990 8179",
+    "match": 88,
+    "skills": [
+      "Roadmaps",
+      "Jira",
+      "Analytics"
+    ],
+    "experience": "3 years experience as a product manager",
+    "status": "Rejected",
+    "summary": "Adrian Ferguson has strong skills in Roadmaps, Jira, Analytics and is a great fit for a Product Manager role."
+  },
+  {
+    "name": "James Black",
+    "role": "Frontend Developer",
+    "email": "riverajim@trevino-sheppard.biz",
+    "phone": "+65 9224 3076",
+    "match": 94,
+    "skills": [
+      "React",
+      "CSS",
+      "Tailwind"
+    ],
+    "experience": "5 years experience as a frontend developer",
+    "status": "Pending",
+    "summary": "James Black has strong skills in React, CSS, Tailwind and is a great fit for a Frontend Developer role."
+  },
+  {
+    "name": "Abigail Ramirez",
+    "role": "Software Engineer",
+    "email": "barreracarrie@lewis.com",
+    "phone": "+65 8365 3242",
+    "match": 80,
+    "skills": [
+      "OOP",
+      "Git",
+      "Python"
+    ],
+    "experience": "5 years experience as a software engineer",
+    "status": "Rejected",
+    "summary": "Abigail Ramirez has strong skills in OOP, Git, Python and is a great fit for a Software Engineer role."
+  },
+  {
+    "name": "Helen Burton",
+    "role": "Product Manager",
+    "email": "xrichard@yahoo.com",
+    "phone": "+65 9208 7918",
+    "match": 83,
+    "skills": [
+      "User Stories",
+      "Roadmaps",
+      "Agile"
+    ],
+    "experience": "3 years experience as a product manager",
+    "status": "Rejected",
+    "summary": "Helen Burton has strong skills in User Stories, Roadmaps, Agile and is a great fit for a Product Manager role."
+  },
+  {
+    "name": "Sabrina Kline",
+    "role": "UI/UX Designer",
+    "email": "fcastillo@hotmail.com",
+    "phone": "+65 8193 4964",
+    "match": 91,
+    "skills": [
+      "Figma",
+      "Prototyping",
+      "Design Systems"
+    ],
+    "experience": "5 years experience as a ui/ux designer",
+    "status": "Scheduled",
+    "summary": "Sabrina Kline has strong skills in Figma, Prototyping, Design Systems and is a great fit for a UI/UX Designer role."
+  },
+  {
+    "name": "Christine Church MD",
+    "role": "UI/UX Designer",
+    "email": "danielgibson@hotmail.com",
+    "phone": "+65 9984 2246",
+    "match": 76,
+    "skills": [
+      "Prototyping",
+      "Wireframes",
+      "Design Systems"
+    ],
+    "experience": "4 years experience as a ui/ux designer",
+    "status": "Rejected",
+    "summary": "Christine Church MD has strong skills in Prototyping, Wireframes, Design Systems and is a great fit for a UI/UX Designer role."
   }
 ]
