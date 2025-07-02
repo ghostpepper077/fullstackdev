@@ -8,6 +8,11 @@ const userSchema = new mongoose.Schema({
   role: { type: String, default: "user" },
   lastLogin: { type: Date },
   isActive: { type: Boolean, default: true },
+  dateOfBirth: { type: String },
+  gender: { type: String },
+  country: { type: String },
+  language: { type: String },
+  timeZone: { type: String }
 }, { timestamps: true });
 
 // Hash password before saving
