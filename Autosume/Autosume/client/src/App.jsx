@@ -1,20 +1,20 @@
 import './App.css';
 import { useState, useEffect } from 'react';
 import { Container, Box } from '@mui/material';
-import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import MyTheme from './themes/MyTheme';
 import MyForm from './pages/UserProfile/MyForm';
 import Register from './pages/UserProfile/Register';
 import Login from './pages/UserProfile/Login';
 import JobManagement from './pages/JobManagement/mainpage';
+import Create from './pages/JobManagement/Create'; // Add this import
 import http from './http';
 import UserContext from './contexts/UserContext';
 import ChatbotPage from './pages/Chatbot/ChatbotPage';
 import ForgotPassword from './pages/UserProfile/ForgotPassword';
 import Shortlisting from './pages/Shortlisting/shortlisting';
 import CreateCriteria from './pages/Shortlisting/create-criteria';
-
 import Profile from './pages/UserProfile/Profile';
 import Interview from './pages/Interview+Email/shortlistoverview';
 import InterviewScheduling from './pages/Interview+Email/scheduling';
@@ -24,19 +24,19 @@ import Sidebar from './components/Sidebar';
 
 function App() {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (localStorage.getItem("accessToken")) {
       http.get('/user/auth').then((res) => {
         setUser(res.data.user);
-        setLoading(false); // Set loading to false after successful auth
+        setLoading(false);
       }).catch(() => {
         localStorage.clear();
-        setLoading(false); // Set loading to false even if auth fails
+        setLoading(false);
       });
     } else {
-      setLoading(false); // No token, so not loading anymore
+      setLoading(false);
     }
   }, []);
 
@@ -46,7 +46,6 @@ function App() {
     window.location = "/login";
   };
 
-  // Show loading spinner or nothing while checking authentication
   if (loading) {
     return (
       <ThemeProvider theme={MyTheme}>
@@ -56,7 +55,7 @@ function App() {
           alignItems: 'center',
           minHeight: '100vh'
         }}>
-          <div>Loading...</div> {/* You can replace this with a proper loading component */}
+          <div>Loading...</div>
         </Box>
       </ThemeProvider>
     );
@@ -67,12 +66,11 @@ function App() {
       <Router>
         <ThemeProvider theme={MyTheme}>
           {user ? (
-            // Authenticated layout with sidebar
             <Box sx={{ display: 'flex', minHeight: '100vh' }}>
               <Sidebar user={user} onLogout={logout} />
               <Box sx={{
                 flex: 1,
-                marginLeft: '280px', // Account for fixed sidebar width
+                marginLeft: '280px',
                 backgroundColor: '#f5f5f5',
                 minHeight: '100vh'
               }}>
@@ -82,7 +80,9 @@ function App() {
                     <Route path="/support" element={<Support />} />
                     <Route path="/form" element={<MyForm />} />
                     <Route path="/profile" element={<Profile />} />
+                    {/* Updated Job Management Routes */}
                     <Route path="/job-management" element={<JobManagement />} />
+                    <Route path="/jobs/create" element={<Create />} />
                     <Route path="/shortlisting" element={<Shortlisting />} />
                     <Route path="/create-criteria" element={<CreateCriteria />} />
                     <Route path="/shortlistoverview" element={<Interview />} />
@@ -99,7 +99,6 @@ function App() {
               </Box>
             </Box>
           ) : (
-            // Non-authenticated layout (no navigation)
             <Box sx={{ minHeight: '100vh' }}>
               <Container>
                 <Routes>
