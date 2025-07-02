@@ -1,16 +1,16 @@
-import React, { useContext } from 'react';
-import { Box, Typography, TextField, Button, Link } from '@mui/material';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import http from '../../http';
+import { Box, Typography, TextField, Button, Link } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import UserContext from '../../contexts/UserContext';
+import http from '../../http';
+import { UserContext } from '../../contexts/UserContext';
 
 function Login() {
     const navigate = useNavigate();
-    const { setUser } = useContext(UserContext);
+    const { setUser } = React.useContext(UserContext);
 
     const formik = useFormik({
         initialValues: {
@@ -30,133 +30,63 @@ function Login() {
         onSubmit: (data) => {
             data.email = data.email.trim().toLowerCase();
             data.password = data.password.trim();
-            http.post("/user/login", data)
+            // Use the correct endpoint: /api/auth/login
+            http.post("/api/auth/login", data)
                 .then((res) => {
-                    localStorage.setItem("accessToken", res.data.accessToken);
+                    localStorage.setItem("token", res.data.token);
                     setUser(res.data.user);
-                    navigate("/profile");
+                    navigate("/dashboard");
                 })
                 .catch(function (err) {
-                    toast.error(`${err.response?.data?.message || "Login failed"}`);
+                    toast.error(`${err.response.data.message}`);
                 });
         }
     });
 
-    const handleForgotPassword = () => {
-        navigate('/ForgotPassword');
-    };
-
     return (
-        <>
-            <Box
-                sx={{
-                    width: '100vw',
-                    backgroundColor: '#E8E3E3',
-                    borderRadius: 0,
-                    py: 2,
-                    mb: 3,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    position: 'relative',
-                    left: '50%',
-                    right: '50%',
-                    marginLeft: '-50vw',
-                    marginRight: '-50vw',
-                }}
-            >
-                <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#333' }}>
+        <Box sx={{
+            marginTop: 8,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
+        }}>
+            <Typography variant="h4" sx={{ my: 2 }}>
+                Login
+            </Typography>
+            <Box component="form" sx={{ maxWidth: '500px' }}
+                onSubmit={formik.handleSubmit}>
+                <TextField
+                    fullWidth margin="dense" autoComplete="off"
+                    label="Email"
+                    name="email"
+                    value={formik.values.email}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.email && Boolean(formik.errors.email)}
+                    helperText={formik.touched.email && formik.errors.email}
+                />
+                <TextField
+                    fullWidth margin="dense" autoComplete="off"
+                    label="Password"
+                    name="password" type="password"
+                    value={formik.values.password}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.password && Boolean(formik.errors.password)}
+                    helperText={formik.touched.password && formik.errors.password}
+                />
+                <Button fullWidth variant="contained" sx={{ mt: 2 }}
+                    type="submit">
                     Login
-                </Typography>
-            </Box>
-            <Box sx={{
-                marginTop: 4,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center'
-            }}>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 2 }}>
-                    WELCOME BACK
-                </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    LOG IN TO CONTINUE
-                </Typography>
-                <Box component="form" sx={{ maxWidth: '500px', width: '100%' }}
-                    onSubmit={formik.handleSubmit}>
-                    <TextField
-                        fullWidth margin="dense" autoComplete="off"
-                        label="Email"
-                        name="email"
-                        value={formik.values.email}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        error={formik.touched.email && Boolean(formik.errors.email)}
-                        helperText={formik.touched.email && formik.errors.email}
-                    />
-                    <TextField
-                        fullWidth margin="dense" autoComplete="off"
-                        label="Password"
-                        name="password" type="password"
-                        value={formik.values.password}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        error={formik.touched.password && Boolean(formik.errors.password)}
-                        helperText={formik.touched.password && formik.errors.password}
-                    />
-                    
-                    {/* Forgot Password Link */}
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1, mb: 2 }}>
-                        <Link
-                            component="button"
-                            type="button"
-                            onClick={handleForgotPassword}
-                            sx={{
-                                color: '#4169E1',
-                                textDecoration: 'none',
-                                fontSize: '0.875rem',
-                                '&:hover': {
-                                    textDecoration: 'underline'
-                                }
-                            }}
-                        >
-                            Forgot Password?
-                        </Link>
-                    </Box>
-
-                    <Button
-                        fullWidth
-                        variant="contained"
-                        sx={{ mt: 1, backgroundColor: '#4169E1', '&:hover': { backgroundColor: '#365fcf' } }}
-                        type="submit"
-                    >
-                        LOGIN
-                    </Button>
+                </Button>
+                <Box sx={{ mt: 2, textAlign: 'center' }}>
+                    <Link href="/register">
+                        Don't have an account? Register
+                    </Link>
                 </Box>
-
-                {/* Additional helpful links */}
-                <Box sx={{ mt: 3, textAlign: 'center' }}>
-                    <Typography variant="body2" color="text.secondary">
-                        Don't have an account?{' '}
-                        <Link
-                            component="button"
-                            type="button"
-                            onClick={() => navigate('/register')}
-                            sx={{
-                                color: '#4169E1',
-                                textDecoration: 'none',
-                                '&:hover': {
-                                    textDecoration: 'underline'
-                                }
-                            }}
-                        >
-                            Sign up here
-                        </Link>
-                    </Typography>
-                </Box>
-
-                <ToastContainer />
             </Box>
-        </>
+            <ToastContainer />
+        </Box>
     );
 }
 
