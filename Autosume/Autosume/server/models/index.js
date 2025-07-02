@@ -1,14 +1,12 @@
-const express = require("express");
-const cors = require("cors");
-const mongoose = require("mongoose");
-require("dotenv").config();
+'use strict';
 
-// --- Model Imports ---
-const User = require("./routes/user"); // Note: This seems to be a router, not a model. Naming might be confusing.
-const Candidate = require('./models/Candidate');
-const Criteria = require('./models/Criteria');
-
-const app = express();
+const fs = require('fs');
+const path = require('path');
+const Sequelize = require('sequelize');
+const process = require('process');
+const basename = path.basename(__filename);
+const db = {};
+require('dotenv').config();
 
 // --- Middleware ---
 app.use(express.json());
@@ -90,6 +88,8 @@ app.get('/api/criteria/options', async (req, res) => {
     res.status(500).json({ message: 'Server error while fetching options.' });
   }
 });
+
+
 
 
 // --- General Error Handling Middleware ---
