@@ -2,7 +2,11 @@
   {
     "name": "Audrey Hall",
     "match": 92,
-    "skills": ["React", "Node.js", "TypeScript"],
+    "skills": [
+      "React",
+      "Node.js",
+      "TypeScript"
+    ],
     "experience": "3 years",
     "phone": "+65 9123 4567",
     "email": "audrey.hall@example.com",
@@ -14,7 +18,11 @@
   {
     "name": "Johnathan Lee",
     "match": 85,
-    "skills": ["Python", "Django", "AWS"],
+    "skills": [
+      "Python",
+      "Django",
+      "AWS"
+    ],
     "experience": "5 years",
     "phone": "+65 9876 5432",
     "email": "john.lee@example.com",
@@ -26,7 +34,11 @@
   {
     "name": "Brenda Tan",
     "match": 78,
-    "skills": ["Java", "Spring Boot", "Microservices"],
+    "skills": [
+      "Java",
+      "Spring Boot",
+      "Microservices"
+    ],
     "experience": "4 years",
     "phone": "+65 8765 4321",
     "email": "brenda.tan@example.com",
@@ -38,7 +50,12 @@
   {
     "name": "David Chen",
     "match": 88,
-    "skills": ["AWS", "Docker", "Kubernetes", "Terraform"],
+    "skills": [
+      "AWS",
+      "Docker",
+      "Kubernetes",
+      "Terraform"
+    ],
     "experience": "6 years",
     "phone": "+65 9234 5678",
     "email": "david.chen@example.com",
@@ -50,7 +67,12 @@
   {
     "name": "Emily Lim",
     "match": 75,
-    "skills": ["HTML", "CSS", "JavaScript", "React"],
+    "skills": [
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "React"
+    ],
     "experience": "1 year",
     "phone": "+65 9345 6789",
     "email": "emily.lim@example.com",
@@ -62,7 +84,12 @@
   {
     "name": "Faisal Khan",
     "match": 95,
-    "skills": ["Python", "Pandas", "Scikit-learn", "TensorFlow"],
+    "skills": [
+      "Python",
+      "Pandas",
+      "Scikit-learn",
+      "TensorFlow"
+    ],
     "experience": "5 years",
     "phone": "+65 9456 7890",
     "email": "faisal.khan@example.com",
@@ -74,7 +101,12 @@
   {
     "name": "Grace Woo",
     "match": 82,
-    "skills": ["Agile", "Roadmapping", "User Stories", "JIRA"],
+    "skills": [
+      "Agile",
+      "Roadmapping",
+      "User Stories",
+      "JIRA"
+    ],
     "experience": "7 years",
     "phone": "+65 9567 8901",
     "email": "grace.woo@example.com",
@@ -84,453 +116,483 @@
     "aiSummary": "Grace is a seasoned Product Manager with seven years of experience. Her strong background in Agile methodologies and product strategy would be a great asset for leading a product team."
   },
   {
-    "name": "Gabriela Lam",
-    "role": "DevOps Engineer",
-    "email": "smithjennifer@meadows.com",
-    "phone": "+65 8886 2003",
-    "match": 90,
+    "name": "Ms. Tracy Owens",
+    "match": 80,
     "skills": [
-      "Terraform",
-      "CI/CD",
-      "Kubernetes"
+      "MongoDB",
+      "Django",
+      "Express"
     ],
-    "experience": "5 years experience as a devops engineer",
-    "status": "Scheduled",
-    "summary": "Gabriela Lam has strong skills in Terraform, CI/CD, Kubernetes and is a great fit for a DevOps Engineer role."
+    "experience": "3 years",
+    "phone": "+65 9835 7918",
+    "email": "watsonchristopher@peters-wilson.org",
+    "overview": "Backend Developer with experience in MongoDB, Django, Express and delivering results across multiple projects.",
+    "experienceDetails": "Backend Developer @ Ortiz, Anderson and Johnson\n(2021 - Present)\n- Worked on scalable applications and team projects using MongoDB, Django, Express.",
+    "education": "Diploma in Web Development (2021)",
+    "aiSummary": "Ms. Tracy Owens brings 3 years of hands-on experience as a Backend Developer. Their expertise in MongoDB, Django, Express aligns well with modern development requirements."
   },
   {
-    "name": "Adrian Hoffman",
-    "role": "Backend Developer",
-    "email": "angelasmith@hurley.com",
-    "phone": "+65 9410 3040",
-    "match": 94,
+    "name": "Sandra Carey",
+    "match": 85,
     "skills": [
-      "REST API",
-      "SQL",
+      "CSS",
+      "JavaScript",
+      "HTML"
+    ],
+    "experience": "2 years",
+    "phone": "+65 9448 8479",
+    "email": "icontreras@yahoo.com",
+    "overview": "Frontend Developer with experience in CSS, JavaScript, HTML and delivering results across multiple projects.",
+    "experienceDetails": "Frontend Developer @ Roberts-Abbott\n(2020 - Present)\n- Worked on scalable applications and team projects using CSS, JavaScript, HTML.",
+    "education": "Bachelor of Science in Computer Science (2018)",
+    "aiSummary": "Sandra Carey brings 2 years of hands-on experience as a Frontend Developer. Their expertise in CSS, JavaScript, HTML aligns well with modern development requirements."
+  },
+  {
+    "name": "David Price",
+    "match": 85,
+    "skills": [
+      "Tailwind",
+      "HTML",
+      "CSS"
+    ],
+    "experience": "1 years",
+    "phone": "+65 9320 9453",
+    "email": "kevin12@hotmail.com",
+    "overview": "Frontend Developer with experience in Tailwind, HTML, CSS and delivering results across multiple projects.",
+    "experienceDetails": "Frontend Developer @ Lynch and Sons\n(2020 - Present)\n- Worked on scalable applications and team projects using Tailwind, HTML, CSS.",
+    "education": "Master of Science in AI and Data Science (2020)",
+    "aiSummary": "David Price brings 1 years of hands-on experience as a Frontend Developer. Their expertise in Tailwind, HTML, CSS aligns well with modern development requirements."
+  },
+  {
+    "name": "Brandi Thomas",
+    "match": 93,
+    "skills": [
+      "CI/CD",
+      "Kubernetes",
+      "AWS"
+    ],
+    "experience": "3 years",
+    "phone": "+65 9696 6457",
+    "email": "uthompson@rice.com",
+    "overview": "DevOps Engineer with experience in CI/CD, Kubernetes, AWS and delivering results across multiple projects.",
+    "experienceDetails": "DevOps Engineer @ Swanson-Diaz\n(2024 - Present)\n- Worked on scalable applications and team projects using CI/CD, Kubernetes, AWS.",
+    "education": "Bachelor of Business Administration (2017)",
+    "aiSummary": "Brandi Thomas brings 3 years of hands-on experience as a DevOps Engineer. Their expertise in CI/CD, Kubernetes, AWS aligns well with modern development requirements."
+  },
+  {
+    "name": "Gregory Brady",
+    "match": 78,
+    "skills": [
+      "Scikit-learn",
+      "Pandas",
+      "Python"
+    ],
+    "experience": "6 years",
+    "phone": "+65 9187 5122",
+    "email": "jlee@yahoo.com",
+    "overview": "Data Scientist with experience in Scikit-learn, Pandas, Python and delivering results across multiple projects.",
+    "experienceDetails": "Data Scientist @ Taylor-Saunders\n(2024 - Present)\n- Worked on scalable applications and team projects using Scikit-learn, Pandas, Python.",
+    "education": "Master of Science in AI and Data Science (2020)",
+    "aiSummary": "Gregory Brady brings 6 years of hands-on experience as a Data Scientist. Their expertise in Scikit-learn, Pandas, Python aligns well with modern development requirements."
+  },
+  {
+    "name": "Paul Thomas",
+    "match": 87,
+    "skills": [
+      "Express",
+      "Django",
       "Node.js"
     ],
-    "experience": "3 years experience as a backend developer",
-    "status": "Rejected",
-    "summary": "Adrian Hoffman has strong skills in REST API, SQL, Node.js and is a great fit for a Backend Developer role."
+    "experience": "2 years",
+    "phone": "+65 9422 8549",
+    "email": "hgordon@morris.net",
+    "overview": "Backend Developer with experience in Express, Django, Node.js and delivering results across multiple projects.",
+    "experienceDetails": "Backend Developer @ Lopez, Miller and Russell\n(2021 - Present)\n- Worked on scalable applications and team projects using Express, Django, Node.js.",
+    "education": "Diploma in Web Development (2021)",
+    "aiSummary": "Paul Thomas brings 2 years of hands-on experience as a Backend Developer. Their expertise in Express, Django, Node.js aligns well with modern development requirements."
   },
   {
-    "name": "Daniel Smith",
-    "role": "Data Analyst",
-    "email": "jamescabrera@diaz.com",
-    "phone": "+65 9475 8349",
-    "match": 71,
+    "name": "Fernando Ramos",
+    "match": 77,
     "skills": [
-      "Power BI",
-      "Pandas",
-      "SQL"
+      "Automation",
+      "Test Cases",
+      "Selenium"
     ],
-    "experience": "3 years experience as a data analyst",
-    "status": "Scheduled",
-    "summary": "Daniel Smith has strong skills in Power BI, Pandas, SQL and is a great fit for a Data Analyst role."
+    "experience": "3 years",
+    "phone": "+65 9315 9460",
+    "email": "pruiz@lambert.com",
+    "overview": "QA Tester with experience in Automation, Test Cases, Selenium and delivering results across multiple projects.",
+    "experienceDetails": "QA Tester @ Burgess, Robles and Rivers\n(2021 - Present)\n- Worked on scalable applications and team projects using Automation, Test Cases, Selenium.",
+    "education": "Master of Science in AI and Data Science (2020)",
+    "aiSummary": "Fernando Ramos brings 3 years of hands-on experience as a QA Tester. Their expertise in Automation, Test Cases, Selenium aligns well with modern development requirements."
   },
   {
-    "name": "Diane Carroll",
-    "role": "QA Tester",
-    "email": "jennifergomez@boone.org",
-    "phone": "+65 9532 4862",
-    "match": 76,
+    "name": "Beth Powell",
+    "match": 91,
+    "skills": [
+      "React",
+      "Next.js",
+      "MongoDB"
+    ],
+    "experience": "7 years",
+    "phone": "+65 9936 6246",
+    "email": "nzhang@hotmail.com",
+    "overview": "Full Stack Developer with experience in React, Next.js, MongoDB and delivering results across multiple projects.",
+    "experienceDetails": "Full Stack Developer @ Barrett, Harper and Phillips\n(2021 - Present)\n- Worked on scalable applications and team projects using React, Next.js, MongoDB.",
+    "education": "Diploma in Web Development (2021)",
+    "aiSummary": "Beth Powell brings 7 years of hands-on experience as a Full Stack Developer. Their expertise in React, Next.js, MongoDB aligns well with modern development requirements."
+  },
+  {
+    "name": "Julia Green",
+    "match": 90,
+    "skills": [
+      "SQL",
+      "Express",
+      "MongoDB"
+    ],
+    "experience": "5 years",
+    "phone": "+65 9548 4022",
+    "email": "gsmith@foster-paul.org",
+    "overview": "Backend Developer with experience in SQL, Express, MongoDB and delivering results across multiple projects.",
+    "experienceDetails": "Backend Developer @ Bowers Group\n(2020 - Present)\n- Worked on scalable applications and team projects using SQL, Express, MongoDB.",
+    "education": "Master of Science in AI and Data Science (2020)",
+    "aiSummary": "Julia Green brings 5 years of hands-on experience as a Backend Developer. Their expertise in SQL, Express, MongoDB aligns well with modern development requirements."
+  },
+  {
+    "name": "Michael Johnson",
+    "match": 90,
+    "skills": [
+      "Wireframes",
+      "Prototyping",
+      "Figma"
+    ],
+    "experience": "4 years",
+    "phone": "+65 9931 5175",
+    "email": "natalie33@hotmail.com",
+    "overview": "UI/UX Designer with experience in Wireframes, Prototyping, Figma and delivering results across multiple projects.",
+    "experienceDetails": "UI/UX Designer @ Davidson, Elliott and Allen\n(2021 - Present)\n- Worked on scalable applications and team projects using Wireframes, Prototyping, Figma.",
+    "education": "Bachelor of Business Administration (2017)",
+    "aiSummary": "Michael Johnson brings 4 years of hands-on experience as a UI/UX Designer. Their expertise in Wireframes, Prototyping, Figma aligns well with modern development requirements."
+  },
+  {
+    "name": "Trevor Jacobs",
+    "match": 86,
     "skills": [
       "Automation",
       "Bug Tracking",
       "Selenium"
     ],
-    "experience": "4 years experience as a qa tester",
-    "status": "Rejected",
-    "summary": "Diane Carroll has strong skills in Automation, Bug Tracking, Selenium and is a great fit for a QA Tester role."
+    "experience": "1 years",
+    "phone": "+65 9696 1303",
+    "email": "aenglish@yahoo.com",
+    "overview": "QA Tester with experience in Automation, Bug Tracking, Selenium and delivering results across multiple projects.",
+    "experienceDetails": "QA Tester @ Mccarty, Johnson and Edwards\n(2021 - Present)\n- Worked on scalable applications and team projects using Automation, Bug Tracking, Selenium.",
+    "education": "Diploma in Web Development (2021)",
+    "aiSummary": "Trevor Jacobs brings 1 years of hands-on experience as a QA Tester. Their expertise in Automation, Bug Tracking, Selenium aligns well with modern development requirements."
   },
   {
-    "name": "Kristen Castaneda",
-    "role": "DevOps Engineer",
-    "email": "williamsjeffrey@gmail.com",
-    "phone": "+65 8254 8458",
-    "match": 73,
+    "name": "Jennifer Molina",
+    "match": 83,
     "skills": [
-      "Kubernetes",
-      "Docker",
-      "CI/CD"
+      "AWS",
+      "Terraform",
+      "Docker"
     ],
-    "experience": "2 years experience as a devops engineer",
-    "status": "Pending",
-    "summary": "Kristen Castaneda has strong skills in Kubernetes, Docker, CI/CD and is a great fit for a DevOps Engineer role."
+    "experience": "5 years",
+    "phone": "+65 9205 6173",
+    "email": "jamesdunn@gmail.com",
+    "overview": "DevOps Engineer with experience in AWS, Terraform, Docker and delivering results across multiple projects.",
+    "experienceDetails": "DevOps Engineer @ Webb and Sons\n(2022 - Present)\n- Worked on scalable applications and team projects using AWS, Terraform, Docker.",
+    "education": "Bachelor of Science in Computer Science (2018)",
+    "aiSummary": "Jennifer Molina brings 5 years of hands-on experience as a DevOps Engineer. Their expertise in AWS, Terraform, Docker aligns well with modern development requirements."
   },
   {
-    "name": "John Lee",
-    "role": "Data Analyst",
-    "email": "danielle18@dean.org",
-    "phone": "+65 9472 8972",
-    "match": 73,
-    "skills": [
-      "Power BI",
-      "SQL",
-      "Pandas"
-    ],
-    "experience": "1 years experience as a data analyst",
-    "status": "Scheduled",
-    "summary": "John Lee has strong skills in Power BI, SQL, Pandas and is a great fit for a Data Analyst role."
-  },
-  {
-    "name": "Mackenzie Wilson",
-    "role": "Data Analyst",
-    "email": "justin13@gmail.com",
-    "phone": "+65 9203 6362",
-    "match": 81,
-    "skills": [
-      "Pandas",
-      "Power BI",
-      "SQL"
-    ],
-    "experience": "1 years experience as a data analyst",
-    "status": "Scheduled",
-    "summary": "Mackenzie Wilson has strong skills in Pandas, Power BI, SQL and is a great fit for a Data Analyst role."
-  },
-  {
-    "name": "Mrs. Rachel Frederick DDS",
-    "role": "Software Engineer",
-    "email": "lwalker@yahoo.com",
-    "phone": "+65 9316 3913",
-    "match": 79,
-    "skills": [
-      "C++",
-      "Java",
-      "Python"
-    ],
-    "experience": "1 years experience as a software engineer",
-    "status": "Pending",
-    "summary": "Mrs. Rachel Frederick DDS has strong skills in C++, Java, Python and is a great fit for a Software Engineer role."
-  },
-  {
-    "name": "Chad Howard",
-    "role": "Software Engineer",
-    "email": "ukelley@ross.org",
-    "phone": "+65 9784 1643",
-    "match": 85,
-    "skills": [
-      "Java",
-      "Python",
-      "OOP"
-    ],
-    "experience": "4 years experience as a software engineer",
-    "status": "Rejected",
-    "summary": "Chad Howard has strong skills in Java, Python, OOP and is a great fit for a Software Engineer role."
-  },
-  {
-    "name": "Jody Roy",
-    "role": "Data Analyst",
-    "email": "wcardenas@lee.com",
-    "phone": "+65 8503 3426",
-    "match": 71,
-    "skills": [
-      "Pandas",
-      "Python",
-      "SQL"
-    ],
-    "experience": "4 years experience as a data analyst",
-    "status": "Pending",
-    "summary": "Jody Roy has strong skills in Pandas, Python, SQL and is a great fit for a Data Analyst role."
-  },
-  {
-    "name": "Logan Mendez",
-    "role": "Data Analyst",
-    "email": "fsutton@valenzuela-cardenas.com",
-    "phone": "+65 8778 8093",
-    "match": 75,
-    "skills": [
-      "Pandas",
-      "Python",
-      "Power BI"
-    ],
-    "experience": "4 years experience as a data analyst",
-    "status": "Scheduled",
-    "summary": "Logan Mendez has strong skills in Pandas, Python, Power BI and is a great fit for a Data Analyst role."
-  },
-  {
-    "name": "Rose Walker",
-    "role": "Backend Developer",
-    "email": "david09@yahoo.com",
-    "phone": "+65 8153 3359",
-    "match": 81,
-    "skills": [
-      "Node.js",
-      "REST API",
-      "SQL"
-    ],
-    "experience": "2 years experience as a backend developer",
-    "status": "Scheduled",
-    "summary": "Rose Walker has strong skills in Node.js, REST API, SQL and is a great fit for a Backend Developer role."
-  },
-  {
-    "name": "Sarah Gallegos",
-    "role": "Frontend Developer",
-    "email": "xmack@hernandez-davis.net",
-    "phone": "+65 8177 9754",
-    "match": 81,
-    "skills": [
-      "JavaScript",
-      "CSS",
-      "Tailwind"
-    ],
-    "experience": "3 years experience as a frontend developer",
-    "status": "Rejected",
-    "summary": "Sarah Gallegos has strong skills in JavaScript, CSS, Tailwind and is a great fit for a Frontend Developer role."
-  },
-  {
-    "name": "Christopher Parker",
-    "role": "Frontend Developer",
-    "email": "rileymatthew@moore.net",
-    "phone": "+65 8589 3268",
-    "match": 80,
-    "skills": [
-      "Tailwind",
-      "JavaScript",
-      "CSS"
-    ],
-    "experience": "4 years experience as a frontend developer",
-    "status": "Pending",
-    "summary": "Christopher Parker has strong skills in Tailwind, JavaScript, CSS and is a great fit for a Frontend Developer role."
-  },
-  {
-    "name": "Dillon Hale",
-    "role": "Software Engineer",
-    "email": "mariahrandall@carter-thompson.com",
-    "phone": "+65 8832 1231",
-    "match": 76,
-    "skills": [
-      "OOP",
-      "Git",
-      "Java"
-    ],
-    "experience": "4 years experience as a software engineer",
-    "status": "Pending",
-    "summary": "Dillon Hale has strong skills in OOP, Git, Java and is a great fit for a Software Engineer role."
-  },
-  {
-    "name": "Darren Wilson",
-    "role": "Frontend Developer",
-    "email": "barnesdebra@mayer-griffin.com",
-    "phone": "+65 9051 8475",
-    "match": 85,
-    "skills": [
-      "JavaScript",
-      "React",
-      "HTML"
-    ],
-    "experience": "3 years experience as a frontend developer",
-    "status": "Scheduled",
-    "summary": "Darren Wilson has strong skills in JavaScript, React, HTML and is a great fit for a Frontend Developer role."
-  },
-  {
-    "name": "Alexis Clark",
-    "role": "DevOps Engineer",
-    "email": "comptonleslie@bates-sanchez.com",
-    "phone": "+65 8513 1301",
+    "name": "James Bond",
     "match": 77,
     "skills": [
       "CI/CD",
-      "Docker",
-      "Kubernetes"
-    ],
-    "experience": "4 years experience as a devops engineer",
-    "status": "Scheduled",
-    "summary": "Alexis Clark has strong skills in CI/CD, Docker, Kubernetes and is a great fit for a DevOps Engineer role."
-  },
-  {
-    "name": "Nancy Parker",
-    "role": "DevOps Engineer",
-    "email": "melissacontreras@hayes.info",
-    "phone": "+65 9388 9752",
-    "match": 74,
-    "skills": [
       "Kubernetes",
-      "AWS",
-      "Terraform"
+      "AWS"
     ],
-    "experience": "4 years experience as a devops engineer",
-    "status": "Pending",
-    "summary": "Nancy Parker has strong skills in Kubernetes, AWS, Terraform and is a great fit for a DevOps Engineer role."
+    "experience": "4 years",
+    "phone": "+65 9189 7154",
+    "email": "ashleydaugherty@gmail.com",
+    "overview": "DevOps Engineer with experience in CI/CD, Kubernetes, AWS and delivering results across multiple projects.",
+    "experienceDetails": "DevOps Engineer @ Adams, Robbins and Martinez\n(2023 - Present)\n- Worked on scalable applications and team projects using CI/CD, Kubernetes, AWS.",
+    "education": "Master of Science in AI and Data Science (2020)",
+    "aiSummary": "James Bond brings 4 years of hands-on experience as a DevOps Engineer. Their expertise in CI/CD, Kubernetes, AWS aligns well with modern development requirements."
   },
   {
-    "name": "Jeanette Ramos",
-    "role": "Backend Developer",
-    "email": "churchstephanie@hotmail.com",
-    "phone": "+65 9795 5327",
+    "name": "Cheyenne Gaines",
+    "match": 75,
+    "skills": [
+      "Bug Tracking",
+      "Test Cases",
+      "Selenium"
+    ],
+    "experience": "4 years",
+    "phone": "+65 9666 5829",
+    "email": "jacobsandrew@yahoo.com",
+    "overview": "QA Tester with experience in Bug Tracking, Test Cases, Selenium and delivering results across multiple projects.",
+    "experienceDetails": "QA Tester @ Smith-Schwartz\n(2024 - Present)\n- Worked on scalable applications and team projects using Bug Tracking, Test Cases, Selenium.",
+    "education": "Diploma in Web Development (2021)",
+    "aiSummary": "Cheyenne Gaines brings 4 years of hands-on experience as a QA Tester. Their expertise in Bug Tracking, Test Cases, Selenium aligns well with modern development requirements."
+  },
+  {
+    "name": "Kathy Thompson",
     "match": 88,
     "skills": [
+      "TensorFlow",
+      "Scikit-learn",
+      "Python"
+    ],
+    "experience": "3 years",
+    "phone": "+65 9190 7751",
+    "email": "johnlewis@yahoo.com",
+    "overview": "Data Scientist with experience in TensorFlow, Scikit-learn, Python and delivering results across multiple projects.",
+    "experienceDetails": "Data Scientist @ Gomez, Rubio and Merritt\n(2021 - Present)\n- Worked on scalable applications and team projects using TensorFlow, Scikit-learn, Python.",
+    "education": "Bachelor of Business Administration (2017)",
+    "aiSummary": "Kathy Thompson brings 3 years of hands-on experience as a Data Scientist. Their expertise in TensorFlow, Scikit-learn, Python aligns well with modern development requirements."
+  },
+  {
+    "name": "Richard Johnson",
+    "match": 75,
+    "skills": [
+      "MongoDB",
+      "Express",
+      "Node.js"
+    ],
+    "experience": "3 years",
+    "phone": "+65 9154 8077",
+    "email": "fishermorgan@bradford.biz",
+    "overview": "Backend Developer with experience in MongoDB, Express, Node.js and delivering results across multiple projects.",
+    "experienceDetails": "Backend Developer @ Brown Group\n(2024 - Present)\n- Worked on scalable applications and team projects using MongoDB, Express, Node.js.",
+    "education": "Diploma in Web Development (2021)",
+    "aiSummary": "Richard Johnson brings 3 years of hands-on experience as a Backend Developer. Their expertise in MongoDB, Express, Node.js aligns well with modern development requirements."
+  },
+  {
+    "name": "Christopher Tran",
+    "match": 92,
+    "skills": [
+      "Express",
+      "SQL",
+      "Node.js"
+    ],
+    "experience": "3 years",
+    "phone": "+65 9529 5200",
+    "email": "oschultz@lozano.com",
+    "overview": "Backend Developer with experience in Express, SQL, Node.js and delivering results across multiple projects.",
+    "experienceDetails": "Backend Developer @ Gonzalez PLC\n(2020 - Present)\n- Worked on scalable applications and team projects using Express, SQL, Node.js.",
+    "education": "Master of Science in AI and Data Science (2020)",
+    "aiSummary": "Christopher Tran brings 3 years of hands-on experience as a Backend Developer. Their expertise in Express, SQL, Node.js aligns well with modern development requirements."
+  },
+  {
+    "name": "Laurie Moore",
+    "match": 95,
+    "skills": [
+      "HTML",
+      "JavaScript",
+      "React"
+    ],
+    "experience": "1 years",
+    "phone": "+65 9544 8321",
+    "email": "georgewebb@clay-conway.com",
+    "overview": "Frontend Developer with experience in HTML, JavaScript, React and delivering results across multiple projects.",
+    "experienceDetails": "Frontend Developer @ Green, Ballard and Howell\n(2024 - Present)\n- Worked on scalable applications and team projects using HTML, JavaScript, React.",
+    "education": "Bachelor of Engineering in Information Systems (2019)",
+    "aiSummary": "Laurie Moore brings 1 years of hands-on experience as a Frontend Developer. Their expertise in HTML, JavaScript, React aligns well with modern development requirements."
+  },
+  {
+    "name": "Roger Ross",
+    "match": 74,
+    "skills": [
+      "Prototyping",
+      "Wireframes",
+      "Figma"
+    ],
+    "experience": "5 years",
+    "phone": "+65 9481 3347",
+    "email": "nprice@gmail.com",
+    "overview": "UI/UX Designer with experience in Prototyping, Wireframes, Figma and delivering results across multiple projects.",
+    "experienceDetails": "UI/UX Designer @ Kidd Group\n(2023 - Present)\n- Worked on scalable applications and team projects using Prototyping, Wireframes, Figma.",
+    "education": "Master of Science in AI and Data Science (2020)",
+    "aiSummary": "Roger Ross brings 5 years of hands-on experience as a UI/UX Designer. Their expertise in Prototyping, Wireframes, Figma aligns well with modern development requirements."
+  },
+  {
+    "name": "Cody Campbell",
+    "match": 84,
+    "skills": [
       "Node.js",
+      "Next.js",
+      "React"
+    ],
+    "experience": "7 years",
+    "phone": "+65 9178 7153",
+    "email": "sullivanaaron@griffin-bell.com",
+    "overview": "Full Stack Developer with experience in Node.js, Next.js, React and delivering results across multiple projects.",
+    "experienceDetails": "Full Stack Developer @ Anderson-Solis\n(2021 - Present)\n- Worked on scalable applications and team projects using Node.js, Next.js, React.",
+    "education": "Bachelor of Business Administration (2017)",
+    "aiSummary": "Cody Campbell brings 7 years of hands-on experience as a Full Stack Developer. Their expertise in Node.js, Next.js, React aligns well with modern development requirements."
+  },
+  {
+    "name": "Amy Schneider",
+    "match": 89,
+    "skills": [
+      "React",
+      "MongoDB",
+      "Node.js"
+    ],
+    "experience": "7 years",
+    "phone": "+65 9903 4631",
+    "email": "barnesgeorge@bennett.info",
+    "overview": "Full Stack Developer with experience in React, MongoDB, Node.js and delivering results across multiple projects.",
+    "experienceDetails": "Full Stack Developer @ Fisher and Sons\n(2022 - Present)\n- Worked on scalable applications and team projects using React, MongoDB, Node.js.",
+    "education": "Diploma in Web Development (2021)",
+    "aiSummary": "Amy Schneider brings 7 years of hands-on experience as a Full Stack Developer. Their expertise in React, MongoDB, Node.js aligns well with modern development requirements."
+  },
+  {
+    "name": "Matthew Gray",
+    "match": 88,
+    "skills": [
+      "Prototyping",
+      "Wireframes",
+      "Design Systems"
+    ],
+    "experience": "1 years",
+    "phone": "+65 9516 2052",
+    "email": "robertstanley@davis-allen.com",
+    "overview": "UI/UX Designer with experience in Prototyping, Wireframes, Design Systems and delivering results across multiple projects.",
+    "experienceDetails": "UI/UX Designer @ Martinez Group\n(2020 - Present)\n- Worked on scalable applications and team projects using Prototyping, Wireframes, Design Systems.",
+    "education": "Bachelor of Business Administration (2017)",
+    "aiSummary": "Matthew Gray brings 1 years of hands-on experience as a UI/UX Designer. Their expertise in Prototyping, Wireframes, Design Systems aligns well with modern development requirements."
+  },
+  {
+    "name": "Timothy Bentley",
+    "match": 92,
+    "skills": [
+      "Design Systems",
+      "Wireframes",
+      "Prototyping"
+    ],
+    "experience": "4 years",
+    "phone": "+65 9985 7696",
+    "email": "unielsen@houston.biz",
+    "overview": "UI/UX Designer with experience in Design Systems, Wireframes, Prototyping and delivering results across multiple projects.",
+    "experienceDetails": "UI/UX Designer @ Hayes, Evans and Anderson\n(2023 - Present)\n- Worked on scalable applications and team projects using Design Systems, Wireframes, Prototyping.",
+    "education": "Bachelor of Business Administration (2017)",
+    "aiSummary": "Timothy Bentley brings 4 years of hands-on experience as a UI/UX Designer. Their expertise in Design Systems, Wireframes, Prototyping aligns well with modern development requirements."
+  },
+  {
+    "name": "John Scott",
+    "match": 77,
+    "skills": [
+      "Django",
       "Express",
       "SQL"
     ],
-    "experience": "1 years experience as a backend developer",
-    "status": "Scheduled",
-    "summary": "Jeanette Ramos has strong skills in Node.js, Express, SQL and is a great fit for a Backend Developer role."
+    "experience": "6 years",
+    "phone": "+65 9882 1059",
+    "email": "carol79@park.com",
+    "overview": "Backend Developer with experience in Django, Express, SQL and delivering results across multiple projects.",
+    "experienceDetails": "Backend Developer @ Franco, Morgan and Ramirez\n(2020 - Present)\n- Worked on scalable applications and team projects using Django, Express, SQL.",
+    "education": "Bachelor of Business Administration (2017)",
+    "aiSummary": "John Scott brings 6 years of hands-on experience as a Backend Developer. Their expertise in Django, Express, SQL aligns well with modern development requirements."
   },
   {
-    "name": "Stephanie Durham",
-    "role": "UI/UX Designer",
-    "email": "reevesdebbie@acevedo.com",
-    "phone": "+65 8465 8705",
-    "match": 84,
+    "name": "Brian Bowers",
+    "match": 96,
     "skills": [
-      "Prototyping",
-      "Design Systems",
-      "Figma"
+      "AWS",
+      "Docker",
+      "CI/CD"
     ],
-    "experience": "2 years experience as a ui/ux designer",
-    "status": "Scheduled",
-    "summary": "Stephanie Durham has strong skills in Prototyping, Design Systems, Figma and is a great fit for a UI/UX Designer role."
+    "experience": "7 years",
+    "phone": "+65 9864 8738",
+    "email": "jennifer25@gmail.com",
+    "overview": "DevOps Engineer with experience in AWS, Docker, CI/CD and delivering results across multiple projects.",
+    "experienceDetails": "DevOps Engineer @ Mack PLC\n(2024 - Present)\n- Worked on scalable applications and team projects using AWS, Docker, CI/CD.",
+    "education": "Bachelor of Engineering in Information Systems (2019)",
+    "aiSummary": "Brian Bowers brings 7 years of hands-on experience as a DevOps Engineer. Their expertise in AWS, Docker, CI/CD aligns well with modern development requirements."
   },
   {
-    "name": "Jordan Barnett",
-    "role": "UI/UX Designer",
-    "email": "egentry@gmail.com",
-    "phone": "+65 8548 6149",
-    "match": 90,
-    "skills": [
-      "Wireframes",
-      "Design Systems",
-      "Prototyping"
-    ],
-    "experience": "1 years experience as a ui/ux designer",
-    "status": "Rejected",
-    "summary": "Jordan Barnett has strong skills in Wireframes, Design Systems, Prototyping and is a great fit for a UI/UX Designer role."
-  },
-  {
-    "name": "Adrienne Lynch",
-    "role": "Software Engineer",
-    "email": "wwells@hotmail.com",
-    "phone": "+65 9666 2182",
-    "match": 71,
-    "skills": [
-      "Python",
-      "Git",
-      "OOP"
-    ],
-    "experience": "2 years experience as a software engineer",
-    "status": "Scheduled",
-    "summary": "Adrienne Lynch has strong skills in Python, Git, OOP and is a great fit for a Software Engineer role."
-  },
-  {
-    "name": "Kristin Allen",
-    "role": "QA Tester",
-    "email": "michael29@wells.com",
-    "phone": "+65 9162 4619",
-    "match": 72,
-    "skills": [
-      "Automation",
-      "Bug Tracking",
-      "Test Cases"
-    ],
-    "experience": "5 years experience as a qa tester",
-    "status": "Pending",
-    "summary": "Kristin Allen has strong skills in Automation, Bug Tracking, Test Cases and is a great fit for a QA Tester role."
-  },
-  {
-    "name": "Meredith Baker",
-    "role": "Data Analyst",
-    "email": "marknixon@kelley.com",
-    "phone": "+65 9423 4911",
-    "match": 91,
-    "skills": [
-      "Excel",
-      "Power BI",
-      "Pandas"
-    ],
-    "experience": "5 years experience as a data analyst",
-    "status": "Pending",
-    "summary": "Meredith Baker has strong skills in Excel, Power BI, Pandas and is a great fit for a Data Analyst role."
-  },
-  {
-    "name": "Adrian Ferguson",
-    "role": "Product Manager",
-    "email": "hlewis@ingram.com",
-    "phone": "+65 9990 8179",
-    "match": 88,
-    "skills": [
-      "Roadmaps",
-      "Jira",
-      "Analytics"
-    ],
-    "experience": "3 years experience as a product manager",
-    "status": "Rejected",
-    "summary": "Adrian Ferguson has strong skills in Roadmaps, Jira, Analytics and is a great fit for a Product Manager role."
-  },
-  {
-    "name": "James Black",
-    "role": "Frontend Developer",
-    "email": "riverajim@trevino-sheppard.biz",
-    "phone": "+65 9224 3076",
+    "name": "Alexandria Fuller",
     "match": 94,
     "skills": [
-      "React",
-      "CSS",
-      "Tailwind"
+      "Automation",
+      "Test Cases",
+      "Selenium"
     ],
-    "experience": "5 years experience as a frontend developer",
-    "status": "Pending",
-    "summary": "James Black has strong skills in React, CSS, Tailwind and is a great fit for a Frontend Developer role."
+    "experience": "5 years",
+    "phone": "+65 9293 3495",
+    "email": "curryrebecca@hotmail.com",
+    "overview": "QA Tester with experience in Automation, Test Cases, Selenium and delivering results across multiple projects.",
+    "experienceDetails": "QA Tester @ Smith-Baker\n(2022 - Present)\n- Worked on scalable applications and team projects using Automation, Test Cases, Selenium.",
+    "education": "Master of Science in AI and Data Science (2020)",
+    "aiSummary": "Alexandria Fuller brings 5 years of hands-on experience as a QA Tester. Their expertise in Automation, Test Cases, Selenium aligns well with modern development requirements."
   },
   {
-    "name": "Abigail Ramirez",
-    "role": "Software Engineer",
-    "email": "barreracarrie@lewis.com",
-    "phone": "+65 8365 3242",
+    "name": "Caleb Gallagher",
+    "match": 90,
+    "skills": [
+      "CI/CD",
+      "Kubernetes",
+      "AWS"
+    ],
+    "experience": "3 years",
+    "phone": "+65 9620 8696",
+    "email": "julie01@atkins.com",
+    "overview": "DevOps Engineer with experience in CI/CD, Kubernetes, AWS and delivering results across multiple projects.",
+    "experienceDetails": "DevOps Engineer @ Gallegos LLC\n(2024 - Present)\n- Worked on scalable applications and team projects using CI/CD, Kubernetes, AWS.",
+    "education": "Bachelor of Business Administration (2017)",
+    "aiSummary": "Caleb Gallagher brings 3 years of hands-on experience as a DevOps Engineer. Their expertise in CI/CD, Kubernetes, AWS aligns well with modern development requirements."
+  },
+  {
+    "name": "Joshua Bowen",
     "match": 80,
     "skills": [
-      "OOP",
-      "Git",
-      "Python"
+      "CSS",
+      "Tailwind",
+      "React"
     ],
-    "experience": "5 years experience as a software engineer",
-    "status": "Rejected",
-    "summary": "Abigail Ramirez has strong skills in OOP, Git, Python and is a great fit for a Software Engineer role."
+    "experience": "6 years",
+    "phone": "+65 9129 9374",
+    "email": "lhughes@harris.com",
+    "overview": "Frontend Developer with experience in CSS, Tailwind, React and delivering results across multiple projects.",
+    "experienceDetails": "Frontend Developer @ Spencer, Davis and Mccarty\n(2020 - Present)\n- Worked on scalable applications and team projects using CSS, Tailwind, React.",
+    "education": "Master of Science in AI and Data Science (2020)",
+    "aiSummary": "Joshua Bowen brings 6 years of hands-on experience as a Frontend Developer. Their expertise in CSS, Tailwind, React aligns well with modern development requirements."
   },
   {
-    "name": "Helen Burton",
-    "role": "Product Manager",
-    "email": "xrichard@yahoo.com",
-    "phone": "+65 9208 7918",
-    "match": 83,
+    "name": "Leslie Cox",
+    "match": 88,
     "skills": [
-      "User Stories",
-      "Roadmaps",
-      "Agile"
+      "HTML",
+      "JavaScript",
+      "Tailwind"
     ],
-    "experience": "3 years experience as a product manager",
-    "status": "Rejected",
-    "summary": "Helen Burton has strong skills in User Stories, Roadmaps, Agile and is a great fit for a Product Manager role."
+    "experience": "4 years",
+    "phone": "+65 9244 5020",
+    "email": "hickschristian@yahoo.com",
+    "overview": "Frontend Developer with experience in HTML, JavaScript, Tailwind and delivering results across multiple projects.",
+    "experienceDetails": "Frontend Developer @ Douglas-Perkins\n(2020 - Present)\n- Worked on scalable applications and team projects using HTML, JavaScript, Tailwind.",
+    "education": "Bachelor of Engineering in Information Systems (2019)",
+    "aiSummary": "Leslie Cox brings 4 years of hands-on experience as a Frontend Developer. Their expertise in HTML, JavaScript, Tailwind aligns well with modern development requirements."
   },
   {
-    "name": "Sabrina Kline",
-    "role": "UI/UX Designer",
-    "email": "fcastillo@hotmail.com",
-    "phone": "+65 8193 4964",
-    "match": 91,
+    "name": "Jared Spencer",
+    "match": 74,
     "skills": [
+      "Design Systems",
       "Figma",
-      "Prototyping",
-      "Design Systems"
+      "Wireframes"
     ],
-    "experience": "5 years experience as a ui/ux designer",
-    "status": "Scheduled",
-    "summary": "Sabrina Kline has strong skills in Figma, Prototyping, Design Systems and is a great fit for a UI/UX Designer role."
-  },
-  {
-    "name": "Christine Church MD",
-    "role": "UI/UX Designer",
-    "email": "danielgibson@hotmail.com",
-    "phone": "+65 9984 2246",
-    "match": 76,
-    "skills": [
-      "Prototyping",
-      "Wireframes",
-      "Design Systems"
-    ],
-    "experience": "4 years experience as a ui/ux designer",
-    "status": "Rejected",
-    "summary": "Christine Church MD has strong skills in Prototyping, Wireframes, Design Systems and is a great fit for a UI/UX Designer role."
+    "experience": "4 years",
+    "phone": "+65 9190 4223",
+    "email": "cindybooth@garcia.com",
+    "overview": "UI/UX Designer with experience in Design Systems, Figma, Wireframes and delivering results across multiple projects.",
+    "experienceDetails": "UI/UX Designer @ Barrett Group\n(2024 - Present)\n- Worked on scalable applications and team projects using Design Systems, Figma, Wireframes.",
+    "education": "Master of Science in AI and Data Science (2020)",
+    "aiSummary": "Jared Spencer brings 4 years of hands-on experience as a UI/UX Designer. Their expertise in Design Systems, Figma, Wireframes aligns well with modern development requirements."
   }
 ]
