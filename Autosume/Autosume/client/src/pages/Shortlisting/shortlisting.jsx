@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import CandidateTable from '../../components/CandidateTable';
 import CandidateDetails from '../../components/CandidateDetails';
-import FilterBar from '../../components/FilterBar';
+import FilterBar from '../../components/Filterbar';
 import './Shortlisting.css'; // <-- IMPORT THE NEW CSS FILE
 import '../../App.css';
 

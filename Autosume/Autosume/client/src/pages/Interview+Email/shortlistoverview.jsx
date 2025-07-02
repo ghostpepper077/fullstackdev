@@ -12,6 +12,8 @@ import {
   ListItemText,
   Chip,
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom'; 
+
 
 const candidates = [
   {
@@ -54,6 +56,7 @@ const candidates = [
 
 export default function ShortlistOverview() {
   const [selected, setSelected] = useState(candidates[0]);
+  const navigate = useNavigate();
 
   return (
     <Box p={5} bgcolor="#f5f5f5" minHeight="100vh">
@@ -157,7 +160,7 @@ export default function ShortlistOverview() {
               <Button
                 variant="contained"
                 sx={{ mt: 3 }}
-                onClick={() => alert(`Proceeding to schedule for ${selected.name}`)}
+                onClick={() => navigate('/scheduling', { state: { candidate: selected } })}
               >
                 Proceed to Schedule
               </Button>

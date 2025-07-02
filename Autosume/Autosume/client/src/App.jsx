@@ -11,10 +11,13 @@ import JobManagement from './pages/JobManagement/mainpage';
 import http from './http';
 import UserContext from './contexts/UserContext';
 import ChatbotPage from './pages/Chatbot/ChatbotPage';
-import ForgotPassword from './pages/UserProfile/ForgotPassowrd';
-import Shortlisting from './pages/Shortlisting/Shortlisting';
+import ForgotPassword from './pages/UserProfile/ForgotPassword';
+import Shortlisting from './pages/Shortlisting/shortlisting';
 import Profile from './pages/UserProfile/Profile';
 import Interview from './pages/Interview+Email/shortlistoverview';
+import InterviewScheduling from './pages/Interview+Email/scheduling';
+import EmailAutomation from './pages/Interview+Email/emailautomation';
+import InterviewDashboard from './pages/Interview+Email/interviewdashboard';
 import Sidebar from './components/Sidebar';
 
 function App() {
@@ -79,6 +82,9 @@ function App() {
                     <Route path="/job-management" element={<JobManagement />} />
                     <Route path="/shortlisting" element={<Shortlisting />} />
                     <Route path="/shortlistoverview" element={<Interview />} />
+                    <Route path="/scheduling" element={<InterviewScheduling />} />
+                    <Route path="/emailautomation" element={<EmailAutomation />} />
+                    <Route path="/interviewdashboard" element={<InterviewDashboard />} />
                     <Route path="/chatbot" element={<ChatbotPage />} />
                     <Route path="/" element={<Navigate to="/dashboard" />} />
                     <Route path="/login" element={<Navigate to="/dashboard" />} />
