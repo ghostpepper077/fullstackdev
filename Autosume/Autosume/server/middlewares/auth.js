@@ -1,23 +1,20 @@
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const { verify } = require('jsonwebtoken');
+require('dotenv').config();
 
-const auth = async (req, res, next) => {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
-    if (!token) {
-        return res.status(401).send({ error: 'Authentication required' });
-    }
+const validateToken = (req, res, next) => {
     try {
-        const decoded = jwt.verify(token, process.env.APP_SECRET);
-        const user = await User.findOne({ _id: decoded.user.id }).select('-password');
-        if (!user) {
-            throw new Error();
+        const accessToken = req.header("Authorization").split(" ")[1];
+        if (!accessToken) {
+            return res.sendStatus(401);
         }
-        req.token = token;
-        req.user = user;
-        next();
-    } catch (error) {
-        res.status(401).send({ error: 'Please authenticate.' });
-    }
-};
 
-module.exports = auth;
+        const payload = verify(accessToken, process.env.APP_SECRET);
+        req.user = payload;
+        return next();
+    }
+    catch (err) {
+        return res.sendStatus(401);
+    }
+}
+
+module.exports = { validateToken };
