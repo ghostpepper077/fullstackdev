@@ -1,27 +1,31 @@
-module.exports = (sequelize, DataTypes) => {
-    const User = sequelize.define("User", {
-        name: {
-            type: DataTypes.STRING(50),
-            allowNull: false
-        },
-        email: {
-            type: DataTypes.STRING(50),
-            allowNull: false
-        },
-        password: {
-            type: DataTypes.STRING(100),
-            allowNull: false
-        }
-    }, {
-        tableName: 'users'
-    });
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
-    User.associate = (models) => {
-        User.hasMany(models.Tutorial, {
-            foreignKey: "userId",
-            onDelete: "cascade"
-        });
-    };
+const userSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+});
 
-    return User;
-}
+// Hash the password before saving
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
+    return next();
+  }
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
+
+module.exports = mongoose.model("User", userSchema);
