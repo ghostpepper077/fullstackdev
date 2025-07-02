@@ -3,20 +3,20 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Container, Box, CircularProgress, Typography } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import MyTheme from './themes/MyTheme';
-import { UserContext } from './contexts/UserContext';
+import UserContext from './contexts/UserContext';
 import http from './http';
 
-// Import all pages from your original file
+// Import all pages that actually exist
 import Sidebar from './components/Sidebar';
 import Login from './pages/UserProfile/Login.jsx';
 import Register from './pages/UserProfile/Register.jsx';
 import Shortlisting from './pages/Shortlisting/shortlisting.jsx';
 import CreateCriteria from './pages/Shortlisting/create-criteria.jsx';
 import Profile from './pages/UserProfile/Profile.jsx';
-import JobManagement from './pages/JobManagement/JobManagement.jsx';
-import InterviewScheduling from './pages/InterviewScheduling/InterviewScheduling.jsx';
-import Settings from './pages/Settings/Settings.jsx';
-import Support from './pages/Support/Support.jsx';
+import JobManagement from './pages/JobManagement/mainpage.jsx';
+import InterviewScheduling from './pages/Interview+Email/scheduling.jsx';
+// import Settings from './pages/Settings/Settings.jsx'; // This file does not exist yet
+// import Support from './pages/Support/Support.jsx'; // This file also does not exist, so we comment it out
 import ChatbotPage from './pages/Chatbot/ChatbotPage.jsx';
 import ForgotPassword from './pages/UserProfile/ForgotPassword.jsx';
 
@@ -60,33 +60,29 @@ function App() {
       <Router>
         <ThemeProvider theme={MyTheme}>
           {user ? (
-            // Authenticated user layout (with Sidebar)
+            // Authenticated user layout
             <Box sx={{ display: 'flex' }}>
               <Sidebar user={user} onLogout={logout} />
               <Box component="main" sx={{ flexGrow: 1, p: 3, marginLeft: '280px', backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
                 <Routes>
-                  {/* All your authenticated routes */}
                   <Route path="/" element={<Navigate to="/dashboard" />} />
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/job-management" element={<JobManagement />} />
                   <Route path="/shortlisting" element={<Shortlisting />} />
                   <Route path="/create-criteria" element={<CreateCriteria />} />
                   <Route path="/interview-scheduling" element={<InterviewScheduling />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/support" element={<Support />} />
+                  {/* <Route path="/settings" element={<Settings />} /> */}
+                  {/* <Route path="/support" element={<Support />} /> */}
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/chatbot" element={<ChatbotPage />} />
-                  
-                  {/* Redirect any logged-in user trying to access login/register */}
                   <Route path="/login" element={<Navigate to="/dashboard" />} />
                   <Route path="/register" element={<Navigate to="/dashboard" />} />
-                  
                   <Route path="*" element={<Navigate to="/dashboard" />} />
                 </Routes>
               </Box>
             </Box>
           ) : (
-            // Public layout (for users not logged in)
+            // Public layout
             <Container>
               <Routes>
                 <Route path="/" element={<Navigate to="/login" />} />

@@ -1,3 +1,5 @@
+// client/src/pages/UserProfile/Login.jsx
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
@@ -6,7 +8,7 @@ import { Box, Typography, TextField, Button, Link } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import http from '../../http';
-import { UserContext } from '../../contexts/UserContext';
+import UserContext from '../../contexts/UserContext'; // <-- FIX: Changed to default import
 
 function Login() {
     const navigate = useNavigate();
@@ -30,7 +32,6 @@ function Login() {
         onSubmit: (data) => {
             data.email = data.email.trim().toLowerCase();
             data.password = data.password.trim();
-            // Use the correct endpoint: /api/auth/login
             http.post("/api/auth/login", data)
                 .then((res) => {
                     localStorage.setItem("token", res.data.token);
