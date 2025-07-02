@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const Candidate = require('./models/Candidate');
 require("dotenv").config();
 
 const app = express();
@@ -27,6 +28,21 @@ mongoose
 // Routes
 const userRoutes = require("./routes/user");
 app.use("/api/user", userRoutes);
+
+// ===================================================================
+// ★★★ CHANGE THIS LINE ★★★
+// Add the "/api" prefix to match your other routes
+// ===================================================================
+app.get('/api/candidates', async (req, res) => {
+  try {
+    const candidates = await Candidate.find({});
+    res.json(candidates);
+  } catch (error) {
+    console.error('Error fetching candidates:', error);
+    res.status(500).json({ message: 'Server error while fetching candidates.' });
+  }
+});
+// ===================================================================
 
 // Error handling middleware
 app.use((err, req, res, next) => {
