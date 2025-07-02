@@ -192,8 +192,8 @@ function Support() {
           <p style={{ color: '#555', lineHeight: '1.6', marginBottom: '20px' }}>
             Speak directly with our support team for immediate assistance with any questions or issues.
           </p>
-          <p style={{ color: '#2c3e50', fontWeight: 'bold', fontSize: '1.2rem' }}>+1 (555) 123-4567</p>
-          <p style={{ color: '#7f8c8d', fontSize: '0.9rem' }}>Monday - Friday, 9AM - 6PM EST</p>
+          <p style={{ color: '#2c3e50', fontWeight: 'bold', fontSize: '1.2rem' }}>+65 9397 9142</p>
+          <p style={{ color: '#7f8c8d', fontSize: '0.9rem' }}>Monday - Friday, 9AM - 6PM SGT</p>
         </div>
         
         <div style={{ backgroundColor: '#fff', padding: '40px', borderRadius: '15px', boxShadow: '0 6px 20px rgba(0,0,0,0.1)' }}>
@@ -204,7 +204,7 @@ function Support() {
           <p style={{ color: '#555', lineHeight: '1.6', marginBottom: '20px' }}>
             Send us a detailed message and we'll get back to you within 24 hours with a comprehensive solution.
           </p>
-          <p style={{ color: '#2c3e50', fontWeight: 'bold', fontSize: '1.2rem' }}>support@hirepro.com</p>
+          <p style={{ color: '#2c3e50', fontWeight: 'bold', fontSize: '1.2rem' }}>support@autosume.com</p>
           <p style={{ color: '#7f8c8d', fontSize: '0.9rem' }}>Average response time: 4 hours</p>
         </div>
       </div>
