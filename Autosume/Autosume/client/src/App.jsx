@@ -13,6 +13,8 @@ import UserContext from './contexts/UserContext';
 import ChatbotPage from './pages/Chatbot/ChatbotPage';
 import ForgotPassword from './pages/UserProfile/ForgotPassword';
 import Shortlisting from './pages/Shortlisting/shortlisting';
+import CreateCriteria from './pages/Shortlisting/create-criteria';
+
 import Profile from './pages/UserProfile/Profile';
 import Interview from './pages/Interview+Email/shortlistoverview';
 import InterviewScheduling from './pages/Interview+Email/scheduling';
@@ -82,6 +84,7 @@ function App() {
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/job-management" element={<JobManagement />} />
                     <Route path="/shortlisting" element={<Shortlisting />} />
+                    <Route path="/create-criteria" element={<CreateCriteria />} />
                     <Route path="/shortlistoverview" element={<Interview />} />
                     <Route path="/scheduling" element={<InterviewScheduling />} />
                     <Route path="/emailautomation" element={<EmailAutomation />} />

@@ -1,77 +1,89 @@
 // client/src/pages/Shortlisting/shortlisting.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import CandidateTable from '../../components/CandidateTable';
-import CandidateDetails from '../../components/CandidateDetails';
-import FilterBar from '../../components/Filterbar';
-import './Shortlisting.css'; // <-- IMPORT THE NEW CSS FILE
+import CandidateDetails from '../../components/Candidate';
+import FilterBar from '../../components/FilterBar';
 import '../../App.css';
 
-// (Your dummyCandidates array remains the same)
-const dummyCandidates = [
-  {
-    name: "Audrey Hall",
-    match: 92,
-    skills: ["React", "Node.js"],
-    experience: "3 years",
-    phone: "+6513141212",
-    email: "AudreyHall@gmail.com",
-    overview: "A skilled software engineer with experience in developing web applications using React and Node.js",
-    experienceDetails: "Software Engineer\n3/22 - Present\nDeveloped 3 successful web apps using React, Node.js and Flask",
-    education: "Bachelor of Science in Information Technology (2018)",
-    aiSummary: "Audrey has over three years of hands-on experience in developing dynamic and scalable web applications using React and Node.js. Her technical background aligns closely with the core requirements for the Software Engineer role, demonstrating both proficiency in modern JavaScript frameworks and practical experience in full-stack development."
-  },
-  { name: "Dunn Smith", match: 84, skills: ["Degree"], experience: "2 years", /*...other details*/},
-  { name: "Merlin Hermes", match: 72, skills: ["BSc in IT"], experience: "7 months", /*...other details*/},
-  { name: "Gerard Martin", match: 71, skills: ["MSc in CS"], experience: "6 months", /*...other details*/},
-];
+const Shortlisting = () => {
+  const [selectedCandidate, setSelectedCandidate] = useState(null);
+  const [criteriaList, setCriteriaList] = useState([]);
+  const [selectedCriteria, setSelectedCriteria] = useState('');
+  const navigate = useNavigate();
 
+  const dummyCandidates = [
+    {
+      name: "Audrey Hall",
+      match: 92,
+      skills: ["React", "Node.js"],
+      experience: "3 years",
+      phone: "+65 8123 4567",
+      email: "audrey@example.com",
+      summary: "Full-stack developer with strong frontend expertise.",
+    },
+    {
+      name: "Bryan Lim",
+      match: 85,
+      skills: ["Python", "Flask"],
+      experience: "2 years",
+      phone: "+65 8123 9876",
+      email: "bryan@example.com",
+      summary: "Backend developer focused on APIs and system integration.",
+    },
+  ];
 
-export default function Shortlisting() {
-  const [selectedCandidate, setSelectedCandidate] = useState(dummyCandidates[0]);
-  const [filters, setFilters] = useState({
-    jobRole: 'Software Engineer',
-    status: 'Under Review',
-    experience: '>5 months',
-    skills: 'Any'
-  });
+  useEffect(() => {
+    // Fetch criteria from backend
+    fetch('http://localhost:5000/api/criteria')
+      .then((res) => res.json())
+      .then((data) => setCriteriaList(data))
+      .catch((err) => console.error('Error loading criteria:', err));
+  }, []);
+
+  const handleCandidateSelect = (candidate) => {
+    setSelectedCandidate(candidate);
+  };
 
   return (
-    <div className="main-content" style={{ flex: 1, padding: '2rem 2.5rem', backgroundColor: '#f8f9fa' }}>
+    <div className="shortlisting-container">
+      <h2>Shortlisting Candidates</h2>
 
-      {/* Header - "Hariz" profile is now removed */}
-      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '2rem', color: '#212529' }}>Resume Shortlisting</h1>
-      </div>
-      
-      <FilterBar filters={filters} setFilters={setFilters} />
+      {/* Add Criteria Button */}
+      <button onClick={() => navigate('/create-criteria')} className="btn btn-primary mb-3">
+        + Add Criteria
+      </button>
 
-      {/* Main content area using our new responsive CSS classes */}
-      <div className="shortlisting-grid">
-        <div className="table-column">
-          <CandidateTable
-            candidates={dummyCandidates}
-            setSelectedCandidate={setSelectedCandidate}
-            selectedName={selectedCandidate.name}
-          />
-        </div>
-        <div className="details-column">
-          <CandidateDetails candidate={selectedCandidate} />
-        </div>
+      {/* Criteria Filter Dropdown */}
+      <div className="mb-3">
+        <label htmlFor="criteriaDropdown">Filter by Criteria:</label>
+        <select
+          id="criteriaDropdown"
+          className="form-select"
+          value={selectedCriteria}
+          onChange={(e) => setSelectedCriteria(e.target.value)}
+        >
+          <option value="">-- Select --</option>
+          {criteriaList.map((c, idx) => (
+            <option key={idx} value={c.label}>
+              {c.label}
+            </option>
+          ))}
+        </select>
       </div>
 
-      {/* AI Summary Card - with increased spacing and font size */}
-      <div style={{ 
-          marginTop: '2.5rem', 
-          backgroundColor: "#ffffff", 
-          padding: '2rem', 
-          borderRadius: '8px', 
-          boxShadow: '0 2px 8px rgba(0,0,0,0.06)' 
-        }}>
-        <h3 style={{ marginTop: 0, marginBottom: '1rem', fontSize: '1.25rem', color: '#343a40' }}>AI summary</h3>
-        <p style={{ margin: 0, color: '#495057', lineHeight: 1.7, fontSize: '1rem' }}>
-          {selectedCandidate.aiSummary}
-        </p>
-      </div>
+      {/* Candidate Table */}
+      <CandidateTable
+        candidates={dummyCandidates}
+        onCandidateSelect={handleCandidateSelect}
+      />
+
+      {/* Candidate Details */}
+      {selectedCandidate && (
+        <CandidateDetails candidate={selectedCandidate} />
+      )}
     </div>
   );
-}
+};
+
+export default Shortlisting;
