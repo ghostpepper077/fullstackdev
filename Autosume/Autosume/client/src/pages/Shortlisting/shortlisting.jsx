@@ -1,89 +1,158 @@
-// client/src/pages/Shortlisting/shortlisting.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import CandidateTable from '../../components/CandidateTable';
-import CandidateDetails from '../../components/Candidate';
-import FilterBar from '../../components/FilterBar';
-import '../../App.css';
+import {
+  Box, Typography, Select, MenuItem, Button, Grid, Paper,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+  CircularProgress, Alert
+} from '@mui/material';
+import http from '../../http'; // Your pre-configured http client
 
-const Shortlisting = () => {
-  const [selectedCandidate, setSelectedCandidate] = useState(null);
-  const [criteriaList, setCriteriaList] = useState([]);
-  const [selectedCriteria, setSelectedCriteria] = useState('');
+export default function Shortlisting() {
   const navigate = useNavigate();
+  
+  // State for fetched data, loading, and errors
+  const [candidates, setCandidates] = useState([]);
+  const [selectedCandidate, setSelectedCandidate] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const dummyCandidates = [
-    {
-      name: "Audrey Hall",
-      match: 92,
-      skills: ["React", "Node.js"],
-      experience: "3 years",
-      phone: "+65 8123 4567",
-      email: "audrey@example.com",
-      summary: "Full-stack developer with strong frontend expertise.",
-    },
-    {
-      name: "Bryan Lim",
-      match: 85,
-      skills: ["Python", "Flask"],
-      experience: "2 years",
-      phone: "+65 8123 9876",
-      email: "bryan@example.com",
-      summary: "Backend developer focused on APIs and system integration.",
-    },
-  ];
+  const [filters, setFilters] = useState({
+    jobRole: 'Software Engineer',
+    status: 'Under Review',
+    experience: '>5 months',
+    skills: 'Any',
+  });
 
+  // Fetch candidates from the database when the component loads
   useEffect(() => {
-    // Fetch criteria from backend
-    fetch('http://localhost:5000/api/criteria')
-      .then((res) => res.json())
-      .then((data) => setCriteriaList(data))
-      .catch((err) => console.error('Error loading criteria:', err));
-  }, []);
+    const fetchCandidates = async () => {
+      try {
+        // ===================================================================
+        // This endpoint must be set up on your server to return the candidates
+        // e.g., app.get('/candidates', (req, res) => { ... });
+        const response = await http.get('/candidates');
+        // ===================================================================
+        
+        setCandidates(response.data);
+        // Set the first candidate as selected by default if data exists
+        if (response.data && response.data.length > 0) {
+          setSelectedCandidate(response.data[0]);
+        }
+      } catch (err) {
+        setError('Failed to fetch candidates. Please ensure the server is running and the API endpoint is correct.');
+        console.error("Fetch error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleCandidateSelect = (candidate) => {
-    setSelectedCandidate(candidate);
-  };
+    fetchCandidates();
+  }, []); // The empty array ensures this effect runs only once on component mount
+
+  // Display a loading spinner while fetching data
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+        <CircularProgress />
+        <Typography sx={{ ml: 2 }}>Loading Candidates...</Typography>
+      </Box>
+    );
+  }
+
+  // Display an error message if the fetch fails
+  if (error) {
+    return <Alert severity="error" sx={{ m: 4 }}>{error}</Alert>;
+  }
 
   return (
-    <div className="shortlisting-container">
-      <h2>Shortlisting Candidates</h2>
+    <Box sx={{ flex: 1, p: 4, overflowY: 'auto', backgroundColor: '#fdfdfd' }}>
+      {/* Top Bar */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h4" fontWeight="bold">Resume Shortlisting</Typography>
+        <Typography>Hariz</Typography> {/* Replace with dynamic user name if needed */}
+      </Box>
 
-      {/* Add Criteria Button */}
-      <button onClick={() => navigate('/create-criteria')} className="btn btn-primary mb-3">
-        + Add Criteria
-      </button>
+      {/* Filters */}
+      <Box sx={{ display: 'flex', gap: 2, mb: 3, alignItems: 'center' }}>
+        <Select size="small" value={filters.jobRole} onChange={(e) => setFilters({ ...filters, jobRole: e.target.value })}>
+          <MenuItem value="Software Engineer">Software Engineer</MenuItem>
+        </Select>
+        {/* Add other filters as needed */}
+        <Button variant="outlined" onClick={() => navigate('/create-criteria')}>+ ADD CRITERIA</Button>
+      </Box>
 
-      {/* Criteria Filter Dropdown */}
-      <div className="mb-3">
-        <label htmlFor="criteriaDropdown">Filter by Criteria:</label>
-        <select
-          id="criteriaDropdown"
-          className="form-select"
-          value={selectedCriteria}
-          onChange={(e) => setSelectedCriteria(e.target.value)}
-        >
-          <option value="">-- Select --</option>
-          {criteriaList.map((c, idx) => (
-            <option key={idx} value={c.label}>
-              {c.label}
-            </option>
-          ))}
-        </select>
-      </div>
+      {/* Main Content Grid */}
+      <Grid container spacing={3}>
+        {/* Candidate Table */}
+        <Grid item xs={12} lg={7}>
+          <TableContainer component={Paper} elevation={2} sx={{ borderRadius: 2 }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell><strong>Candidate</strong></TableCell>
+                  <TableCell><strong>Match %</strong></TableCell>
+                  <TableCell><strong>Key Skills</strong></TableCell>
+                  <TableCell><strong>Experience</strong></TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {candidates.map((candidate) => (
+                  <TableRow
+                    key={candidate._id} // Use MongoDB's unique _id for the key
+                    onClick={() => setSelectedCandidate(candidate)}
+                    hover
+                    sx={{
+                      cursor: 'pointer',
+                      backgroundColor: selectedCandidate && candidate._id === selectedCandidate._id ? '#f5f5f5' : 'transparent'
+                    }}
+                  >
+                    <TableCell>{candidate.name}</TableCell>
+                    <TableCell sx={{ color: candidate.match >= 90 ? 'green' : 'inherit', fontWeight: 'medium' }}>{candidate.match}%</TableCell>
+                    <TableCell>{candidate.skills.join(', ')}</TableCell>
+                    <TableCell>{candidate.experience}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Grid>
 
-      {/* Candidate Table */}
-      <CandidateTable
-        candidates={dummyCandidates}
-        onCandidateSelect={handleCandidateSelect}
-      />
+        {/* Candidate Detail View */}
+        <Grid item xs={12} lg={5}>
+          {selectedCandidate ? (
+            <Paper elevation={2} sx={{ p: 3, borderRadius: 2 }}>
+              <Typography variant="h6" fontWeight="bold">{selectedCandidate.name}</Typography>
+              <Typography color="text.secondary">{selectedCandidate.phone}</Typography>
+              <Typography color="text.secondary" gutterBottom>{selectedCandidate.email}</Typography>
 
-      {/* Candidate Details */}
+              <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2 }}>Overview</Typography>
+              <Typography variant="body2">{selectedCandidate.overview}</Typography>
+
+              <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2 }}>Experience</Typography>
+              <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>{selectedCandidate.experienceDetails}</Typography>
+
+              <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2 }}>Education</Typography>
+              <Typography variant="body2">{selectedCandidate.education}</Typography>
+
+              <Button variant="contained" sx={{ mt: 3, textTransform: 'none', fontWeight: 'bold' }}>
+                View Full Resume
+              </Button>
+            </Paper>
+          ) : (
+            <Paper sx={{ p: 3, textAlign: 'center' }}>
+              <Typography>No candidates found or select a candidate to see details.</Typography>
+            </Paper>
+          )}
+        </Grid>
+      </Grid>
+
+      {/* AI Summary Section */}
       {selectedCandidate && (
-        <CandidateDetails candidate={selectedCandidate} />
+        <Paper elevation={2} sx={{ mt: 3, p: 3, backgroundColor: '#f0f4f8', borderRadius: 2 }}>
+          <Typography variant="h6" fontWeight="bold" gutterBottom>AI Summary 🤖</Typography>
+          <Typography variant="body2">{selectedCandidate.aiSummary}</Typography>
+        </Paper>
       )}
-    </div>
+    </Box>
   );
-};
-
-export default Shortlisting;
+} 

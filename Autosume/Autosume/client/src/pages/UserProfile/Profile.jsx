@@ -93,7 +93,7 @@ function Profile() {
             confirmPassword: yup.string().trim()
                 .oneOf([yup.ref('password'), ''], 'Passwords must match')
         }),
-        onSubmit: async (data) => {
+        onSubmit: async (data, { setSubmitting, setValues }) => {
             try {
                 const payload = {
                     name: data.name.trim(),
@@ -102,27 +102,37 @@ function Profile() {
                     gender: data.gender,
                     country: data.country,
                     language: data.language,
-                    timeZone: data.timeZone
+                    timeZone: data.timeZone,
+                    password: data.password ? data.password.trim() : undefined
                 };
-
-                if (data.password) payload.password = data.password.trim();
 
                 const response = await http.put('/user/profile', payload);
 
                 toast.success('Profile updated successfully!');
                 setEditMode(false);
 
-                // UPDATE: Handle new token and user data from response
+                // Update token and user context
                 if (response.data.accessToken) {
                     localStorage.setItem('accessToken', response.data.accessToken);
                 }
 
                 if (response.data.user) {
                     setUser(response.data.user);
+                    // Update form values with latest user data, clear password fields
+                    setValues({
+                        name: response.data.user.name || '',
+                        email: response.data.user.email || '',
+                        dateOfBirth: response.data.user.dateOfBirth || '',
+                        gender: response.data.user.gender || '',
+                        country: response.data.user.country || '',
+                        language: response.data.user.language || '',
+                        timeZone: response.data.user.timeZone || '',
+                        password: '',
+                        confirmPassword: ''
+                    });
                 } else {
                     setUser({ ...user, ...payload });
                 }
-
             } catch (err) {
                 if (err.response) {
                     const message = err.response.data?.message || `Server error: ${err.response.status}`;
@@ -132,6 +142,8 @@ function Profile() {
                 } else {
                     toast.error('An unexpected error occurred');
                 }
+            } finally {
+                setSubmitting(false);
             }
         }
     });
@@ -150,7 +162,6 @@ function Profile() {
                 password: '',
                 confirmPassword: ''
             });
-            // Also reset touched and errors
             formik.setTouched({});
             formik.setErrors({});
         }
@@ -188,7 +199,7 @@ function Profile() {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    overflowX: 'hidden', // 
+                    overflowX: 'hidden',
                 }}
             >
                 <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#333' }}>

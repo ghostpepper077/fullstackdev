@@ -1,0 +1,86 @@
+[
+  {
+    "name": "Audrey Hall",
+    "match": 92,
+    "skills": ["React", "Node.js", "TypeScript"],
+    "experience": "3 years",
+    "phone": "+65 9123 4567",
+    "email": "audrey.hall@example.com",
+    "overview": "A skilled software engineer with experience in developing web applications using React and Node.js.",
+    "experienceDetails": "Software Engineer @ Tech Solutions Inc.\n(March 2023 - Present)\n- Developed 3 successful web apps using React, Node.js and Flask.",
+    "education": "Bachelor of Science in Information Technology (2023)",
+    "aiSummary": "Audrey has over three years of hands-on experience in developing dynamic and scalable web applications. Her expertise in React and Node.js makes her a strong fit for a frontend or full-stack role."
+  },
+  {
+    "name": "Johnathan Lee",
+    "match": 85,
+    "skills": ["Python", "Django", "AWS"],
+    "experience": "5 years",
+    "phone": "+65 9876 5432",
+    "email": "john.lee@example.com",
+    "overview": "Experienced backend developer specializing in Python and cloud infrastructure.",
+    "experienceDetails": "Backend Developer @ Cloud Innovations\n(June 2020 - Present)\n- Designed and maintained scalable backend services on AWS.",
+    "education": "Bachelor of Engineering in Computer Science (2020)",
+    "aiSummary": "Johnathan is a proficient backend developer with five years of experience. His skills in Python, Django, and AWS are well-suited for roles requiring robust server-side logic."
+  },
+  {
+    "name": "Brenda Tan",
+    "match": 78,
+    "skills": ["Java", "Spring Boot", "Microservices"],
+    "experience": "4 years",
+    "phone": "+65 8765 4321",
+    "email": "brenda.tan@example.com",
+    "overview": "Java developer with a focus on building enterprise-level microservices.",
+    "experienceDetails": "Software Engineer @ Enterprise Systems\n(July 2021 - Present)\n- Contributed to a large-scale microservices architecture using Spring Boot.",
+    "education": "Bachelor of Computing (2021)",
+    "aiSummary": "Brenda has four years of experience in Java and Spring Boot. While her match score is slightly lower, her specialization in microservices could be valuable for specific project needs."
+  },
+  {
+    "name": "David Chen",
+    "match": 88,
+    "skills": ["AWS", "Docker", "Kubernetes", "Terraform"],
+    "experience": "6 years",
+    "phone": "+65 9234 5678",
+    "email": "david.chen@example.com",
+    "overview": "Certified DevOps engineer with a passion for automating cloud infrastructure and CI/CD pipelines.",
+    "experienceDetails": "Senior DevOps Engineer @ Global Tech\n(May 2019 - Present)\n- Managed cloud infrastructure on AWS, reducing costs by 20%.\n- Implemented a full CI/CD pipeline using Jenkins and Kubernetes.",
+    "education": "Bachelor of Science in Network Engineering (2019)",
+    "aiSummary": "David is a highly experienced DevOps engineer with six years in the field. His expertise in AWS, Docker, and Kubernetes makes him ideal for managing and scaling cloud-native applications."
+  },
+  {
+    "name": "Emily Lim",
+    "match": 75,
+    "skills": ["HTML", "CSS", "JavaScript", "React"],
+    "experience": "1 year",
+    "phone": "+65 9345 6789",
+    "email": "emily.lim@example.com",
+    "overview": "A recent graduate with a strong foundation in frontend technologies and a desire to learn and grow.",
+    "experienceDetails": "Junior Frontend Developer @ Digital Start\n(June 2024 - Present)\n- Assisted in building responsive user interfaces with React.\n- Collaborated with designers to translate Figma mockups into code.",
+    "education": "Diploma in Web Development (2024)",
+    "aiSummary": "Emily is an enthusiastic junior developer with one year of experience. She has foundational skills in React and is a good candidate for an entry-level position where she can be mentored."
+  },
+  {
+    "name": "Faisal Khan",
+    "match": 95,
+    "skills": ["Python", "Pandas", "Scikit-learn", "TensorFlow"],
+    "experience": "5 years",
+    "phone": "+65 9456 7890",
+    "email": "faisal.khan@example.com",
+    "overview": "Data scientist with a track record of building predictive models that drive business decisions.",
+    "experienceDetails": "Data Scientist @ Data Insights Co.\n(August 2020 - Present)\n- Developed a machine learning model to predict customer churn, improving retention by 15%.\n- Used Pandas and Scikit-learn for data cleaning and analysis.",
+    "education": "Master of Science in Data Analytics (2020)",
+    "aiSummary": "Faisal is a top-tier data scientist with five years of experience. His expertise in Python and machine learning libraries like TensorFlow, combined with proven business impact, makes him an excellent candidate."
+  },
+  {
+    "name": "Grace Woo",
+    "match": 82,
+    "skills": ["Agile", "Roadmapping", "User Stories", "JIRA"],
+    "experience": "7 years",
+    "phone": "+65 9567 8901",
+    "email": "grace.woo@example.com",
+    "overview": "A strategic Product Manager skilled in leading cross-functional teams to deliver user-centric products.",
+    "experienceDetails": "Product Manager @ Innovate Labs\n(January 2018 - Present)\n- Managed the entire product lifecycle from ideation to launch.\n- Defined product roadmaps and wrote detailed user stories in JIRA.",
+    "education": "Bachelor of Business Administration (2017)",
+    "aiSummary": "Grace is a seasoned Product Manager with seven years of experience. Her strong background in Agile methodologies and product strategy would be a great asset for leading a product team."
+  }
+]

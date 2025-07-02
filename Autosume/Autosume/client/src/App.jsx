@@ -21,6 +21,11 @@ import InterviewScheduling from './pages/Interview+Email/scheduling';
 import EmailAutomation from './pages/Interview+Email/emailautomation';
 import InterviewDashboard from './pages/Interview+Email/interviewdashboard';
 import Sidebar from './components/Sidebar';
+// ===================================================================
+// ★★★ 1. IMPORT THE NEW COMPONENT ★★★
+// ===================================================================
+import TriggerAIScreening from './pages/AIScreening/TriggerAIScreening';
+// ===================================================================
 
 function App() {
   const [user, setUser] = useState(null);
@@ -85,6 +90,11 @@ function App() {
                     <Route path="/jobs/create" element={<Create />} />
                     <Route path="/shortlisting" element={<Shortlisting />} />
                     <Route path="/create-criteria" element={<CreateCriteria />} />
+                    {/* =================================================================== */}
+                    {/* ★★★ 2. ADD THE NEW ROUTE HERE ★★★ */}
+                    {/* =================================================================== */}
+                    <Route path="/trigger-ai-screening" element={<TriggerAIScreening />} />
+                    {/* =================================================================== */}
                     <Route path="/shortlistoverview" element={<Interview />} />
                     <Route path="/scheduling" element={<InterviewScheduling />} />
                     <Route path="/emailautomation" element={<EmailAutomation />} />

@@ -19,7 +19,12 @@ import {
   Settings as SettingsIcon,
   Support as SupportIcon,
   ExitToApp as LogoutIcon,
-  Message as ChatbotIcon
+  Message as ChatbotIcon,
+  // ===================================================================
+  // ★★★ 1. IMPORT THE NEW ICON ★★★
+  // ===================================================================
+  OnlinePrediction as AIScreeningIcon 
+  // ===================================================================
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -30,6 +35,11 @@ const Sidebar = ({ user, onLogout }) => {
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
     { text: 'Job Management', icon: <WorkIcon />, path: '/job-management' },
+    // ===================================================================
+    // ★★★ 2. ADD THE NEW MENU ITEM TO THE ARRAY ★★★
+    // ===================================================================
+    { text: 'Trigger AI Screening', icon: <AIScreeningIcon />, path: '/trigger-ai-screening' },
+    // ===================================================================
     { text: 'Resume Shortlisting', icon: <ShortlistIcon />, path: '/shortlisting' },
     { text: 'Interview Scheduling', icon: <InterviewIcon />, path: '/shortlistoverview' },
     { text: 'Chatbot', icon: <ChatbotIcon />, path: '/chatbot' },
