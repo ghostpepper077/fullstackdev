@@ -1,64 +1,171 @@
-import React, { useState } from 'react';
-import { Box, Typography, TextField, Button, Paper, List, ListItem, ListItemText } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  Typography,
+  Paper,
+  Grid,
+  TextField,
+  Button,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  CircularProgress,
+  Alert
+} from '@mui/material';
+import http from '../../http'; // Assuming you use the same http client from App.jsx
 
-// This is the component that your App.js will render at the "/create-criteria" route.
 export default function CreateCriteria() {
-  // State to hold the list of criteria and the current input value
-  const [criteriaList, setCriteriaList] = useState(['Technical Skills', 'Team Fit']);
-  const [newCriterion, setNewCriterion] = useState('');
+  // State to hold the list of jobs fetched from the database
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
-  /**
-   * This is the function that adds a new criterion.
-   * It's declared here and used in the handleSubmit function below.
-   */
-  const handleCreateCriterion = (criterionName) => {
-    if (criterionName.trim()) {
-      setCriteriaList([...criteriaList, criterionName.trim()]);
-      setNewCriterion(''); // Clear the input field after adding
+  // State for the form fields
+  const [formData, setFormData] = useState({
+    jobId: '',
+    experience: '',
+    skills: ''
+  });
+
+  // Fetch jobs from the database when the component loads
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        // ===================================================================
+        // TODO: Replace with your actual API endpoint to get jobs
+        // This endpoint should return an array of objects, e.g., [{ _id: '1', title: 'Software Engineer' }, ...]
+        const response = await http.get('/jobs'); 
+        setJobs(response.data);
+        // ===================================================================
+
+      } catch (err) {
+        setError('Failed to fetch job roles. Please try again later.');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJobs();
+  }, []); // Empty array ensures this runs only once on mount
+
+  // Handle changes in form inputs
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
+
+  // Handle form submission
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError(null);
+    setSuccess(null);
+
+    // Basic validation
+    if (!formData.jobId || !formData.experience || !formData.skills) {
+      setError('All fields are required.');
+      return;
+    }
+
+    try {
+      // ===================================================================
+      // TODO: Replace with your actual API endpoint to create criteria
+      // This will send the form data to your backend to be saved in MongoDB
+      const response = await http.post('/criteria', formData);
+      // ===================================================================
+      
+      setSuccess('Criteria created successfully!');
+      // Optionally, reset the form
+      setFormData({ jobId: '', experience: '', skills: '' });
+
+    } catch (err) {
+      setError('Failed to create criteria. Please try again.');
+      console.error(err);
     }
   };
 
-  /**
-   * Handles the form submission.
-   */
-  const handleSubmit = (event) => {
-    event.preventDefault(); // Prevent page reload
-    handleCreateCriterion(newCriterion); // This is where the function is used
-  };
-
   return (
-    <Paper sx={{ p: 4, maxWidth: '800px', margin: 'auto' }}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Manage Shortlisting Criteria
+    <Paper sx={{ p: 4, maxWidth: '900px', margin: 'auto', borderRadius: 2 }}>
+      <Typography variant="h4" component="h1" fontWeight="bold" gutterBottom>
+        Create Job Criteria
       </Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-        Add or remove the criteria used to evaluate candidates.
+      <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+        Define role requirements to guide AI-driven resume matching.
       </Typography>
 
-      <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', gap: 2, mb: 4 }}>
-        <TextField
-          fullWidth
-          variant="outlined"
-          label="New Criterion Name"
-          value={newCriterion}
-          onChange={(e) => setNewCriterion(e.target.value)}
-          placeholder="e.g., 'Communication Skills'"
-        />
-        <Button type="submit" variant="contained" sx={{ whiteSpace: 'nowrap' }}>
-          Add Criterion
-        </Button>
+      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
+
+      <Box component="form" onSubmit={handleSubmit}>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <FormControl fullWidth>
+              <InputLabel id="job-role-label">Job Role</InputLabel>
+              <Select
+                labelId="job-role-label"
+                id="jobId"
+                name="jobId"
+                value={formData.jobId}
+                label="Job Role"
+                onChange={handleChange}
+                disabled={loading}
+              >
+                {loading ? (
+                  <MenuItem disabled>
+                    <CircularProgress size={20} sx={{ mr: 1 }} /> Loading jobs...
+                  </MenuItem>
+                ) : (
+                  jobs.map((job) => (
+                    // Assuming job object has `_id` and `title` properties from MongoDB
+                    <MenuItem key={job._id} value={job._id}>
+                      {job.title}
+                    </MenuItem>
+                  ))
+                )}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              id="experience"
+              name="experience"
+              label="Experience Required"
+              variant="outlined"
+              value={formData.experience}
+              onChange={handleChange}
+              placeholder="e.g., 3-5 years"
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              id="skills"
+              name="skills"
+              label="Required Skills"
+              variant="outlined"
+              multiline
+              rows={4}
+              value={formData.skills}
+              onChange={handleChange}
+              placeholder="Enter skills, separated by commas (e.g., React, Node.js, MongoDB)"
+            />
+          </Grid>
+
+          <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Button type="submit" variant="contained" size="large">
+              Submit
+            </Button>
+          </Grid>
+        </Grid>
       </Box>
-
-      <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
-        Current Criteria:
-      </Typography>
-      <List>
-        {criteriaList.map((criterion, index) => (
-          <ListItem key={index} divider>
-            <ListItemText primary={criterion} />
-          </ListItem>
-        ))}
-      </List>
     </Paper>
   );
 }
