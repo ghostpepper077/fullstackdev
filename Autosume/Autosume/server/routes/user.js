@@ -1,196 +1,333 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const bcrypt = require("bcrypt");
-const { User } = require("../models");
-const yup = require("yup");
-const { sign } = require("jsonwebtoken");
-const { validateToken } = require("../middlewares/auth");
-require("dotenv").config();
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
+const { body, validationResult } = require('express-validator');
+const { authenticateToken } = require('../middlewares/auth');
 
-router.post("/register", async (req, res) => {
-  let data = req.body;
-  // Validate request body
-  let validationSchema = yup.object({
-    name: yup
-      .string()
-      .trim()
-      .min(3)
-      .max(50)
-      .required()
-      .matches(
-        /^[a-zA-Z '-,.]+$/,
-        "name only allow letters, spaces and characters: ' - , ."
-      ),
-    email: yup.string().trim().lowercase().email().max(50).required(),
-    password: yup
-      .string()
-      .trim()
-      .min(8)
-      .max(50)
-      .required()
-      .matches(
-        /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/,
-        "password at least 1 letter and 1 number"
-      ),
-  });
-  try {
-    data = await validationSchema.validate(data, { abortEarly: false });
+// JWT Secrets
+const JWT_SECRET = process.env.JWT_SECRET || process.env.APP_SECRET || 'your-super-secret-jwt-key';
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'your-super-secret-refresh-key';
 
-    // Check email
-    let user = await User.findOne({
-      where: { email: data.email },
-    });
-    if (user) {
-      res.status(400).json({ message: "Email already exists." });
-      return;
+// Helper function to generate tokens
+const generateTokens = (userId) => {
+    const accessToken = jwt.sign(
+        { userId },
+        JWT_SECRET,
+        { expiresIn: process.env.TOKEN_EXPIRES_IN || '15m' }
+    );
+
+    const refreshToken = jwt.sign(
+        { userId },
+        JWT_REFRESH_SECRET,
+        { expiresIn: '7d' }
+    );
+
+    return { accessToken, refreshToken };
+};
+
+// Register endpoint
+router.post('/register', [
+    body('name')
+        .trim()
+        .isLength({ min: 3, max: 50 })
+        .withMessage('Name must be between 3 and 50 characters')
+        .matches(/^[a-zA-Z '-,.]+$/)
+        .withMessage('Name only allow letters, spaces and characters: \' - , .'),
+    body('email')
+        .trim()
+        .isEmail()
+        .withMessage('Please enter a valid email')
+        .isLength({ max: 50 })
+        .withMessage('Email must be at most 50 characters')
+        .normalizeEmail(),
+    body('password')
+        .trim()
+        .isLength({ min: 8, max: 50 })
+        .withMessage('Password must be between 8 and 50 characters')
+        .matches(/^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/)
+        .withMessage('Password must contain at least 1 letter and 1 number')
+], async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                message: 'Validation failed',
+                errors: errors.array()
+            });
+        }
+
+        const { name, email, password } = req.body;
+
+        // Check if user already exists
+        const existingUser = await User.findOne({ email: email.toLowerCase() });
+        if (existingUser) {
+            return res.status(409).json({
+                message: 'User with this email already exists'
+            });
+        }
+
+        // Create new user
+        const user = new User({
+            name: name.trim(),
+            email: email.trim().toLowerCase(),
+            password: password.trim()
+        });
+
+        await user.save();
+
+        res.status(201).json({
+            message: `Email ${user.email} was registered successfully.`,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                createdAt: user.createdAt
+            }
+        });
+
+    } catch (error) {
+        console.error('Registration error:', error);
+        
+        if (error.code === 11000) {
+            return res.status(409).json({
+                message: 'Email already exists.'
+            });
+        }
+
+        if (error.name === 'ValidationError') {
+            const validationErrors = Object.values(error.errors).map(err => err.message);
+            return res.status(400).json({
+                message: 'Validation failed',
+                errors: validationErrors
+            });
+        }
+
+        res.status(500).json({
+            message: 'Internal server error'
+        });
     }
-
-    // Hash passowrd
-    data.password = await bcrypt.hash(data.password, 10);
-    // Create user
-    let result = await User.create(data);
-    res.json({
-      message: `Email ${result.email} was registered successfully.`,
-    });
-  } catch (err) {
-    res.status(400).json({ errors: err.errors });
-  }
 });
 
-router.post("/login", async (req, res) => {
-  let data = req.body;
-  // Validate request body
-  let validationSchema = yup.object({
-    email: yup.string().trim().lowercase().email().max(50).required(),
-    password: yup.string().trim().min(8).max(50).required(),
-  });
-  try {
-    data = await validationSchema.validate(data, { abortEarly: false });
+// Login endpoint
+router.post('/login', [
+    body('email')
+        .trim()
+        .isEmail()
+        .withMessage('Please enter a valid email')
+        .normalizeEmail(),
+    body('password')
+        .trim()
+        .notEmpty()
+        .withMessage('Password is required')
+], async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                message: 'Invalid input data',
+                errors: errors.array()
+            });
+        }
 
-    // Check email and password
-    let errorMsg = "Email or password is not correct.";
-    let user = await User.findOne({
-      where: { email: data.email },
-    });
-    if (!user) {
-      res.status(400).json({ message: errorMsg });
-      return;
-    }
-    let match = await bcrypt.compare(data.password, user.password);
-    if (!match) {
-      res.status(400).json({ message: errorMsg });
-      return;
-    }
+        const { email, password } = req.body;
 
-    // Return user info
-    let userInfo = {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      dateOfBirth: user.dateOfBirth,
-      gender: user.gender,
-      country: user.country,
-      language: user.language,
-      timeZone: user.timeZone,
+        // Find user by email
+        const user = await User.findOne({
+            email: email.toLowerCase(),
+            isActive: true
+        });
+
+        if (!user) {
+            return res.status(401).json({
+                message: 'Email or password is not correct.'
+            });
+        }
+
+        // Check password
+        const isPasswordValid = await user.comparePassword(password);
+        if (!isPasswordValid) {
+            return res.status(401).json({
+                message: 'Email or password is not correct.'
+            });
+        }
+
+        // Generate tokens
+        const { accessToken, refreshToken } = generateTokens(user._id);
+
+        // Update user's last login
+        user.lastLogin = new Date();
+        await user.save();
+
+        // Return user info (legacy format for compatibility)
+        const userInfo = {
+            id: user._id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            lastLogin: user.lastLogin
+        };
+
+        res.status(200).json({
+            message: 'Login successful',
+            accessToken,
+            refreshToken,
+            user: userInfo
+        });
+
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({
+            message: 'Internal server error'
+        });
+    }
+});
+
+// Get authenticated user info
+router.get('/auth', authenticateToken, (req, res) => {
+    const userInfo = {
+        id: req.user._id,
+        email: req.user.email,
+        name: req.user.name,
+        role: req.user.role,
+        lastLogin: req.user.lastLogin
     };
-    let accessToken = sign(userInfo, process.env.APP_SECRET, {
-      expiresIn: process.env.TOKEN_EXPIRES_IN,
-    });
-    res.json({
-      accessToken: accessToken,
-      user: userInfo,
-    });
-  } catch (err) {
-    res.status(400).json({ errors: err.errors });
-    return;
-  }
+    res.json({ user: userInfo });
 });
 
-router.get("/auth", validateToken, (req, res) => {
-  res.json({ user: req.user });
+// Get user profile
+router.get('/profile', authenticateToken, async (req, res) => {
+    try {
+        res.status(200).json({
+            message: 'Profile retrieved successfully',
+            user: req.user
+        });
+    } catch (error) {
+        console.error('Profile error:', error);
+        res.status(500).json({
+            message: 'Internal server error'
+        });
+    }
 });
 
-// PUT /user/profile - update user profile
-router.put("/profile", validateToken, async (req, res) => {
-  const userId = req.user.id;
-  const data = req.body;
+// Update user profile
+router.put('/profile', authenticateToken, [
+    body('name')
+        .optional()
+        .trim()
+        .isLength({ min: 3, max: 50 })
+        .withMessage('Name must be between 3 and 50 characters')
+        .matches(/^[a-zA-Z '-,.]+$/)
+        .withMessage('Name only allow letters, spaces and characters: \' - , .'),
+    body('email')
+        .optional()
+        .trim()
+        .isEmail()
+        .withMessage('Please enter a valid email')
+        .isLength({ max: 50 })
+        .withMessage('Email must be at most 50 characters'),
+    body('password')
+        .optional()
+        .trim()
+        .isLength({ min: 8, max: 50 })
+        .withMessage('Password must be between 8 and 50 characters')
+        .matches(/^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/)
+        .withMessage('Password must contain at least 1 letter and 1 number')
+], async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                message: 'Validation failed',
+                errors: errors.array()
+            });
+        }
 
-  // Validation schema for profile update
-  let validationSchema = yup.object({
-    name: yup.string().trim().min(3).max(50).required(),
-    email: yup.string().trim().lowercase().email().max(50).required(),
-    dateOfBirth: yup.string().nullable(),
-    gender: yup.string().nullable(),
-    country: yup.string().nullable(),
-    language: yup.string().nullable(),
-    timeZone: yup.string().nullable(),
-    password: yup
-      .string()
-      .trim()
-      .min(8)
-      .max(50)
-      .matches(
-        /^(|(?=.*[a-zA-Z])(?=.*[0-9]).{8,})$/,
-        "Password must have at least 1 letter and 1 number"
-      )
-      .notRequired(),
-  });
+        const { name, email, password } = req.body;
+        const user = req.user;
 
-  try {
-    const validated = await validationSchema.validate(data, {
-      abortEarly: false,
-    });
+        // Update fields if provided
+        if (name) user.name = name.trim();
+        if (email) user.email = email.trim().toLowerCase();
+        if (password) user.password = password.trim(); // Will be hashed by pre-save hook
 
-    // Find user
-    const user = await User.findByPk(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found." });
+        await user.save();
+
+        // Generate new token with updated user data
+        const userInfo = {
+            id: user._id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            lastLogin: user.lastLogin
+        };
+
+        const newAccessToken = jwt.sign(userInfo, JWT_SECRET, {
+            expiresIn: process.env.TOKEN_EXPIRES_IN || '15m'
+        });
+
+        res.status(200).json({
+            message: 'Profile updated successfully.',
+            accessToken: newAccessToken,
+            user: userInfo
+        });
+
+    } catch (error) {
+        console.error('Profile update error:', error);
+        
+        if (error.code === 11000) {
+            return res.status(409).json({
+                message: 'Email already exists.'
+            });
+        }
+        
+        res.status(500).json({
+            message: 'Internal server error'
+        });
     }
+});
 
-    // Update fields
-    user.name = validated.name;
-    user.email = validated.email;
-    user.dateOfBirth = validated.dateOfBirth;
-    user.gender = validated.gender;
-    user.country = validated.country;
-    user.language = validated.language;
-    user.timeZone = validated.timeZone;
+// Token refresh endpoint
+router.post('/refresh-token', async (req, res) => {
+    try {
+        const { refreshToken } = req.body;
 
-    // If password is provided, hash and update
-    if (validated.password) {
-      user.password = await bcrypt.hash(validated.password, 10);
+        if (!refreshToken) {
+            return res.status(401).json({
+                message: 'Refresh token is required'
+            });
+        }
+
+        const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
+        const user = await User.findById(decoded.userId);
+        
+        if (!user || !user.isActive) {
+            return res.status(401).json({
+                message: 'Invalid refresh token'
+            });
+        }
+
+        const tokens = generateTokens(user._id);
+
+        res.status(200).json({
+            message: 'Token refreshed successfully',
+            ...tokens
+        });
+
+    } catch (error) {
+        console.error('Token refresh error:', error);
+        res.status(401).json({
+            message: 'Invalid refresh token'
+        });
     }
+});
 
-    await user.save();
-
-    // CREATE NEW JWT TOKEN WITH UPDATED USER DATA
-    let updatedUserInfo = {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      dateOfBirth: user.dateOfBirth,
-      gender: user.gender,
-      country: user.country,
-      language: user.language,
-      timeZone: user.timeZone,
-    };
-
-    let newAccessToken = sign(updatedUserInfo, process.env.APP_SECRET, {
-      expiresIn: process.env.TOKEN_EXPIRES_IN,
+// Logout endpoint
+router.post('/logout', (req, res) => {
+    res.status(200).json({
+        message: 'Logout successful'
     });
-
-    res.json({
-      message: "Profile updated successfully.",
-      accessToken: newAccessToken, // Return new token
-      user: updatedUserInfo, // Return updated user data
-    });
-  } catch (err) {
-    if (err.errors) {
-      res.status(400).json({ errors: err.errors });
-    } else {
-      res.status(500).json({ message: "Server error." });
-    }
-  }
 });
 
 module.exports = router;

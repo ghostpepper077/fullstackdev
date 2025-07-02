@@ -1,3 +1,4 @@
+// Frontend - Register.jsx (React Component)
 import React from 'react';
 import { Box, Typography, TextField, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -40,12 +41,18 @@ function Register() {
             data.name = data.name.trim();
             data.email = data.email.trim().toLowerCase();
             data.password = data.password.trim();
-            http.post("/user/register", data)
+            
+            // Remove confirmPassword before sending to backend
+            const { confirmPassword, ...registrationData } = data;
+            
+            http.post("/user/register", registrationData)
                 .then((res) => {
                     console.log(res.data);
+                    toast.success("Registration successful! Please login.");
                     navigate("/login");
                 })
                 .catch(function (err) {
+                    console.error('Registration error:', err);
                     toast.error(`${err.response?.data?.message || "Registration failed"}`);
                 });
         }
@@ -132,8 +139,9 @@ function Register() {
                         fullWidth
                         variant="contained"
                         sx={{ mt: 2, backgroundColor: '#4169E1', '&:hover': { backgroundColor: '#365fcf' } }}
-                        type="submit">
-                        SIGN UP
+                        type="submit"
+                        disabled={formik.isSubmitting}>
+                        {formik.isSubmitting ? 'SIGNING UP...' : 'SIGN UP'}
                     </Button>
                 </Box>
                 <ToastContainer />

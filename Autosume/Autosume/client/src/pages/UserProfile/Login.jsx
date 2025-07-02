@@ -1,3 +1,4 @@
+// Frontend - Login.jsx (React Component)
 import React, { useContext } from 'react';
 import { Box, Typography, TextField, Button, Link } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -27,18 +28,32 @@ function Login() {
                 .max(50, 'Password must be at most 50 characters')
                 .required('Password is required')
         }),
-        onSubmit: (data) => {
-            data.email = data.email.trim().toLowerCase();
-            data.password = data.password.trim();
-            http.post("/user/login", data)
-                .then((res) => {
-                    localStorage.setItem("accessToken", res.data.accessToken);
-                    setUser(res.data.user);
-                    navigate("/profile");
-                })
-                .catch(function (err) {
-                    toast.error(`${err.response?.data?.message || "Login failed"}`);
-                });
+        onSubmit: async (data, { setSubmitting }) => {
+            try {
+                data.email = data.email.trim().toLowerCase();
+                data.password = data.password.trim();
+                
+                const response = await http.post("/user/login", data);
+                
+                // Store token and user data
+                localStorage.setItem("accessToken", response.data.accessToken);
+                if (response.data.refreshToken) {
+                    localStorage.setItem("refreshToken", response.data.refreshToken);
+                }
+                
+                setUser(response.data.user);
+                toast.success("Login successful!");
+                
+                // Navigate based on user role or default to profile
+                const redirectPath = response.data.user.role === 'admin' ? '/admin' : '/profile';
+                navigate(redirectPath);
+                
+            } catch (err) {
+                console.error('Login error:', err);
+                toast.error(`${err.response?.data?.message || "Login failed"}`);
+            } finally {
+                setSubmitting(false);
+            }
         }
     });
 
@@ -128,8 +143,9 @@ function Login() {
                         variant="contained"
                         sx={{ mt: 1, backgroundColor: '#4169E1', '&:hover': { backgroundColor: '#365fcf' } }}
                         type="submit"
+                        disabled={formik.isSubmitting}
                     >
-                        LOGIN
+                        {formik.isSubmitting ? 'LOGGING IN...' : 'LOGIN'}
                     </Button>
                 </Box>
 

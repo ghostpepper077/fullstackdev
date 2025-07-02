@@ -1,38 +1,76 @@
 import axios from "axios";
 
-const instance = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL
+// Use Vite environment variable for API URL, fallback to localhost if not set
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
+const http = axios.create({
+  baseURL: API_URL,
+  timeout: 10000,
 });
 
-// Add a request interceptor
-instance.interceptors.request.use(function (config) {
-    // Do something before request is sent
-    let accessToken = localStorage.getItem("accessToken");
-    if (accessToken) {
-        config.headers["Authorization"] = `Bearer ${accessToken}`;
-    }
-    if (config.data && config.data.user) {
-        delete config.data.user;
+// Request interceptor to add auth token
+http.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
-}, function (error) {
-    // Do something with request error
-    return Promise.reject(error);
-});
+  },
+  (error) => Promise.reject(error)
+);
 
-// Add a response interceptor
-instance.interceptors.response.use(function (response) {
-    // Any status code that lie within the range of 2xx cause this function to trigger
-    // Do something with response data
-    return response;
-}, function (error) {
-    // Any status codes that falls outside the range of 2xx cause this function to trigger
-    // Do something with response error
-    if (error.response.status === 401 || error.response.status === 403) {
-        localStorage.clear();
-        window.location = "/login";
+// Response interceptor to handle token refresh and errors
+http.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Handle network errors
+    if (!error.response) {
+      console.error('Network Error:', error.message);
+      return Promise.reject({
+        message: 'Network error. Please check if the server is running.',
+        status: 0
+      });
     }
-    return Promise.reject(error);
-});
 
-export default instance;
+    // Handle 401 Unauthorized - token expired or invalid
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const refreshToken = localStorage.getItem("refreshToken");
+        if (!refreshToken) {
+          throw new Error("No refresh token");
+        }
+
+        const response = await axios.post(`${API_URL}/user/refresh-token`, {
+          refreshToken,
+        });
+
+        const { accessToken } = response.data;
+        localStorage.setItem("accessToken", accessToken);
+
+        // Retry original request with new token
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+        return http(originalRequest);
+      } catch (refreshError) {
+        // Refresh failed, redirect to login
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        window.location.href = "/login";
+        return Promise.reject(refreshError);
+      }
+    }
+
+    // Return structured error object
+    return Promise.reject({
+      message: error.response?.data?.message || error.message || 'An error occurred',
+      status: error.response?.status || 0,
+      errors: error.response?.data?.errors || []
+    });
+  }
+);
+
+export default http;
