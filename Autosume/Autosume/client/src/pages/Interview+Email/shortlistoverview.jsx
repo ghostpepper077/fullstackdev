@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Grid,
@@ -12,51 +12,23 @@ import {
   ListItemText,
   Chip,
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom'; 
-
-
-const candidates = [
-  {
-    name: 'Audrey Hall',
-    role: 'Solution Architect',
-    match: 92,
-    status: 'Scheduled',
-    email: 'audrey.hall@email.com',
-    phone: '+65 9012 1234',
-    skills: ['React', 'Node.js', 'Architecture'],
-    experience: '3+ years',
-    summary:
-      'Audrey has solid experience in building scalable architecture solutions using modern tech stacks like React and Node.js.',
-  },
-  {
-    name: 'Samanta Wong',
-    role: 'UI/UX Designer',
-    match: 87,
-    status: 'Pending',
-    email: 'wongsamanta_23@gmail.com',
-    phone: '+65 8012 3040',
-    skills: ['Figma', 'UI/UX', 'Prototyping', 'Thinking', 'Design'],
-    experience: '3+ years',
-    summary:
-      'Samanta Wong brings over three years of experience in crafting intuitive and visually engaging user interfaces...',
-  },
-  {
-    name: 'Jason Lim',
-    role: 'Data Scientist',
-    match: 86,
-    status: 'Not Scheduled',
-    email: 'jason.lim@email.com',
-    phone: '+65 8123 9988',
-    skills: ['Python', 'Pandas', 'Machine Learning'],
-    experience: '1.5 years',
-    summary:
-      'Jason is a data-driven individual with experience in building machine learning models and working with big datasets in Python.',
-  },
-];
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export default function ShortlistOverview() {
-  const [selected, setSelected] = useState(candidates[0]);
+  const [candidates, setCandidates] = useState([]);
+  const [selected, setSelected] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    axios
+      .get('http://localhost:5000/api/candidates')
+      .then((res) => {
+        setCandidates(res.data);
+        setSelected(res.data[0]); // Set default selected candidate
+      })
+      .catch((err) => console.error('Error fetching candidates:', err));
+  }, []);
 
   return (
     <Box p={5} bgcolor="#f5f5f5" minHeight="100vh">
@@ -64,7 +36,7 @@ export default function ShortlistOverview() {
         Shortlist Overview
       </Typography>
 
-      {/* Filters */}
+      {/* Filters (static placeholders for now) */}
       <Box display="flex" gap={2} mb={4}>
         <Select size="small" defaultValue="Software Engineer">
           <MenuItem value="Software Engineer">Software Engineer</MenuItem>

@@ -8,6 +8,9 @@ const basename = path.basename(__filename);
 const db = {};
 require('dotenv').config();
 
+const candidateRoutes = require('./routes/candidateRoutes');
+app.use('/api/candidates', candidateRoutes);
+
 // Create sequelize instance using config 
 let sequelize = new Sequelize(
   process.env.DB_NAME, process.env.DB_USER, process.env.DB_PWD,
@@ -35,6 +38,8 @@ Object.keys(db).forEach(modelName => {
     db[modelName].associate(db);
   }
 });
+
+
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
