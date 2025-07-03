@@ -1,38 +1,8 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
-<<<<<<< Updated upstream
 const userSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  role: { type: String, default: "user" },
-  lastLogin: { type: Date },
-  isActive: { type: Boolean, default: true },
-  dateOfBirth: { type: String },
-  gender: { type: String },
-  country: { type: String },
-  language: { type: String },
-  timeZone: { type: String }
-}, { timestamps: true });
-
-// Hash password before saving
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-  this.password = await bcrypt.hash(this.password, 10);
-  next();
-});
-
-// Compare password method
-userSchema.methods.comparePassword = function (candidatePassword) {
-  return bcrypt.compare(candidatePassword, this.password);
-};
-
-module.exports = mongoose.model("User", userSchema);
-
-=======
->>>>>>> Stashed changes
-const UserSchema = new mongoose.Schema({
+  name: { type: String },
   email: {
     type: String,
     required: true,
@@ -44,11 +14,19 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 6
-  }
-});
+  },
+  role: { type: String, default: "user" },
+  lastLogin: { type: Date },
+  isActive: { type: Boolean, default: true },
+  dateOfBirth: { type: String },
+  gender: { type: String },
+  country: { type: String },
+  language: { type: String },
+  timeZone: { type: String }
+}, { timestamps: true });
 
 // Hash password before saving
-UserSchema.pre('save', async function(next) {
+userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
   
   try {
@@ -60,9 +38,9 @@ UserSchema.pre('save', async function(next) {
   }
 });
 
-<<<<<<< Updated upstream
-module.exports = mongoose.model('User', UserSchema);
+// Compare password method
+userSchema.methods.comparePassword = function(candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.password);
+};
 
-=======
-module.exports = mongoose.model('User', UserSchema);
->>>>>>> Stashed changes
+module.exports = mongoose.model('User', userSchema);
