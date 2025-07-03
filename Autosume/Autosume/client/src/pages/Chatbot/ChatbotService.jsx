@@ -2,6 +2,14 @@
 
 const rules = [
   {
+    question: "Hello",
+    answer: "Hello! How can I assist you today?"
+  },
+  {
+    question: "Thank you",
+    answer: "You're welcome! If you have any more questions, feel free to ask."
+  },
+  {
     question: "dress code policy?",
     answer: "Employees are expected to wear business casual attire from Monday to Thursday and smart casual on Fridays."
   },
