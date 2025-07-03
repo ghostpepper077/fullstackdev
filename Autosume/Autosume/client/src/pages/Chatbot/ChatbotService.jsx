@@ -1,5 +1,3 @@
-// src/pages/Chatbot/chatbotService.js (or src/features/Chatbot/chatbotService.js)
-
 const rules = [
   {
     question: "Hello",
@@ -33,20 +31,20 @@ const rules = [
     question: "remote work policy",
     answer: "Employees can work remotely up to 2 days per week with manager approval."
   },
-  // Add more handbook FAQs here
+
 ];
 
 export function getChatbotResponse(userInput) {
   const lowerInput = userInput.toLowerCase();
 
-  // Check for exact matches first
+  
   for (let rule of rules) {
     if (lowerInput.includes(rule.question.toLowerCase())) {
       return rule.answer;
     }
   }
 
-  // Check for keyword matches
+  
   for (let rule of rules) {
     const keywords = rule.question.toLowerCase().split(' ');
     if (keywords.some(keyword => keyword.length > 3 && lowerInput.includes(keyword))) {
@@ -54,7 +52,7 @@ export function getChatbotResponse(userInput) {
     }
   }
 
-  // Check for partial matches (first few words)
+
   for (let rule of rules) {
     const firstWords = rule.question.toLowerCase().split(' ').slice(0, 3).join(' ');
     if (lowerInput.includes(firstWords)) {

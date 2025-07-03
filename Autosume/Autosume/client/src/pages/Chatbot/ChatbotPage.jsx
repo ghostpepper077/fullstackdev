@@ -1,4 +1,3 @@
-// src/pages/Chatbot/ChatbotPage.jsx
 import React, { useState } from 'react';
 import {
   Box,
@@ -183,7 +182,7 @@ const ChatbotPage = () => {
 
   return (
     <Box sx={{ display: 'flex', height: '100%', p: 3 }}>
-      {/* Sidebar */}
+    
       <Box sx={{ width: 250, pr: 2 }}>
         <PageTitle title="Chats" />
         <Button variant="contained" fullWidth onClick={handleCreateNewChat} sx={{ mb: 2 }}>
@@ -209,12 +208,12 @@ const ChatbotPage = () => {
         },
       }}
     >
-      {/* Chat Title - click to select */}
+    
       <Box onClick={() => setSelectedChatId(chat.id)} sx={{ flexGrow: 1 }}>
         <Typography variant="body1">{chat.title}</Typography>
       </Box>
 
-      {/* Delete Icon */}
+     
       <IconButton
         size="small"
         edge="end"
@@ -222,7 +221,7 @@ const ChatbotPage = () => {
         onClick={() => {
           setChats((prev) => {
             const updated = prev.filter((c) => c.id !== chat.id);
-            // Reset selected chat if deleted
+       
             if (chat.id === selectedChatId) {
               setSelectedChatId(updated[0]?.id || null);
             }
@@ -238,7 +237,7 @@ const ChatbotPage = () => {
 
       </Box>
 
-      {/* Main Chat Area */}
+  
       <Box sx={{ flex: 1 }}>
         <PageTitle title="Staff Handbook Assistant" />
         {selectedChat ? (
