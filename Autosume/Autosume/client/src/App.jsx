@@ -145,18 +145,18 @@ function Dashboard() {
             Our platform leverages cutting-edge technology to make hiring faster, smarter, and more efficient than ever before.
           </p>
         </div>
-        
+
         <div style={{ backgroundColor: '#fff', padding: '30px', borderRadius: '10px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
           <h3 style={{ color: '#e74c3c', marginBottom: '15px' }}>👥 Expert Team</h3>
           <p style={{ color: '#555', lineHeight: '1.6' }}>
-            Built by recruitment professionals who understand the challenges of finding the right talent in today's competitive market.
+            Built by developers who understand the challenges of finding the right talent in today's competitive market.
           </p>
         </div>
-        
+
         <div style={{ backgroundColor: '#fff', padding: '30px', borderRadius: '10px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
-          <h3 style={{ color: '#2ecc71', marginBottom: '15px' }}>📈 Proven Results</h3>
+          <h3 style={{ color: '#2ecc71', marginBottom: '15px' }}>📈 Smart Automation</h3>
           <p style={{ color: '#555', lineHeight: '1.6' }}>
-            Trusted by hundreds of companies worldwide, we've helped reduce hiring time by 60% while improving candidate quality.
+            Automate repetitive hiring tasks like resume screening and interview scheduling to save valuable time.
           </p>
         </div>
       </div>
@@ -164,7 +164,7 @@ function Dashboard() {
       <div style={{ backgroundColor: '#f8f9fa', padding: '40px', borderRadius: '15px', textAlign: 'center' }}>
         <h2 style={{ color: '#2c3e50', marginBottom: '20px' }}>Ready to Transform Your Hiring?</h2>
         <p style={{ fontSize: '1.1rem', color: '#666', marginBottom: '30px', lineHeight: '1.6' }}>
-          Join thousands of companies who have revolutionized their recruitment process with our comprehensive platform.
+          Join us in revolutionising your recruitment process with our comprehensive platform.
           From job posting to candidate selection, we've got everything you need.
         </p>
         <button style={{
@@ -207,7 +207,7 @@ function Support() {
           <p style={{ color: '#2c3e50', fontWeight: 'bold', fontSize: '1.2rem' }}>+65 9397 9142</p>
           <p style={{ color: '#7f8c8d', fontSize: '0.9rem' }}>Monday - Friday, 9AM - 6PM SGT</p>
         </div>
-        
+
         <div style={{ backgroundColor: '#fff', padding: '40px', borderRadius: '15px', boxShadow: '0 6px 20px rgba(0,0,0,0.1)' }}>
           <div style={{ textAlign: 'center', marginBottom: '25px' }}>
             <div style={{ fontSize: '3rem', marginBottom: '15px' }}>✉️</div>
@@ -229,8 +229,10 @@ function Support() {
             <p style={{ color: '#666', lineHeight: '1.5' }}>Click on "Forgot Password" on the login page and follow the instructions sent to your email.</p>
           </div>
           <div>
-            <h4 style={{ color: '#3498db', marginBottom: '10px' }}>Can I cancel my subscription?</h4>
-            <p style={{ color: '#666', lineHeight: '1.5' }}>Yes, you can cancel anytime from your account settings or by contacting our support team.</p>
+            <h4 style={{ color: '#3498db', marginBottom: '10px' }}>What does Autosume do?</h4>
+            <p style={{ color: '#666', lineHeight: '1.5' }}>
+              Autosume is a platform designed to streamline and simplify the recruitment process to save time and improve hiring outcomes.
+            </p>
           </div>
           <div>
             <h4 style={{ color: '#3498db', marginBottom: '10px' }}>How do I export my data?</h4>
@@ -238,7 +240,7 @@ function Support() {
           </div>
           <div>
             <h4 style={{ color: '#3498db', marginBottom: '10px' }}>Is my data secure?</h4>
-            <p style={{ color: '#666', lineHeight: '1.5' }}>Absolutely! We use enterprise-grade encryption and follow industry best practices for data protection.</p>
+            <p style={{ color: '#666', lineHeight: '1.5' }}>Absolutely! We use encryption and follow industry best practices for data protection.</p>
           </div>
         </div>
       </div>
