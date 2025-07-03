@@ -64,6 +64,51 @@ app.post('/api/jobs', async (req, res) => {
   } catch (error) { res.status(500).json({ message: 'Server error creating job.' }); }
 });
 
+// Get a job by ID
+app.get('/api/jobs/:id', async (req, res) => {
+  try {
+    const job = await Job.findById(req.params.id);
+    if (!job) {
+      return res.status(404).json({ message: 'Job not found' });
+    }
+    res.json(job);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error fetching job.' });
+  }
+});
+
+// Update a job by ID
+app.put('/api/jobs/:id', async (req, res) => {
+  try {
+    const updatedJob = await Job.findByIdAndUpdate(
+      req.params.id,
+      req.body,  // assuming req.body has the fields you want to update
+      { new: true }
+    );
+    if (!updatedJob) {
+      return res.status(404).json({ message: 'Job not found' });
+    }
+    res.json(updatedJob);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error updating job.' });
+  }
+});
+
+// Delete a job by ID
+app.delete('/api/jobs/:id', async (req, res) => {
+  try {
+    const deletedJob = await Job.findByIdAndDelete(req.params.id);
+    if (!deletedJob) {
+      return res.status(404).json({ message: 'Job not found' });
+    }
+    res.json({ message: 'Job deleted successfully', job: deletedJob });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error deleting job.' });
+  }
+});
+
+
+
 // --- Candidate Routes ---
 app.get('/api/candidates', async (req, res) => {
   try {
