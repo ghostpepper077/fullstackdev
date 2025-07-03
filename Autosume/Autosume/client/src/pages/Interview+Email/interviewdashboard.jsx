@@ -11,6 +11,7 @@ import {
   Chip,
   Button,
   TextField,
+  Stack,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -34,33 +35,31 @@ export default function InterviewDashboard() {
   }, []);
 
   const handleEdit = (row) => {
-    const route =
-      row.status === "Scheduled" ? "/emailautomation" : "/scheduling";
+    const route = row.status === "Scheduled" ? "/emailautomation" : "/scheduling";
     navigate(route, { state: { candidate: row } });
   };
 
+  const handleClearSchedule = async (id) => {
+    const confirm = window.confirm("Clear this candidate's interview schedule?");
+    if (!confirm) return;
+
+    try {
+      const res = await axios.put(`http://localhost:5000/api/interviews/clear/${id}`);
+      const updated = res.data.candidate;
+
+      setInterviews((prev) =>
+        prev.map((c) => (c._id === id ? updated : c))
+      );
+    } catch (err) {
+      console.error("❌ Clear schedule failed:", err);
+      alert("Failed to clear schedule.");
+    }
+  };
+
   const handleExportCSV = () => {
-    const headers = [
-      "Name",
-      "Role",
-      "Date",
-      "Time",
-      "Interviewer",
-      "Status",
-      "Email",
-      "Phone",
-    ];
+    const headers = ["Name", "Role", "Date", "Time", "Interviewer", "Status", "Email", "Phone"];
     const rows = interviews.map((i) =>
-      [
-        i.name,
-        i.role,
-        i.date,
-        i.time,
-        i.interviewer,
-        i.status,
-        i.email,
-        i.phone,
-      ].join(",")
+      [i.name, i.role, i.date, i.time, i.interviewer, i.status, i.email, i.phone].join(",")
     );
 
     const csv = [headers.join(","), ...rows].join("\n");
@@ -99,36 +98,20 @@ export default function InterviewDashboard() {
         <Table>
           <TableHead sx={{ backgroundColor: "#e3f2fd" }}>
             <TableRow>
-              <TableCell>
-                <strong>Name</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Role</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Date</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Time</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Interviewer</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Status</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Action</strong>
-              </TableCell>
+              <TableCell><strong>Name</strong></TableCell>
+              <TableCell><strong>Role</strong></TableCell>
+              <TableCell><strong>Date</strong></TableCell>
+              <TableCell><strong>Time</strong></TableCell>
+              <TableCell><strong>Interviewer</strong></TableCell>
+              <TableCell><strong>Status</strong></TableCell>
+              <TableCell><strong>Action</strong></TableCell>
             </TableRow>
           </TableHead>
-
           <TableBody>
             {interviews
-              .filter(
-                (row) =>
-                  row.name?.toLowerCase().includes(search) ||
-                  row.role?.toLowerCase().includes(search)
+              .filter((row) =>
+                row.name?.toLowerCase().includes(search) ||
+                row.role?.toLowerCase().includes(search)
               )
               .sort((a, b) => {
                 const aDate = new Date(`${a.date} ${a.time}`);
@@ -150,14 +133,24 @@ export default function InterviewDashboard() {
                     />
                   </TableCell>
                   <TableCell>
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      size="small"
-                      onClick={() => handleEdit(row)}
-                    >
-                      Edit
-                    </Button>
+                    <Stack direction="row" spacing={1}>
+                      <Button
+                        variant="outlined"
+                        color="primary"
+                        size="small"
+                        onClick={() => handleEdit(row)}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        color="warning"
+                        size="small"
+                        onClick={() => handleClearSchedule(row._id)}
+                      >
+                        🧹 Clear
+                      </Button>
+                    </Stack>
                   </TableCell>
                 </TableRow>
               ))}

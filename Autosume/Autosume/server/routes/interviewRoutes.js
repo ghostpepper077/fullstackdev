@@ -29,6 +29,31 @@ router.post('/schedule', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+router.put('/clear/:id', async (req, res) => {
+  try {
+    const cleared = await Candidate.findByIdAndUpdate(
+      req.params.id,
+      {
+        $set: {
+          date: "-",
+          time: "-",
+          interviewer: "-",
+          status: "Not Sent"
+        }
+      },
+      { new: true }
+    );
+
+    if (!cleared) {
+      return res.status(404).json({ message: 'Candidate not found' });
+    }
+
+    res.json({ message: 'Interview schedule cleared', candidate: cleared });
+  } catch (err) {
+    console.error("❌ Failed to clear schedule:", err);
+    res.status(500).json({ message: 'Error clearing schedule' });
+  }
+});
 
 
 module.exports = router;
