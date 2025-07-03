@@ -64,19 +64,28 @@ app.post('/api/jobs', async (req, res) => {
   } catch (error) { res.status(500).json({ message: 'Server error creating job.' }); }
 });
 
-// --- Candidate Routes ---
+// --- Candidate Routes ---// 🔹 Route 1: Top 5 candidates for shortlisting
 app.get('/api/candidates', async (req, res) => {
   try {
-    // 1. Sort by 'match' in descending order (-1)
-    // 2. Limit the results to the top 5
     const topCandidates = await Candidate.find({})
-      .sort({ match: -1 })
+      .sort({ match: -1 }) // Highest match first
       .limit(5);
-      
+
     res.json(topCandidates);
   } catch (error) {
     console.error('Error fetching top candidates:', error);
-    res.status(500).json({ message: 'Server error while fetching candidates.' });
+    res.status(500).json({ message: 'Server error while fetching top candidates.' });
+  }
+});
+
+// 🔹 Route 2: All candidates for scheduling
+app.get('/api/candidates/all', async (req, res) => {
+  try {
+    const allCandidates = await Candidate.find({});
+    res.json(allCandidates);
+  } catch (error) {
+    console.error('Error fetching all candidates:', error);
+    res.status(500).json({ message: 'Server error while fetching all candidates.' });
   }
 });
 

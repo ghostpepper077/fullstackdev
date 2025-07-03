@@ -28,7 +28,7 @@ export default function ShortlistOverview() {
   // Fetch candidates
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/candidates")
+      .get("http://localhost:5000/api/candidates/all")
       .then((res) => {
         setCandidates(res.data);
         setFiltered(res.data);
@@ -97,50 +97,62 @@ export default function ShortlistOverview() {
       <Grid container spacing={4}>
         {/* Candidate List */}
         <Grid item xs={12} md={4}>
-          <List>
-            {filtered.map((c, i) => (
-              <ListItem
-                key={i}
-                button
-                selected={selected?.name === c.name}
-                onClick={() => setSelected(c)}
-                sx={{
-                  mb: 1,
-                  borderRadius: 2,
-                  border: "1px solid #ddd",
-                  backgroundColor:
-                    selected?.name === c.name ? "#e0f7fa" : "#fff",
-                }}
-              >
-                <ListItemText
-                  primary={<Typography fontWeight="bold">{c.name}</Typography>}
-                  secondary={
-                    <>
-                      <Typography variant="body2" color="text.secondary">
-                        {c.role}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Match: {c.match}%
-                      </Typography>
-                      <Chip
-                        label={c.status}
-                        size="small"
-                        color={
-                          c.status === "Scheduled"
-                            ? "success"
-                            : c.status === "Pending"
-                            ? "warning"
-                            : "error"
-                        }
-                        sx={{ mt: 0.5 }}
-                      />
-                    </>
+  <Paper
+    elevation={1}
+    sx={{
+      maxHeight: '75vh',
+      overflowY: 'auto',
+      p: 2,
+      borderRadius: 2,
+      border: '1px solid #ccc',
+      backgroundColor: '#fafafa',
+    }}
+  >
+    <List>
+      {filtered.map((c, i) => (
+        <ListItem
+          key={i}
+          button
+          selected={selected?.name === c.name}
+          onClick={() => setSelected(c)}
+          sx={{
+            mb: 1,
+            borderRadius: 2,
+            border: "1px solid #ddd",
+            backgroundColor:
+              selected?.name === c.name ? "#e0f7fa" : "#fff",
+          }}
+        >
+          <ListItemText
+            primary={<Typography fontWeight="bold">{c.name}</Typography>}
+            secondary={
+              <>
+                <Typography variant="body2" color="text.secondary">
+                  {c.role}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Match: {c.match}%
+                </Typography>
+                <Chip
+                  label={c.status}
+                  size="small"
+                  color={
+                    c.status === "Scheduled"
+                      ? "success"
+                      : c.status === "Pending"
+                      ? "warning"
+                      : "error"
                   }
+                  sx={{ mt: 0.5 }}
                 />
-              </ListItem>
-            ))}
-          </List>
-        </Grid>
+              </>
+            }
+          />
+        </ListItem>
+      ))}
+    </List>
+  </Paper>
+</Grid>
 
         {/* Candidate Details */}
         <Grid item xs={12} md={8}>
