@@ -41,8 +41,8 @@ const JobManagement = () => {
   };
 
   const filteredJobs = jobs.filter(job =>
-  (job?.role || '').toLowerCase().includes(searchTerm.toLowerCase())
-);
+    (job?.role || '').toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
 
   if (loading) {
@@ -56,19 +56,19 @@ const JobManagement = () => {
   return (
     <div className="job-management">
       <h1>Job Management Overview</h1>
-      
+
       <div className="layout">
         <div className="search-container">
           <div className="search-box">
-            <input 
-              type="text" 
-              placeholder="Search jobs..." 
+            <input
+              type="text"
+              placeholder="Search jobs..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
         </div>
-        
+
         <div className="content">
           <div className="header">
             <h2>Job Roles ({filteredJobs.length})</h2>
@@ -78,7 +78,7 @@ const JobManagement = () => {
               </button>
             </div>
           </div>
-          
+
           <div className="job-table">
             <div className="table-row header">
               <div>Job Role</div>
@@ -87,7 +87,7 @@ const JobManagement = () => {
               <div>Status</div>
               <div>Actions</div>
             </div>
-            
+
             {filteredJobs.length > 0 ? (
               filteredJobs.map((job) => (
                 <div key={job._id} className="table-row">
@@ -96,13 +96,14 @@ const JobManagement = () => {
                   <div>{job.applicants || 0}</div>
                   <div>{job.status || 'Active'}</div>
                   <div className="action-buttons">
-                    <button 
+                    <button
                       className="action-btn view"
-                      onClick={() => navigate(`/jobs/${job._id}`)}
+                      onClick={() => navigate(`/jobs/edit/${job._id}`)}
                     >
                       View
                     </button>
-                    <button 
+
+                    <button
                       className="action-btn delete"
                       onClick={() => handleDeleteJob(job._id)}
                     >

@@ -87,7 +87,9 @@ function App() {
                     <Route path="/profile" element={<Profile />} />
                     {/* Updated Job Management Routes */}
                     <Route path="/job-management" element={<JobManagement />} />
-                    <Route path="/jobs/create" element={<Create />} />
+                    <Route path="/jobs/create" element={<Create />} />  {/* create route without id */}
+                    <Route path="/jobs/edit/:id" element={<Create />} /> {/* edit route with id */}
+
                     <Route path="/shortlisting" element={<Shortlisting />} />
                     <Route path="/create-criteria" element={<CreateCriteria />} />
                     {/* =================================================================== */}
