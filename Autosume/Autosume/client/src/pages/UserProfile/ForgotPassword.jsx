@@ -47,21 +47,25 @@ function ForgotPassword() {
                 };
 
                 await http.post('/user/forgot-password', payload);
-                
+
                 setUserEmail(data.email);
                 setEmailSent(true);
                 toast.success('Password reset instructions sent to your email!');
-                
+                alert(`Email sent to ${data.email}`);
+
             } catch (err) {
                 console.error('Forgot password error:', err);
-                
+
                 if (err.response) {
                     const message = err.response.data?.message || 'Failed to send reset email';
                     toast.error(message);
+                    alert(`Email sent to ${data.email}`);
                 } else if (err.request) {
                     toast.error('Unable to connect to server. Please try again later.');
+                    alert(`Email sent to ${data.email}`);
                 } else {
                     toast.error('An unexpected error occurred');
+                    alert(`Email sent to ${data.email}`);
                 }
             } finally {
                 setIsLoading(false);
@@ -79,9 +83,9 @@ function ForgotPassword() {
 
     if (emailSent) {
         return (
-            <Box sx={{ 
-                minHeight: '100vh', 
-                display: 'flex', 
+            <Box sx={{
+                minHeight: '100vh',
+                display: 'flex',
                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -100,9 +104,9 @@ function ForgotPassword() {
                         border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                 >
-                    <Box sx={{ 
-                        display: 'flex', 
-                        justifyContent: 'center', 
+                    <Box sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
                         mb: 3,
                         position: 'relative'
                     }}>
@@ -119,45 +123,45 @@ function ForgotPassword() {
                             <CheckCircleIcon sx={{ fontSize: 45, color: 'white' }} />
                         </Box>
                     </Box>
-                    
-                    <Typography variant="h4" sx={{ 
-                        fontWeight: 700, 
-                        mb: 2, 
+
+                    <Typography variant="h4" sx={{
+                        fontWeight: 700,
+                        mb: 2,
                         color: '#1a1a1a',
                         fontFamily: '"Segoe UI", "Roboto", sans-serif'
                     }}>
                         Check Your Email
                     </Typography>
-                    
-                    <Typography variant="body1" sx={{ 
-                        mb: 3, 
-                        color: '#555', 
+
+                    <Typography variant="body1" sx={{
+                        mb: 3,
+                        color: '#555',
                         lineHeight: 1.6,
                         fontSize: '1.1rem'
                     }}>
                         We've sent password reset instructions to:
                     </Typography>
-                    
-                    <Box sx={{ 
-                        p: 2, 
-                        backgroundColor: '#f8f9ff', 
-                        borderRadius: 2, 
+
+                    <Box sx={{
+                        p: 2,
+                        backgroundColor: '#f8f9ff',
+                        borderRadius: 2,
                         mb: 4,
                         border: '2px solid #e3f2fd'
                     }}>
-                        <Typography variant="h6" sx={{ 
-                            color: '#1976d2', 
+                        <Typography variant="h6" sx={{
+                            color: '#1976d2',
                             fontWeight: 600,
                             wordBreak: 'break-word'
                         }}>
                             {userEmail}
                         </Typography>
                     </Box>
-                    
-                    <Alert 
-                        severity="info" 
-                        sx={{ 
-                            mb: 4, 
+
+                    <Alert
+                        severity="info"
+                        sx={{
+                            mb: 4,
                             textAlign: 'left',
                             borderRadius: 2,
                             '& .MuiAlert-message': {
@@ -179,7 +183,7 @@ function ForgotPassword() {
                             variant="outlined"
                             onClick={handleResendEmail}
                             disabled={isLoading}
-                            sx={{ 
+                            sx={{
                                 flex: 1,
                                 py: 1.5,
                                 borderColor: '#1976d2',
@@ -192,7 +196,7 @@ function ForgotPassword() {
                         >
                             {isLoading ? <CircularProgress size={20} /> : 'Resend Email'}
                         </Button>
-                        
+
                         <Button
                             variant="contained"
                             onClick={handleBackToLogin}
@@ -201,7 +205,7 @@ function ForgotPassword() {
                                 flex: 1,
                                 py: 1.5,
                                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                '&:hover': { 
+                                '&:hover': {
                                     background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
                                     transform: 'translateY(-1px)',
                                     boxShadow: '0 6px 20px rgba(0,0,0,0.15)'
@@ -218,8 +222,8 @@ function ForgotPassword() {
     }
 
     return (
-        <Box sx={{ 
-            minHeight: '100vh', 
+        <Box sx={{
+            minHeight: '100vh',
             display: 'flex',
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             alignItems: 'center',
@@ -259,16 +263,16 @@ function ForgotPassword() {
                     }}>
                         <LockResetIcon sx={{ fontSize: 35, color: 'white' }} />
                     </Box>
-                    
-                    <Typography variant="h4" sx={{ 
-                        fontWeight: 700, 
+
+                    <Typography variant="h4" sx={{
+                        fontWeight: 700,
                         mb: 1,
                         fontFamily: '"Segoe UI", "Roboto", sans-serif'
                     }}>
                         AUTOSUME
                     </Typography>
-                    
-                    <Typography variant="h5" sx={{ 
+
+                    <Typography variant="h5" sx={{
                         fontWeight: 500,
                         opacity: 0.9
                     }}>
@@ -278,9 +282,9 @@ function ForgotPassword() {
 
                 {/* Form Content */}
                 <Box sx={{ p: 4 }}>
-                    <Typography variant="body1" sx={{ 
-                        mb: 4, 
-                        textAlign: 'center', 
+                    <Typography variant="body1" sx={{
+                        mb: 4,
+                        textAlign: 'center',
                         color: '#555',
                         fontSize: '1.1rem',
                         lineHeight: 1.6
@@ -300,7 +304,7 @@ function ForgotPassword() {
                             error={formik.touched.email && Boolean(formik.errors.email)}
                             helperText={formik.touched.email && formik.errors.email}
                             disabled={isLoading}
-                            sx={{ 
+                            sx={{
                                 mb: 4,
                                 '& .MuiOutlinedInput-root': {
                                     borderRadius: 2,
@@ -318,8 +322,8 @@ function ForgotPassword() {
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
-                                        <EmailIcon sx={{ 
-                                            color: formik.touched.email && formik.errors.email ? "error.main" : "#667eea" 
+                                        <EmailIcon sx={{
+                                            color: formik.touched.email && formik.errors.email ? "error.main" : "#667eea"
                                         }} />
                                     </InputAdornment>
                                 ),
@@ -339,7 +343,7 @@ function ForgotPassword() {
                                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                                 fontSize: '1.1rem',
                                 fontWeight: 600,
-                                '&:hover': { 
+                                '&:hover': {
                                     background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
                                     transform: 'translateY(-2px)',
                                     boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
@@ -370,7 +374,7 @@ function ForgotPassword() {
                                         color: '#667eea',
                                         textDecoration: 'none',
                                         fontWeight: 600,
-                                        '&:hover': { 
+                                        '&:hover': {
                                             textDecoration: 'underline',
                                             color: '#5a6fd8'
                                         }
