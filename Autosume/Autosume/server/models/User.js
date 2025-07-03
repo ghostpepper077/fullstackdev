@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
+<<<<<<< Updated upstream
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
@@ -29,6 +30,8 @@ userSchema.methods.comparePassword = function (candidatePassword) {
 
 module.exports = mongoose.model("User", userSchema);
 
+=======
+>>>>>>> Stashed changes
 const UserSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -57,5 +60,9 @@ UserSchema.pre('save', async function(next) {
   }
 });
 
+<<<<<<< Updated upstream
 module.exports = mongoose.model('User', UserSchema);
 
+=======
+module.exports = mongoose.model('User', UserSchema);
+>>>>>>> Stashed changes

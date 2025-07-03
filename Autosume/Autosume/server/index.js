@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const authRoutes = require('./routes/auth');
+<<<<<<< Updated upstream
 
 // --- Model Imports ---
 const Candidate = require('./models/Candidate');
@@ -12,10 +13,16 @@ const Criteria = require('./models/Criteria');
 const app = express();
 
 
+=======
+
+const app = express();
+
+>>>>>>> Stashed changes
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+<<<<<<< Updated upstream
 // CORS setup
 app.use(cors({ 
   origin: process.env.CLIENT_URL || "http://localhost:3000",
@@ -199,6 +206,11 @@ app.listen(port, () => {
 // Routes
 app.use('/api/auth', authRoutes);
 
+=======
+// Routes
+app.use('/api/auth', authRoutes);
+
+>>>>>>> Stashed changes
 // Serve frontend in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../../client/build')));
@@ -218,5 +230,9 @@ mongoose.connect(process.env.MONGODB_URI)
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   })
+<<<<<<< Updated upstream
   .catch(err => console.error('MongoDB connection error:', err));
 
+=======
+  .catch(err => console.error('MongoDB connection error:', err));
+>>>>>>> Stashed changes
