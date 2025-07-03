@@ -3,84 +3,121 @@ import { useNavigate } from 'react-router-dom';
 import {
   Box, Typography, Select, MenuItem, Button, Grid, Paper,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  CircularProgress, Alert
+  CircularProgress, Alert, FormControl, InputLabel
 } from '@mui/material';
-import http from '../../http'; // Your pre-configured http client
+import http from '../../http';
 
 export default function Shortlisting() {
   const navigate = useNavigate();
   
-  // State for fetched data, loading, and errors
   const [candidates, setCandidates] = useState([]);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [filterOptions, setFilterOptions] = useState({ experience: [], skills: [], jobs: [] });
+
   const [filters, setFilters] = useState({
-    jobRole: 'Software Engineer',
+    jobRole: 'Any',
     status: 'Under Review',
-    experience: '>5 months',
+    experience: 'Any',
     skills: 'Any',
   });
 
-  // Fetch candidates from the database when the component loads
   useEffect(() => {
-    const fetchCandidates = async () => {
+    const fetchData = async () => {
       try {
-        // ===================================================================
-        // This endpoint must be set up on your server to return the candidates
-        // e.g., app.get('/candidates', (req, res) => { ... });
-        const response = await http.get('/candidates');
-        // ===================================================================
+        const [candidatesRes, optionsRes] = await Promise.all([
+          http.get('/candidates'),
+          http.get('/criteria/options')
+        ]);
         
-        setCandidates(response.data);
-        // Set the first candidate as selected by default if data exists
-        if (response.data && response.data.length > 0) {
-          setSelectedCandidate(response.data[0]);
+        setCandidates(candidatesRes.data);
+        setFilterOptions(optionsRes.data);
+
+        if (candidatesRes.data && candidatesRes.data.length > 0) {
+          setSelectedCandidate(candidatesRes.data[0]);
         }
       } catch (err) {
-        setError('Failed to fetch candidates. Please ensure the server is running and the API endpoint is correct.');
-        console.error("Fetch error:", err);
+        setError('Failed to fetch page data. Please ensure the server is running.');
       } finally {
         setLoading(false);
       }
     };
+    fetchData();
+  }, []);
 
-    fetchCandidates();
-  }, []); // The empty array ensures this effect runs only once on component mount
-
-  // Display a loading spinner while fetching data
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
         <CircularProgress />
-        <Typography sx={{ ml: 2 }}>Loading Candidates...</Typography>
       </Box>
     );
   }
 
-  // Display an error message if the fetch fails
   if (error) {
     return <Alert severity="error" sx={{ m: 4 }}>{error}</Alert>;
   }
 
   return (
     <Box sx={{ flex: 1, p: 4, overflowY: 'auto', backgroundColor: '#fdfdfd' }}>
-      {/* Top Bar */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h4" fontWeight="bold">Resume Shortlisting</Typography>
-        <Typography>Hariz</Typography> {/* Replace with dynamic user name if needed */}
+        {/* =================================================================== */}
+        {/* ★★★ THE NAME "HARIZ" HAS BEEN REMOVED FROM THIS LINE ★★★ */}
+        {/* <Typography>Hariz</Typography> */} 
+        {/* =================================================================== */}
       </Box>
 
-      {/* Filters */}
+      {/* Filter Bar */}
       <Box sx={{ display: 'flex', gap: 2, mb: 3, alignItems: 'center' }}>
-        <Select size="small" value={filters.jobRole} onChange={(e) => setFilters({ ...filters, jobRole: e.target.value })}>
-          <MenuItem value="Software Engineer">Software Engineer</MenuItem>
-        </Select>
-        {/* Add other filters as needed */}
+        <FormControl size="small" sx={{ minWidth: 180 }}>
+          <InputLabel>Job Role</InputLabel>
+          <Select
+            label="Job Role"
+            value={filters.jobRole}
+            onChange={(e) => setFilters({ ...filters, jobRole: e.target.value })}
+          >
+            <MenuItem value="Any">Any Job Role</MenuItem>
+            {filterOptions.jobs.map((job) => (
+              <MenuItem key={job._id} value={job._id}>
+                {job.role}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <FormControl size="small" sx={{ minWidth: 150 }}>
+          <InputLabel>Experience</InputLabel>
+          <Select
+            label="Experience"
+            value={filters.experience}
+            onChange={(e) => setFilters({ ...filters, experience: e.target.value })}
+          >
+            <MenuItem value="Any">Any</MenuItem>
+            {filterOptions.experience.map((exp) => (
+              <MenuItem key={exp} value={exp}>{exp}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <FormControl size="small" sx={{ minWidth: 150 }}>
+          <InputLabel>Skills</InputLabel>
+          <Select
+            label="Skills"
+            value={filters.skills}
+            onChange={(e) => setFilters({ ...filters, skills: e.target.value })}
+          >
+            <MenuItem value="Any">Any</MenuItem>
+            {filterOptions.skills.map((skill) => (
+              <MenuItem key={skill} value={skill}>{skill}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
         <Button variant="outlined" onClick={() => navigate('/create-criteria')}>+ ADD CRITERIA</Button>
       </Box>
-
+      
       {/* Main Content Grid */}
       <Grid container spacing={3}>
         {/* Candidate Table */}
@@ -98,7 +135,7 @@ export default function Shortlisting() {
               <TableBody>
                 {candidates.map((candidate) => (
                   <TableRow
-                    key={candidate._id} // Use MongoDB's unique _id for the key
+                    key={candidate._id}
                     onClick={() => setSelectedCandidate(candidate)}
                     hover
                     sx={{
@@ -124,19 +161,13 @@ export default function Shortlisting() {
               <Typography variant="h6" fontWeight="bold">{selectedCandidate.name}</Typography>
               <Typography color="text.secondary">{selectedCandidate.phone}</Typography>
               <Typography color="text.secondary" gutterBottom>{selectedCandidate.email}</Typography>
-
               <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2 }}>Overview</Typography>
               <Typography variant="body2">{selectedCandidate.overview}</Typography>
-
               <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2 }}>Experience</Typography>
               <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>{selectedCandidate.experienceDetails}</Typography>
-
               <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2 }}>Education</Typography>
               <Typography variant="body2">{selectedCandidate.education}</Typography>
-
-              <Button variant="contained" sx={{ mt: 3, textTransform: 'none', fontWeight: 'bold' }}>
-                View Full Resume
-              </Button>
+              <Button variant="contained" sx={{ mt: 3 }}>View Full Resume</Button>
             </Paper>
           ) : (
             <Paper sx={{ p: 3, textAlign: 'center' }}>
@@ -155,4 +186,4 @@ export default function Shortlisting() {
       )}
     </Box>
   );
-} 
+}

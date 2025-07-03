@@ -102,15 +102,10 @@ export default function TriggerAIScreening() {
                     <TableCell>{row.status}</TableCell>
                     <TableCell align="center">
                       <Link href="#" sx={{ mr: 2 }}>View</Link>
-                      <IconButton size="small" color="success">
-                        <CheckCircleIcon />
-                      </IconButton>
                       <IconButton size="small" color="warning">
                         <FlagIcon />
                       </IconButton>
-                      <IconButton size="small" color="error">
-                        <CancelIcon />
-                      </IconButton>
+
                     </TableCell>
                   </TableRow>
                 ))}

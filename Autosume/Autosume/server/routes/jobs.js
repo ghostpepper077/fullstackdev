@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Job = require('../models/jobs'); // make sure this matches your path
+const Job = require('../models/jobs'); // make sure this path is correct
 
 // POST /api/jobs → create a new job
 router.post('/', async (req, res) => {
@@ -14,10 +14,10 @@ router.post('/', async (req, res) => {
   }
 });
 
-// GET /api/jobs → fetch all jobs
+// ✅ GET /api/jobs → fetch only _id and title for dropdown
 router.get('/', async (req, res) => {
   try {
-    const jobs = await Job.find();
+    const jobs = await Job.find({}, { _id: 1, title: 1 }); // Only return _id and title
     res.json(jobs);
   } catch (err) {
     console.error('❌ Failed to fetch jobs:', err.message);
