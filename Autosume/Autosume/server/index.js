@@ -172,3 +172,35 @@ mongoose.connect(process.env.MONGO_URI || process.env.MONGODB_URI, {
     console.error('❌ MongoDB connection error:', err.message);
     process.exit(1);
   });
+
+
+const express = require('express');
+const { OpenAI } = require('openai');
+
+const router = express.Router();
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
+
+router.post('/chat', async (req, res) => {
+  try {
+    const { message } = req.body;
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4", // or "gpt-3.5-turbo"
+      messages: [{ role: "user", content: message }]
+    });
+
+    res.json({ reply: response.choices[0].message.content });
+  } catch (err) {
+    console.error("OpenAI error:", err);
+    res.status(500).json({ error: "OpenAI API request failed" });
+  }
+});
+
+module.exports = router;
+
+
+const chatRoute = require('./routes/api'); // Adjust path
+app.use('/api', chatRoute);
