@@ -6,6 +6,8 @@ const path = require('path');
 
 
 
+
+
 const app = express();
 
 // --- Middleware ---
@@ -36,7 +38,6 @@ app.use('/api/interviews', interviewRoutes);
 app.use('/api/schedules', scheduleRoutes);
 app.use('/api/criteria', criteriaRoutes);
 app.use('/api/ai', aiRoutes);
-
 // --- Job Routes ---
 app.get('/api/jobs', async (req, res) => {
   try {
