@@ -1,5 +1,5 @@
 // src/pages/scheduling.jsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -17,6 +17,7 @@ import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { format } from "date-fns";
 
 const timeSlots = ["10:00 AM", "12:00 PM", "2:00 PM", "4:00 PM"];
 const interviewers = ["Gabriel Tan", "Jace Lim", "Amira Soh"];
@@ -30,21 +31,55 @@ export default function InterviewScheduling() {
   const [selectedTime, setSelectedTime] = useState("");
   const [selectedInterviewer, setSelectedInterviewer] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [existingSchedules, setExistingSchedules] = useState([]);
+
+  // Fetch existing interviews on load
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/interviews/all");
+        setExistingSchedules(response.data);
+      } catch (error) {
+        console.error("Error fetching existing schedules:", error);
+      }
+    };
+    fetchSchedules();
+  }, []);
+
+  const getAvailableTimeSlots = () => {
+    if (!selectedDate || !selectedInterviewer) return timeSlots;
+    const selectedDateStr = format(selectedDate, "yyyy-MM-dd");
+    const conflicts = existingSchedules
+      .filter(
+        (s) =>
+          s.date === selectedDateStr && s.interviewer === selectedInterviewer
+      )
+      .map((s) => s.time);
+    return timeSlots.filter((time) => !conflicts.includes(time));
+  };
 
   const handleSchedule = async () => {
     if (selectedDate && selectedTime && selectedInterviewer) {
+      const isConflict = existingSchedules.some(
+        (s) =>
+          s.date === format(selectedDate, "yyyy-MM-dd") &&
+          s.time === selectedTime &&
+          s.interviewer === selectedInterviewer
+      );
+      if (isConflict) {
+        alert("⚠️ This time slot is already booked for the selected interviewer.");
+        return;
+      }
+
       try {
         const payload = {
           name: candidate.name,
-          date: selectedDate.toISOString().split("T")[0],
+          date: format(selectedDate, "yyyy-MM-dd"),
           time: selectedTime,
           interviewer: selectedInterviewer,
         };
 
-        await axios.post(
-          "http://localhost:5000/api/interviews/schedule",
-          payload
-        );
+        await axios.post("http://localhost:5000/api/interviews/schedule", payload);
 
         navigate("/emailautomation", {
           state: {
@@ -67,9 +102,7 @@ export default function InterviewScheduling() {
   const handleAutoSchedule = async () => {
     setOpenSnackbar(true);
     try {
-      const res = await axios.get(
-        "http://localhost:5000/api/schedules/ai-optimal-slot"
-      );
+      const res = await axios.get("http://localhost:5000/api/schedules/ai-optimal-slot");
       const { date, time, interviewer } = res.data;
 
       setSelectedDate(new Date(date));
@@ -108,14 +141,7 @@ export default function InterviewScheduling() {
         <Grid container spacing={4}>
           {/* Candidate Info */}
           <Grid item xs={12} md={4}>
-            <Paper
-              elevation={3}
-              sx={{
-                p: 3,
-                backgroundColor: "white",
-                borderLeft: "5px solid #1976d2",
-              }}
-            >
+            <Paper elevation={3} sx={{ p: 3, backgroundColor: "white", borderLeft: "5px solid #1976d2" }}>
               <Typography variant="h6">{candidate.name}</Typography>
               <Typography variant="subtitle2">{candidate.role}</Typography>
               <Box mt={2}>
@@ -123,17 +149,10 @@ export default function InterviewScheduling() {
                 <Typography variant="body2">{candidate.phone}</Typography>
               </Box>
               <Box mt={2}>
-                <Typography fontWeight="bold" mb={1}>
-                  Skills:
-                </Typography>
+                <Typography fontWeight="bold" mb={1}>Skills:</Typography>
                 <Box display="flex" flexWrap="wrap" gap={1}>
                   {candidate.skills?.map((s, i) => (
-                    <Chip
-                      key={i}
-                      label={s}
-                      color="primary"
-                      variant="outlined"
-                    />
+                    <Chip key={i} label={s} color="primary" variant="outlined" />
                   ))}
                 </Box>
               </Box>
@@ -149,9 +168,7 @@ export default function InterviewScheduling() {
 
               {/* Date Picker */}
               <Box mt={2}>
-                <Typography variant="subtitle2" mb={1}>
-                  Select Interview Date
-                </Typography>
+                <Typography variant="subtitle2" mb={1}>Select Interview Date</Typography>
                 <DatePicker
                   label="Pick a date"
                   value={selectedDate}
@@ -162,11 +179,9 @@ export default function InterviewScheduling() {
 
               {/* Time Slots */}
               <Box mt={4}>
-                <Typography variant="subtitle2" mb={1}>
-                  Choose Time Slot
-                </Typography>
+                <Typography variant="subtitle2" mb={1}>Choose Time Slot</Typography>
                 <Box display="flex" gap={2} flexWrap="wrap">
-                  {timeSlots.map((slot) => (
+                  {getAvailableTimeSlots().map((slot) => (
                     <Button
                       key={slot}
                       variant={selectedTime === slot ? "contained" : "outlined"}
@@ -181,62 +196,42 @@ export default function InterviewScheduling() {
 
               {/* Interviewer */}
               <Box mt={4}>
-                <Typography variant="subtitle2" mb={1}>
-                  Assign Interviewer
-                </Typography>
+                <Typography variant="subtitle2" mb={1}>Assign Interviewer</Typography>
                 <Select
                   fullWidth
                   value={selectedInterviewer}
                   onChange={(e) => setSelectedInterviewer(e.target.value)}
                   displayEmpty
                 >
-                  <MenuItem value="" disabled>
-                    Select Interviewer
-                  </MenuItem>
+                  <MenuItem value="" disabled>Select Interviewer</MenuItem>
                   {interviewers.map((name) => (
-                    <MenuItem key={name} value={name}>
-                      {name}
-                    </MenuItem>
+                    <MenuItem key={name} value={name}>{name}</MenuItem>
                   ))}
                 </Select>
               </Box>
 
-              {/* Action Buttons */}
+              {/* Buttons */}
               <Box display="flex" gap={2} mt={4}>
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  onClick={handleAutoSchedule}
-                >
+                <Button variant="outlined" color="secondary" onClick={handleAutoSchedule}>
                   🧠 Suggest Optimal Slot
                 </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleSchedule}
-                >
+                <Button variant="contained" color="primary" onClick={handleSchedule}>
                   Schedule Interview
                 </Button>
               </Box>
 
               {/* Summary */}
               <Box mt={5} bgcolor="#f9f9f9" p={3} borderRadius={2}>
-                <Typography variant="subtitle1" fontWeight="bold" mb={1}>
-                  Interview Summary
-                </Typography>
-                <Typography>
-                  Date: {selectedDate?.toDateString() || "N/A"}
-                </Typography>
+                <Typography variant="subtitle1" fontWeight="bold" mb={1}>Interview Summary</Typography>
+                <Typography>Date: {selectedDate?.toDateString() || "N/A"}</Typography>
                 <Typography>Time: {selectedTime || "N/A"}</Typography>
-                <Typography>
-                  Interviewer: {selectedInterviewer || "N/A"}
-                </Typography>
+                <Typography>Interviewer: {selectedInterviewer || "N/A"}</Typography>
               </Box>
             </Paper>
           </Grid>
         </Grid>
 
-        {/* Snackbar for AI Info */}
+        {/* Snackbar Feedback */}
         <Snackbar
           open={openSnackbar}
           autoHideDuration={6000}
@@ -248,8 +243,8 @@ export default function InterviewScheduling() {
             severity="info"
             sx={{ width: "100%" }}
           >
-            🧠 GPT analyzes the schedule to avoid conflicts, spread interviews,
-            and balance interviewer loads.
+            🧠 GPT analyzes patterns and returns an open slot that avoids existing conflicts,
+            spreads out interviews to avoid clumping, and balances between interviewers.
           </Alert>
         </Snackbar>
       </Box>

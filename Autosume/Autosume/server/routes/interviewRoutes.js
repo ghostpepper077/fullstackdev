@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Candidate = require('../models/Candidate');
 
+// Get all candidates
 router.get('/all', async (req, res) => {
   try {
     const candidates = await Candidate.find();
@@ -11,16 +12,30 @@ router.get('/all', async (req, res) => {
   }
 });
 
+// Schedule an interview with conflict check
 router.post('/schedule', async (req, res) => {
   try {
     const { name, date, time, interviewer } = req.body;
 
-    const updated = await Candidate.findOneAndUpdate(
-  { name: new RegExp(`^${name}$`, 'i') }, // case-insensitive match
-  { $set: { date, time, interviewer, status: 'Scheduled' } },
-  { new: true }
-);
+    // Check for existing interview conflict
+    const conflict = await Candidate.findOne({
+      date,
+      time,
+      interviewer: new RegExp(`^${interviewer}$`, 'i'),
+    });
 
+    if (conflict) {
+      return res.status(409).json({
+        error: `Conflict: ${interviewer} already has an interview scheduled at ${time} on ${date}.`,
+      });
+    }
+
+    // Update candidate schedule
+    const updated = await Candidate.findOneAndUpdate(
+      { name: new RegExp(`^${name}$`, 'i') },
+      { $set: { date, time, interviewer, status: 'Scheduled' } },
+      { new: true }
+    );
 
     if (!updated) return res.status(404).json({ error: 'Candidate not found' });
 
@@ -29,6 +44,8 @@ router.post('/schedule', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+// Clear a scheduled interview
 router.put('/clear/:id', async (req, res) => {
   try {
     const cleared = await Candidate.findByIdAndUpdate(
@@ -38,8 +55,8 @@ router.put('/clear/:id', async (req, res) => {
           date: "-",
           time: "-",
           interviewer: "-",
-          status: "Not Sent"
-        }
+          status: "Not Sent",
+        },
       },
       { new: true }
     );
@@ -54,6 +71,5 @@ router.put('/clear/:id', async (req, res) => {
     res.status(500).json({ message: 'Error clearing schedule' });
   }
 });
-
 
 module.exports = router;

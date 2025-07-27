@@ -1,13 +1,15 @@
+// server/routes/scheduleRoutes.js
+
 const express = require('express');
 const router = express.Router();
 const Candidate = require('../models/Candidate');
 const { OpenAI } = require('openai');
 
-
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// ✅ AI-Suggested Optimal Interview Slot
 router.get('/ai-optimal-slot', async (req, res) => {
   try {
     const scheduled = await Candidate.find({
@@ -17,12 +19,18 @@ router.get('/ai-optimal-slot', async (req, res) => {
     });
 
     const prompt = `
-Given these existing interview schedules:
+You are a scheduling assistant. Based on the following scheduled interviews, suggest ONE optimal interview slot (date, time, interviewer) for a new candidate within the next 14 days.
 
+Avoid:
+- Scheduling the same interviewer at the same date/time.
+- Clumping too many interviews on the same day.
+- Overloading a single interviewer.
+
+Return only a JSON object in this format:
+{ "date": "YYYY-MM-DD", "time": "HH:MM AM/PM", "interviewer": "Name" }
+
+Scheduled Interviews:
 ${scheduled.map(s => `${s.name} on ${s.date} at ${s.time} with ${s.interviewer}`).join('\n')}
-
-Suggest one optimal interview slot (date, time, interviewer) within the next 14 days with minimal conflict and even distribution. Just return JSON like:
-{ "date": "2025-08-03", "time": "10:00 AM", "interviewer": "Gabriel Tan" }
 `;
 
     const completion = await openai.chat.completions.create({
@@ -42,7 +50,7 @@ Suggest one optimal interview slot (date, time, interviewer) within the next 14 
   }
 });
 
-// Return all occupied interview slots
+// ✅ Get All Currently Booked Slots
 router.get('/availability', async (req, res) => {
   try {
     const candidates = await Candidate.find({ status: { $ne: 'Not Sent' } });
