@@ -11,29 +11,23 @@ import {
   Divider,
   Grid,
 } from "@mui/material";
-import { useLocation , useNavigate } from "react-router-dom";
-import axios from 'axios';
+import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 
-  
-
-function generateWithAI(candidate, interview, type) {
-  const intro =
-    type === "approve"
-      ? `Hi ${candidate.name},\n\nWe’re thrilled to invite you for an interview for the ${candidate.role} position.`
-      : `Hi ${candidate.name},\n\nThank you for applying for the ${candidate.role} position.`;
-
-  const interviewDetails =
-    type === "approve"
-      ? `\n\nHere are the interview details:\n📅 Date: ${interview.date}\n🕒 Time: ${interview.time}\n👤 Interviewer: ${interview.interviewer}`
-      : `\n\nAfter careful consideration, we’ve decided to proceed with other candidates at this time.`;
-
-  const outro =
-    type === "approve"
-      ? `\n\nWe look forward to speaking with you!\n\nBest regards,\nHR Team`
-      : `\n\nWe appreciate your interest and encourage you to apply again in the future.\n\nBest wishes,\nHR Team`;
-
-  return `${intro}${interviewDetails}${outro}`;
-}
+// AI Generation Helper
+const generateWithAI = async (candidate, interview, type) => {
+  try {
+    const res = await axios.post("http://localhost:5000/api/ai/generate-email", {
+      candidate,
+      interview,
+      type,
+    });
+    return res.data.message;
+  } catch (error) {
+    console.error("AI generation error:", error);
+    return "⚠️ Failed to generate email. Please try again.";
+  }
+};
 
 export default function EmailAutomation() {
   const navigate = useNavigate();
@@ -48,18 +42,27 @@ export default function EmailAutomation() {
   const [decision, setDecision] = useState("approve");
   const [emailBody, setEmailBody] = useState("");
 
-  const handleDecisionChange = (event) => {
+  // On decision radio change
+  const handleDecisionChange = async (event) => {
     const value = event.target.value;
     setDecision(value);
-    setEmailBody(generateWithAI(candidate, interview, value));
+    const aiText = await generateWithAI(candidate, interview, value);
+    setEmailBody(aiText);
   };
 
-  const handleSend = () => {
-  alert(`✅ Email sent to ${candidate.email}`);
-  navigate('/interviewdashboard');
-};
+  // Manual regenerate AI
+  const handleGenerateAI = async () => {
+    const aiText = await generateWithAI(candidate, interview, decision);
+    setEmailBody(aiText);
+  };
 
-  if (!candidate.name || !interview.date) {
+  // Final send email
+  const handleSend = () => {
+    alert(`✅ Email sent to ${candidate.email}`);
+    navigate("/interviewdashboard");
+  };
+
+  if (!candidate?.name || !interview?.date) {
     return (
       <Box p={5}>
         <Typography variant="h6" color="error">
@@ -76,9 +79,9 @@ export default function EmailAutomation() {
       </Typography>
 
       <Grid container spacing={4}>
-        {/* Candidate Info */}
+        {/* Left Panel */}
         <Grid item xs={12} md={4}>
-          <Paper elevation={3} sx={{ p: 3, backgroundColor: "#fff" }}>
+          <Paper elevation={3} sx={{ p: 3 }}>
             <Typography variant="h6" color="text.primary">
               Candidate Info
             </Typography>
@@ -102,9 +105,9 @@ export default function EmailAutomation() {
           </Paper>
         </Grid>
 
-        {/* Email Generator */}
+        {/* Right Panel */}
         <Grid item xs={12} md={8}>
-          <Paper elevation={3} sx={{ p: 4, backgroundColor: "#ffffff" }}>
+          <Paper elevation={3} sx={{ p: 4 }}>
             <Typography variant="h6" gutterBottom>
               Notification Type
             </Typography>
@@ -121,13 +124,7 @@ export default function EmailAutomation() {
               />
             </RadioGroup>
 
-            <Button
-              variant="outlined"
-              onClick={() =>
-                setEmailBody(generateWithAI(candidate, interview, decision))
-              }
-              sx={{ mt: 2 }}
-            >
+            <Button onClick={handleGenerateAI} sx={{ mt: 2 }}>
               ✨ Regenerate with AI
             </Button>
 
@@ -138,15 +135,11 @@ export default function EmailAutomation() {
               <TextField
                 multiline
                 fullWidth
-                minRows={2}
-                maxRows={12}
+                rows={8}
                 value={emailBody}
                 onChange={(e) => setEmailBody(e.target.value)}
                 variant="outlined"
-                sx={{
-                  backgroundColor: "#f9f9f9",
-                  fontFamily: "monospace",
-                }}
+                sx={{ backgroundColor: "#f9f9f9", fontFamily: "monospace" }}
               />
             </Box>
 

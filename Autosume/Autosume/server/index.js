@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 
+
+
 const app = express();
 
 // --- Middleware ---
@@ -25,6 +27,7 @@ const userRoutes = require('./routes/user');
 const interviewRoutes = require('./routes/interviewRoutes');
 const scheduleRoutes = require('./routes/scheduleRoutes');
 const criteriaRoutes = require('./routes/criteria');
+const aiRoutes = require('./routes/aiRoutes');
 
 // --- Use Routes ---
 app.use('/api/auth', authRoutes);
@@ -32,6 +35,7 @@ app.use('/api/user', userRoutes);
 app.use('/api/interviews', interviewRoutes);
 app.use('/api/schedules', scheduleRoutes);
 app.use('/api/criteria', criteriaRoutes);
+app.use('/api/ai', aiRoutes);
 
 // --- Job Routes ---
 app.get('/api/jobs', async (req, res) => {
@@ -174,33 +178,33 @@ mongoose.connect(process.env.MONGO_URI || process.env.MONGODB_URI, {
   });
 
 
-const express = require('express');
-const { OpenAI } = require('openai');
+// const express = require('express');
+// const { OpenAI } = require('openai');
 
-const router = express.Router();
+// const router = express.Router();
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+// const openai = new OpenAI({
+//   apiKey: process.env.OPENAI_API_KEY
+// });
 
-router.post('/chat', async (req, res) => {
-  try {
-    const { message } = req.body;
+// router.post('/chat', async (req, res) => {
+//   try {
+//     const { message } = req.body;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4", // or "gpt-3.5-turbo"
-      messages: [{ role: "user", content: message }]
-    });
+//     const response = await openai.chat.completions.create({
+//       model: "gpt-4", // or "gpt-3.5-turbo"
+//       messages: [{ role: "user", content: message }]
+//     });
 
-    res.json({ reply: response.choices[0].message.content });
-  } catch (err) {
-    console.error("OpenAI error:", err);
-    res.status(500).json({ error: "OpenAI API request failed" });
-  }
-});
+//     res.json({ reply: response.choices[0].message.content });
+//   } catch (err) {
+//     console.error("OpenAI error:", err);
+//     res.status(500).json({ error: "OpenAI API request failed" });
+//   }
+// });
 
-module.exports = router;
+// module.exports = router;
 
 
-const chatRoute = require('./routes/api'); // Adjust path
-app.use('/api', chatRoute);
+// const chatRoute = require('./routes/api'); // Adjust path
+// app.use('/api', chatRoute);
