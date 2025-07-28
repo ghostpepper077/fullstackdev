@@ -1,21 +1,21 @@
 // server/routes/scheduleRoutes.js
 
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const Candidate = require('../models/Candidate');
-const { OpenAI } = require('openai');
+const Candidate = require("../models/Candidate");
+const { OpenAI } = require("openai");
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
 // ✅ AI-Suggested Optimal Interview Slot
-router.get('/ai-optimal-slot', async (req, res) => {
+router.get("/ai-optimal-slot", async (req, res) => {
   try {
     const scheduled = await Candidate.find({
-      date: { $ne: '-' },
-      time: { $ne: '-' },
-      interviewer: { $ne: '-' }
+      date: { $ne: "-" },
+      time: { $ne: "-" },
+      interviewer: { $ne: "-" },
     });
 
     const prompt = `
@@ -27,17 +27,19 @@ Avoid:
 - Overloading a single interviewer.
 
 Return only a JSON object in this format:
-{ "date": "YYYY-MM-DD", "time": "HH:MM AM/PM", "interviewer": "Name" }
+ { "date": "2025-08-03", "time": "10:00 AM", "interviewer": "Gabriel Tan" }
 
 Scheduled Interviews:
-${scheduled.map(s => `${s.name} on ${s.date} at ${s.time} with ${s.interviewer}`).join('\n')}
+${scheduled
+  .map((s) => `${s.name} on ${s.date} at ${s.time} with ${s.interviewer}`)
+  .join("\n")}
 `;
 
     const completion = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
+      model: "gpt-3.5-turbo",
       messages: [
-        { role: 'system', content: 'You are a scheduling assistant.' },
-        { role: 'user', content: prompt },
+        { role: "system", content: "You are a scheduling assistant." },
+        { role: "user", content: prompt },
       ],
     });
 
@@ -45,15 +47,15 @@ ${scheduled.map(s => `${s.name} on ${s.date} at ${s.time} with ${s.interviewer}`
     const parsed = JSON.parse(suggestion);
     res.json(parsed);
   } catch (error) {
-    console.error('AI scheduling error:', error.message);
-    res.status(500).json({ error: 'Failed to generate optimal slot.' });
+    console.error("AI scheduling error:", error.message);
+    res.status(500).json({ error: "Failed to generate optimal slot." });
   }
 });
 
 // ✅ Get All Currently Booked Slots
-router.get('/availability', async (req, res) => {
+router.get("/availability", async (req, res) => {
   try {
-    const candidates = await Candidate.find({ status: { $ne: 'Not Sent' } });
+    const candidates = await Candidate.find({ status: { $ne: "Not Sent" } });
 
     const takenSlots = candidates.map((c) => {
       return `${c.date}__${c.time}__${c.interviewer}`;
@@ -61,8 +63,8 @@ router.get('/availability', async (req, res) => {
 
     res.json(takenSlots);
   } catch (error) {
-    console.error('Error getting availability:', error.message);
-    res.status(500).json({ message: 'Server error while fetching slots' });
+    console.error("Error getting availability:", error.message);
+    res.status(500).json({ message: "Server error while fetching slots" });
   }
 });
 
