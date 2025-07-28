@@ -1,4 +1,3 @@
-// Create this file as: src/components/Sidebar.jsx
 import React from 'react';
 import {
   Box,
@@ -19,12 +18,7 @@ import {
   Settings as SettingsIcon,
   Support as SupportIcon,
   ExitToApp as LogoutIcon,
-  Message as ChatbotIcon,
-  // ===================================================================
-  // ★★★ 1. IMPORT THE NEW ICON ★★★
-  // ===================================================================
-  OnlinePrediction as AIScreeningIcon 
-  // ===================================================================
+  Message as ChatbotIcon
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -32,18 +26,18 @@ const Sidebar = ({ user, onLogout }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Updated menu items - only one entry for resume shortlisting
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
     { text: 'Job Management', icon: <WorkIcon />, path: '/job-management' },
-    // ===================================================================
-    // ★★★ 2. ADD THE NEW MENU ITEM TO THE ARRAY ★★★
-    // ===================================================================
-    { text: 'Trigger AI Screening', icon: <AIScreeningIcon />, path: '/trigger-ai-screening' },
-    // ===================================================================
-    { text: 'Resume Shortlisting', icon: <ShortlistIcon />, path: '/shortlisting' },
-    { text: 'Interview Scheduling', icon: <InterviewIcon />, path: '/shortlistoverview' },
+    { 
+      text: 'Resume Shortlisting', 
+      icon: <ShortlistIcon />, 
+      path: '/resume-shortlisting' 
+    },
+    { text: 'Interview Scheduling', icon: <InterviewIcon />, path: '/interviews' },
     { text: 'Chatbot', icon: <ChatbotIcon />, path: '/chatbot' },
-    { text: 'Settings', icon: <SettingsIcon />, path: '/profile' },
+    { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
     { text: 'Support', icon: <SupportIcon />, path: '/support' },
   ];
 
@@ -66,17 +60,13 @@ const Sidebar = ({ user, onLogout }) => {
         zIndex: 1200,
         boxShadow: '4px 0 20px rgba(0, 0, 0, 0.22)',
         overflowY: 'auto',
-        '&::-webkit-scrollbar': {
-          display: 'none',
-        },
-        scrollbarWidth: 'none', // Firefox
-        msOverflowStyle: 'none', // IE and Edge
+        '&::-webkit-scrollbar': { display: 'none' },
       }}
     >
       {/* Logo Section */}
       <Box sx={{ p: 0, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
         <img
-          src="src\assets\autosume_logo.png"
+          src="/assets/autosume_logo.png"
           alt="Autosume Logo"
           style={{
             width: '100%',
@@ -104,17 +94,10 @@ const Sidebar = ({ user, onLogout }) => {
             {user?.name?.charAt(0)?.toUpperCase() || 'U'}
           </Avatar>
           <Box>
-            <Typography variant="subtitle1" sx={{
-              fontWeight: 600,
-              color: 'white',
-              fontSize: '1rem'
-            }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'white' }}>
               {user?.name || 'User'}
             </Typography>
-            <Typography variant="body2" sx={{
-              color: 'rgba(255,255,255,0.7)',
-              fontSize: '0.85rem'
-            }}>
+            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)' }}>
               {user?.email || 'user@email.com'}
             </Typography>
           </Box>
@@ -125,7 +108,7 @@ const Sidebar = ({ user, onLogout }) => {
       <Box sx={{ flex: 1, py: 2 }}>
         <List sx={{ px: 2 }}>
           {menuItems.map((item) => {
-            const isActive = location.pathname === item.path;
+            const isActive = location.pathname.startsWith(item.path);
             return (
               <ListItem key={item.text} disablePadding sx={{ mb: 1 }}>
                 <ListItemButton
@@ -141,7 +124,6 @@ const Sidebar = ({ user, onLogout }) => {
                         ? 'rgba(102, 126, 234, 0.3)'
                         : 'rgba(255,255,255,0.05)',
                       transform: 'translateX(4px)',
-                      transition: 'all 0.2s ease'
                     },
                     transition: 'all 0.2s ease'
                   }}
@@ -185,7 +167,6 @@ const Sidebar = ({ user, onLogout }) => {
               backgroundColor: 'rgba(255, 82, 82, 0.1)',
               borderColor: 'rgba(255, 82, 82, 0.3)',
               color: '#ff5252',
-              transform: 'translateY(-1px)'
             },
             transition: 'all 0.2s ease'
           }}
