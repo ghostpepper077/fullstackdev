@@ -44,6 +44,4 @@ router.put("/:email/schedule", async (req, res) => {
   }
 });
 
-
-
 module.exports = router;
