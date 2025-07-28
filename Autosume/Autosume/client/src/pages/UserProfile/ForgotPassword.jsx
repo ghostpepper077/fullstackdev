@@ -9,13 +9,17 @@ import {
     Alert,
     CircularProgress,
     Link,
-    Divider
+    Divider,
+    IconButton
 } from '@mui/material';
 import {
     Email as EmailIcon,
     ArrowBack as ArrowBackIcon,
     CheckCircle as CheckCircleIcon,
-    LockReset as LockResetIcon
+    LockReset as LockResetIcon,
+    Lock as LockIcon,
+    Visibility as VisibilityIcon,
+    VisibilityOff as VisibilityOffIcon
 } from '@mui/icons-material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -26,10 +30,14 @@ import http from '../../http';
 function ForgotPassword() {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
-    const [emailSent, setEmailSent] = useState(false);
+    const [emailVerified, setEmailVerified] = useState(false);
+    const [passwordReset, setPasswordReset] = useState(false);
     const [userEmail, setUserEmail] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    const formik = useFormik({
+    // Email verification form
+    const emailFormik = useFormik({
         initialValues: {
             email: ""
         },
@@ -46,17 +54,66 @@ function ForgotPassword() {
                     email: data.email.trim().toLowerCase()
                 };
 
-                await http.post('/user/forgot-password', payload);
+                // Verify if email exists in the system
+                await http.post('/user/verify-email', payload);
                 
                 setUserEmail(data.email);
-                setEmailSent(true);
-                toast.success('Password reset instructions sent to your email!');
+                setEmailVerified(true);
+                toast.success('Email verified! Please set your new password.');
                 
             } catch (err) {
-                console.error('Forgot password error:', err);
+                console.error('Email verification error:', err);
                 
                 if (err.response) {
-                    const message = err.response.data?.message || 'Failed to send reset email';
+                    const message = err.response.data?.message || 'Email not found in our system';
+                    toast.error(message);
+                } else if (err.request) {
+                    toast.error('Unable to connect to server. Please try again later.');
+                } else {
+                    toast.error('An unexpected error occurred');
+                }
+            } finally {
+                setIsLoading(false);
+            }
+        }
+    });
+
+    // Password reset form
+    const passwordFormik = useFormik({
+        initialValues: {
+            password: "",
+            confirmPassword: ""
+        },
+        validationSchema: yup.object({
+            password: yup.string()
+                .min(8, 'Password must be at least 8 characters')
+                .matches(
+                    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+                    'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
+                )
+                .required('Password is required'),
+            confirmPassword: yup.string()
+                .oneOf([yup.ref('password'), null], 'Passwords must match')
+                .required('Please confirm your password')
+        }),
+        onSubmit: async (data) => {
+            setIsLoading(true);
+            try {
+                const payload = {
+                    email: userEmail.toLowerCase(),
+                    newPassword: data.password
+                };
+
+                await http.post('/user/reset-password', payload);
+                
+                setPasswordReset(true);
+                toast.success('Password reset successfully!');
+                
+            } catch (err) {
+                console.error('Password reset error:', err);
+                
+                if (err.response) {
+                    const message = err.response.data?.message || 'Failed to reset password';
                     toast.error(message);
                 } else if (err.request) {
                     toast.error('Unable to connect to server. Please try again later.');
@@ -73,11 +130,22 @@ function ForgotPassword() {
         navigate('/login');
     };
 
-    const handleResendEmail = () => {
-        formik.handleSubmit();
+    const handleBackToEmail = () => {
+        setEmailVerified(false);
+        setUserEmail('');
+        emailFormik.resetForm();
     };
 
-    if (emailSent) {
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
+    const toggleConfirmPasswordVisibility = () => {
+        setShowConfirmPassword(!showConfirmPassword);
+    };
+
+    // Success screen after password reset
+    if (passwordReset) {
         return (
             <Box sx={{ 
                 minHeight: '100vh', 
@@ -126,97 +194,301 @@ function ForgotPassword() {
                         color: '#1a1a1a',
                         fontFamily: '"Segoe UI", "Roboto", sans-serif'
                     }}>
-                        Check Your Email
+                        Password Reset Complete!
                     </Typography>
                     
                     <Typography variant="body1" sx={{ 
-                        mb: 3, 
+                        mb: 4, 
                         color: '#555', 
                         lineHeight: 1.6,
                         fontSize: '1.1rem'
                     }}>
-                        We've sent password reset instructions to:
+                        Your password has been successfully reset. You can now sign in with your new password.
                     </Typography>
                     
-                    <Box sx={{ 
-                        p: 2, 
-                        backgroundColor: '#f8f9ff', 
-                        borderRadius: 2, 
-                        mb: 4,
-                        border: '2px solid #e3f2fd'
-                    }}>
-                        <Typography variant="h6" sx={{ 
-                            color: '#1976d2', 
+                    <Button
+                        variant="contained"
+                        onClick={handleBackToLogin}
+                        startIcon={<ArrowBackIcon />}
+                        fullWidth
+                        sx={{
+                            py: 1.5,
+                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            fontSize: '1.1rem',
                             fontWeight: 600,
-                            wordBreak: 'break-word'
-                        }}>
-                            {userEmail}
-                        </Typography>
-                    </Box>
-                    
-                    <Alert 
-                        severity="info" 
-                        sx={{ 
-                            mb: 4, 
-                            textAlign: 'left',
-                            borderRadius: 2,
-                            '& .MuiAlert-message': {
-                                width: '100%'
-                            }
+                            '&:hover': { 
+                                background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                                transform: 'translateY(-1px)',
+                                boxShadow: '0 6px 20px rgba(0,0,0,0.15)'
+                            },
+                            transition: 'all 0.2s ease'
                         }}
                     >
-                        <Typography variant="body2" component="div">
-                            <Box component="ul" sx={{ m: 0, pl: 2 }}>
-                                <li>Check your spam/junk folder if you don't see the email</li>
-                                <li>The reset link will expire in 1 hour</li>
-                                <li>Contact support if you continue having issues</li>
-                            </Box>
-                        </Typography>
-                    </Alert>
+                        Continue to Login
+                    </Button>
+                </Paper>
+            </Box>
+        );
+    }
 
-                    <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
-                        <Button
-                            variant="outlined"
-                            onClick={handleResendEmail}
-                            disabled={isLoading}
-                            sx={{ 
-                                flex: 1,
-                                py: 1.5,
-                                borderColor: '#1976d2',
-                                color: '#1976d2',
-                                '&:hover': {
-                                    borderColor: '#1565c0',
-                                    backgroundColor: 'rgba(25, 118, 210, 0.04)'
-                                }
-                            }}
-                        >
-                            {isLoading ? <CircularProgress size={20} /> : 'Resend Email'}
-                        </Button>
+    // Password reset form screen
+    if (emailVerified) {
+        return (
+            <Box sx={{ 
+                minHeight: '100vh', 
+                display: 'flex',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                alignItems: 'center',
+                justifyContent: 'center',
+                p: 2
+            }}>
+                <Paper
+                    elevation={24}
+                    sx={{
+                        maxWidth: 450,
+                        width: '100%',
+                        borderRadius: 4,
+                        overflow: 'hidden',
+                        background: 'rgba(255, 255, 255, 0.95)',
+                        backdropFilter: 'blur(10px)',
+                        border: '1px solid rgba(255, 255, 255, 0.2)'
+                    }}
+                >
+                    {/* Header */}
+                    <Box sx={{
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        p: 4,
+                        textAlign: 'center',
+                        color: 'white'
+                    }}>
+                        <Box sx={{
+                            width: 70,
+                            height: 70,
+                            borderRadius: '50%',
+                            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            mx: 'auto',
+                            mb: 2,
+                            backdropFilter: 'blur(10px)'
+                        }}>
+                            <LockIcon sx={{ fontSize: 35, color: 'white' }} />
+                        </Box>
                         
-                        <Button
-                            variant="contained"
-                            onClick={handleBackToLogin}
-                            startIcon={<ArrowBackIcon />}
-                            sx={{
-                                flex: 1,
-                                py: 1.5,
-                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                '&:hover': { 
-                                    background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
-                                    transform: 'translateY(-1px)',
-                                    boxShadow: '0 6px 20px rgba(0,0,0,0.15)'
-                                },
-                                transition: 'all 0.2s ease'
+                        <Typography variant="h4" sx={{ 
+                            fontWeight: 700, 
+                            mb: 1,
+                            fontFamily: '"Segoe UI", "Roboto", sans-serif'
+                        }}>
+                            AUTOSUME
+                        </Typography>
+                        
+                        <Typography variant="h5" sx={{ 
+                            fontWeight: 500,
+                            opacity: 0.9
+                        }}>
+                            Set New Password
+                        </Typography>
+                    </Box>
+
+                    {/* Form Content */}
+                    <Box sx={{ p: 4 }}>
+                        <Alert 
+                            severity="success" 
+                            sx={{ 
+                                mb: 3, 
+                                borderRadius: 2
                             }}
                         >
-                            Back to Login
-                        </Button>
+                            Email verified: {userEmail}
+                        </Alert>
+
+                        <Typography variant="body1" sx={{ 
+                            mb: 4, 
+                            textAlign: 'center', 
+                            color: '#555',
+                            fontSize: '1.1rem',
+                            lineHeight: 1.6
+                        }}>
+                            Please enter your new password below.
+                        </Typography>
+
+                        <Box component="form" onSubmit={passwordFormik.handleSubmit}>
+                            <TextField
+                                fullWidth
+                                label="New Password"
+                                name="password"
+                                type={showPassword ? 'text' : 'password'}
+                                value={passwordFormik.values.password}
+                                onChange={passwordFormik.handleChange}
+                                onBlur={passwordFormik.handleBlur}
+                                error={passwordFormik.touched.password && Boolean(passwordFormik.errors.password)}
+                                helperText={passwordFormik.touched.password && passwordFormik.errors.password}
+                                disabled={isLoading}
+                                sx={{ 
+                                    mb: 3,
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: 2,
+                                        '&:hover fieldset': {
+                                            borderColor: '#667eea',
+                                        },
+                                        '&.Mui-focused fieldset': {
+                                            borderColor: '#667eea',
+                                        }
+                                    },
+                                    '& .MuiInputLabel-root.Mui-focused': {
+                                        color: '#667eea'
+                                    }
+                                }}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <LockIcon sx={{ 
+                                                color: passwordFormik.touched.password && passwordFormik.errors.password ? "error.main" : "#667eea" 
+                                            }} />
+                                        </InputAdornment>
+                                    ),
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                onClick={togglePasswordVisibility}
+                                                edge="end"
+                                                sx={{ color: '#667eea' }}
+                                            >
+                                                {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+
+                            <TextField
+                                fullWidth
+                                label="Confirm New Password"
+                                name="confirmPassword"
+                                type={showConfirmPassword ? 'text' : 'password'}
+                                value={passwordFormik.values.confirmPassword}
+                                onChange={passwordFormik.handleChange}
+                                onBlur={passwordFormik.handleBlur}
+                                error={passwordFormik.touched.confirmPassword && Boolean(passwordFormik.errors.confirmPassword)}
+                                helperText={passwordFormik.touched.confirmPassword && passwordFormik.errors.confirmPassword}
+                                disabled={isLoading}
+                                sx={{ 
+                                    mb: 4,
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: 2,
+                                        '&:hover fieldset': {
+                                            borderColor: '#667eea',
+                                        },
+                                        '&.Mui-focused fieldset': {
+                                            borderColor: '#667eea',
+                                        }
+                                    },
+                                    '& .MuiInputLabel-root.Mui-focused': {
+                                        color: '#667eea'
+                                    }
+                                }}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <LockIcon sx={{ 
+                                                color: passwordFormik.touched.confirmPassword && passwordFormik.errors.confirmPassword ? "error.main" : "#667eea" 
+                                            }} />
+                                        </InputAdornment>
+                                    ),
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                onClick={toggleConfirmPasswordVisibility}
+                                                edge="end"
+                                                sx={{ color: '#667eea' }}
+                                            >
+                                                {showConfirmPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                fullWidth
+                                size="large"
+                                disabled={isLoading}
+                                sx={{
+                                    py: 1.8,
+                                    mb: 3,
+                                    borderRadius: 2,
+                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                    fontSize: '1.1rem',
+                                    fontWeight: 600,
+                                    '&:hover': { 
+                                        background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                                        transform: 'translateY(-2px)',
+                                        boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
+                                    },
+                                    '&:disabled': {
+                                        background: '#ccc'
+                                    },
+                                    transition: 'all 0.2s ease'
+                                }}
+                            >
+                                {isLoading ? (
+                                    <CircularProgress size={24} sx={{ color: 'white' }} />
+                                ) : (
+                                    'Reset Password'
+                                )}
+                            </Button>
+
+                            <Divider sx={{ mb: 3 }} />
+
+                            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+                                <Link
+                                    component="button"
+                                    type="button"
+                                    onClick={handleBackToEmail}
+                                    sx={{
+                                        color: '#667eea',
+                                        textDecoration: 'none',
+                                        fontWeight: 600,
+                                        '&:hover': { 
+                                            textDecoration: 'underline',
+                                            color: '#5a6fd8'
+                                        }
+                                    }}
+                                >
+                                    Change Email
+                                </Link>
+                                <Typography variant="body2" sx={{ color: '#666' }}>
+                                    •
+                                </Typography>
+                                <Link
+                                    component="button"
+                                    type="button"
+                                    onClick={handleBackToLogin}
+                                    sx={{
+                                        color: '#667eea',
+                                        textDecoration: 'none',
+                                        fontWeight: 600,
+                                        '&:hover': { 
+                                            textDecoration: 'underline',
+                                            color: '#5a6fd8'
+                                        }
+                                    }}
+                                >
+                                    Back to Login
+                                </Link>
+                            </Box>
+                        </Box>
                     </Box>
                 </Paper>
             </Box>
         );
     }
 
+    // Email verification screen (original screen modified)
     return (
         <Box sx={{ 
             minHeight: '100vh', 
@@ -285,20 +557,20 @@ function ForgotPassword() {
                         fontSize: '1.1rem',
                         lineHeight: 1.6
                     }}>
-                        Enter your email address and we'll send you a secure link to reset your password.
+                        Enter your email address to verify your account and reset your password.
                     </Typography>
 
-                    <Box component="form" onSubmit={formik.handleSubmit}>
+                    <Box component="form" onSubmit={emailFormik.handleSubmit}>
                         <TextField
                             fullWidth
                             label="Email Address"
                             name="email"
                             type="email"
-                            value={formik.values.email}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={formik.touched.email && Boolean(formik.errors.email)}
-                            helperText={formik.touched.email && formik.errors.email}
+                            value={emailFormik.values.email}
+                            onChange={emailFormik.handleChange}
+                            onBlur={emailFormik.handleBlur}
+                            error={emailFormik.touched.email && Boolean(emailFormik.errors.email)}
+                            helperText={emailFormik.touched.email && emailFormik.errors.email}
                             disabled={isLoading}
                             sx={{ 
                                 mb: 4,
@@ -319,7 +591,7 @@ function ForgotPassword() {
                                 startAdornment: (
                                     <InputAdornment position="start">
                                         <EmailIcon sx={{ 
-                                            color: formik.touched.email && formik.errors.email ? "error.main" : "#667eea" 
+                                            color: emailFormik.touched.email && emailFormik.errors.email ? "error.main" : "#667eea" 
                                         }} />
                                     </InputAdornment>
                                 ),
@@ -353,7 +625,7 @@ function ForgotPassword() {
                             {isLoading ? (
                                 <CircularProgress size={24} sx={{ color: 'white' }} />
                             ) : (
-                                'Send Reset Instructions'
+                                'Verify Email'
                             )}
                         </Button>
 

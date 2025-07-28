@@ -194,6 +194,110 @@ router.post(
   }
 );
 
+// Verify email for password reset
+router.post(
+  "/verify-email",
+  [
+    body("email")
+      .trim()
+      .isEmail()
+      .withMessage("Please enter a valid email")
+      .normalizeEmail(),
+  ],
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          message: "Invalid email format",
+          errors: errors.array(),
+        });
+      }
+
+      const { email } = req.body;
+
+      // Find user by email
+      const user = await User.findOne({
+        email: email.toLowerCase(),
+        isActive: true,
+      });
+
+      if (!user) {
+        return res.status(404).json({
+          message: "No account found with this email address",
+        });
+      }
+
+      res.status(200).json({
+        message: "Email verified successfully",
+        email: user.email,
+      });
+    } catch (error) {
+      console.error("Email verification error:", error);
+      res.status(500).json({
+        message: "Internal server error",
+      });
+    }
+  }
+);
+
+// Reset password endpoint
+router.post(
+  "/reset-password",
+  [
+    body("email")
+      .trim()
+      .isEmail()
+      .withMessage("Please enter a valid email")
+      .normalizeEmail(),
+    body("newPassword")
+      .trim()
+      .isLength({ min: 8, max: 50 })
+      .withMessage("Password must be between 8 and 50 characters")
+      .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
+      .withMessage("Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"),
+  ],
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          message: "Validation failed",
+          errors: errors.array(),
+        });
+      }
+
+      const { email, newPassword } = req.body;
+
+      // Find user by email
+      const user = await User.findOne({
+        email: email.toLowerCase(),
+        isActive: true,
+      });
+
+      if (!user) {
+        return res.status(404).json({
+          message: "No account found with this email address",
+        });
+      }
+
+      // Update password (will be hashed by pre-save hook)
+      user.password = newPassword.trim();
+      await user.save();
+
+      res.status(200).json({
+        message: "Password reset successfully",
+        email: user.email,
+      });
+    } catch (error) {
+      console.error("Password reset error:", error);
+      res.status(500).json({
+        message: "Internal server error",
+      });
+    }
+  }
+);
+
 // Get authenticated user info
 router.get("/auth", authenticateToken, (req, res) => {
   const userInfo = {
