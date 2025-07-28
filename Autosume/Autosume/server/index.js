@@ -30,6 +30,9 @@ const interviewRoutes = require('./routes/interviewRoutes');
 const scheduleRoutes = require('./routes/scheduleRoutes');
 const criteriaRoutes = require('./routes/criteria');
 const aiRoutes = require('./routes/aiRoutes');
+const aiRoutesJason = require('./routes/aiRoutesJason');
+app.use('/api/ai', aiRoutesJason);
+
 
 // --- Use Routes ---
 app.use('/api/auth', authRoutes);
