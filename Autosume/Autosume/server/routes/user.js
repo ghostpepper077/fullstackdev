@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const { body, validationResult } = require("express-validator");
 const { authenticateToken } = require("../middlewares/auth");
+const { sendOTPEmail } = require("../services/emailService");
 
 // JWT Secrets
 const JWT_SECRET =
@@ -194,7 +195,205 @@ router.post(
   }
 );
 
-// Verify email for password reset
+// Send OTP for password reset
+router.post(
+  "/send-reset-otp",
+  [
+    body("email")
+      .trim()
+      .isEmail()
+      .withMessage("Please enter a valid email")
+      .normalizeEmail(),
+  ],
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          message: "Invalid email format",
+          errors: errors.array(),
+        });
+      }
+
+      const { email } = req.body;
+
+      // Find user by email
+      const user = await User.findOne({
+        email: email.toLowerCase(),
+        isActive: true,
+      });
+
+      if (!user) {
+        return res.status(404).json({
+          message: "No account found with this email address",
+        });
+      }
+
+      // Generate OTP
+      const otp = user.generateResetPasswordOTP();
+      await user.save();
+
+      // Send OTP email
+      const emailResult = await sendOTPEmail(user.email, otp, user.name);
+
+      if (!emailResult.success) {
+        return res.status(500).json({
+          message: "Failed to send verification email. Please try again.",
+        });
+      }
+
+      res.status(200).json({
+        message: "Verification code sent to your email",
+        email: user.email,
+      });
+    } catch (error) {
+      console.error("Send OTP error:", error);
+      res.status(500).json({
+        message: "Internal server error",
+      });
+    }
+  }
+);
+
+// Verify OTP for password reset
+router.post(
+  "/verify-reset-otp",
+  [
+    body("email")
+      .trim()
+      .isEmail()
+      .withMessage("Please enter a valid email")
+      .normalizeEmail(),
+    body("otp")
+      .trim()
+      .isLength({ min: 6, max: 6 })
+      .withMessage("OTP must be 6 digits")
+      .isNumeric()
+      .withMessage("OTP must contain only numbers"),
+  ],
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          message: "Validation failed",
+          errors: errors.array(),
+        });
+      }
+
+      const { email, otp } = req.body;
+
+      // Find user by email
+      const user = await User.findOne({
+        email: email.toLowerCase(),
+        isActive: true,
+      });
+
+      if (!user) {
+        return res.status(404).json({
+          message: "No account found with this email address",
+        });
+      }
+
+      // Verify OTP
+      if (!user.verifyResetPasswordOTP(otp)) {
+        return res.status(400).json({
+          message: "Invalid or expired verification code",
+        });
+      }
+
+      // Mark OTP as verified
+      user.resetPasswordOTPVerified = true;
+      await user.save();
+
+      res.status(200).json({
+        message: "Verification code verified successfully",
+        email: user.email,
+      });
+    } catch (error) {
+      console.error("Verify OTP error:", error);
+      res.status(500).json({
+        message: "Internal server error",
+      });
+    }
+  }
+);
+
+// Reset password endpoint (now requires verified OTP)
+router.put("/reset-password",
+  [
+    body("email")
+      .trim()
+      .isEmail()
+      .withMessage("Please enter a valid email")
+      .normalizeEmail(),
+    body("password")
+      .trim()
+      .isLength({ min: 8, max: 50 })
+      .withMessage("Password must be between 8 and 50 characters")
+      .matches(/^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/)
+      .withMessage("Password must contain at least 1 letter and 1 number"),
+  ],
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          message: "Validation failed",
+          errors: errors.array(),
+        });
+      }
+
+      const { email, password } = req.body;
+
+      // Find user by email
+      const user = await User.findOne({
+        email: email.toLowerCase(),
+        isActive: true,
+      });
+
+      if (!user) {
+        return res.status(404).json({
+          message: "No account found with this email address",
+        });
+      }
+
+      // Check if OTP was verified
+      if (!user.resetPasswordOTPVerified) {
+        return res.status(400).json({
+          message: "Please verify your email with the OTP first",
+        });
+      }
+
+      // Check if OTP is still valid (hasn't expired)
+      if (user.resetPasswordOTPExpires < Date.now()) {
+        return res.status(400).json({
+          message: "Verification code has expired. Please request a new one.",
+        });
+      }
+
+      // Update password (will be hashed by pre-save hook)
+      user.password = password.trim();
+      
+      // Clear OTP data
+      user.clearResetPasswordOTP();
+      
+      await user.save();
+
+      res.status(200).json({
+        message: "Password reset successfully",
+        email: user.email,
+      });
+    } catch (error) {
+      console.error("Password reset error:", error);
+      res.status(500).json({
+        message: "Internal server error",
+      });
+    }
+  }
+);
+
+// Legacy endpoint - keeping for backward compatibility but now sends OTP
 router.post(
   "/verify-email",
   [
@@ -228,69 +427,25 @@ router.post(
         });
       }
 
+      // Generate OTP
+      const otp = user.generateResetPasswordOTP();
+      await user.save();
+
+      // Send OTP email
+      const emailResult = await sendOTPEmail(user.email, otp, user.name);
+
+      if (!emailResult.success) {
+        return res.status(500).json({
+          message: "Failed to send verification email. Please try again.",
+        });
+      }
+
       res.status(200).json({
-        message: "Email verified successfully",
+        message: "Verification code sent to your email",
         email: user.email,
       });
     } catch (error) {
       console.error("Email verification error:", error);
-      res.status(500).json({
-        message: "Internal server error",
-      });
-    }
-  }
-);
-
-// Reset password endpoint
-// Change this in routes/user.js
-router.put("/reset-password",  // Change POST to PUT
-  [
-    body("email")
-      .trim()
-      .isEmail()
-      .withMessage("Please enter a valid email")
-      .normalizeEmail(),
-    body("password")  // Change "newPassword" to "password"
-      .trim()
-      .isLength({ min: 8, max: 50 })
-      .withMessage("Password must be between 8 and 50 characters")
-      .matches(/^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/)  // Match your Profile validation
-      .withMessage("Password must contain at least 1 letter and 1 number"),
-  ],
-  async (req, res) => {
-    try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({
-          message: "Validation failed",
-          errors: errors.array(),
-        });
-      }
-
-      const { email, password } = req.body;  // Change "newPassword" to "password"
-
-      // Find user by email
-      const user = await User.findOne({
-        email: email.toLowerCase(),
-        isActive: true,
-      });
-
-      if (!user) {
-        return res.status(404).json({
-          message: "No account found with this email address",
-        });
-      }
-
-      // Update password (will be hashed by pre-save hook)
-      user.password = password.trim();  // Change "newPassword" to "password"
-      await user.save();
-
-      res.status(200).json({
-        message: "Password reset successfully",
-        email: user.email,
-      });
-    } catch (error) {
-      console.error("Password reset error:", error);
       res.status(500).json({
         message: "Internal server error",
       });

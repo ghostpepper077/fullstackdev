@@ -19,7 +19,8 @@ import {
     LockReset as LockResetIcon,
     Lock as LockIcon,
     Visibility as VisibilityIcon,
-    VisibilityOff as VisibilityOffIcon
+    VisibilityOff as VisibilityOffIcon,
+    VerifiedUser as VerifiedUserIcon
 } from '@mui/icons-material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -31,13 +32,14 @@ import 'react-toastify/dist/ReactToastify.css';
 function ForgotPassword() {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
-    const [emailVerified, setEmailVerified] = useState(false);
+    const [emailSent, setEmailSent] = useState(false);
+    const [otpVerified, setOtpVerified] = useState(false);
     const [passwordReset, setPasswordReset] = useState(false);
     const [userEmail, setUserEmail] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    // Email verification form
+    // Email form to send OTP
     const emailFormik = useFormik({
         initialValues: {
             email: ""
@@ -56,24 +58,58 @@ function ForgotPassword() {
                     email: data.email.trim().toLowerCase()
                 };
 
-                // Verify if email exists in the system
-                const response = await http.post('/user/verify-email', payload);
-                console.log('Email verification response:', response.data);
+                const response = await http.post('/user/send-reset-otp', payload);
+                console.log('OTP sent response:', response.data);
 
                 setUserEmail(data.email.trim().toLowerCase());
-                setEmailVerified(true);
-                toast.success('Email verified! Please set your new password.');
+                setEmailSent(true);
+                toast.success('Verification code sent to your email!');
 
             } catch (err) {
-                console.error('Email verification error:', err);
-                toast.error(`${err.response?.data?.message || 'Email not found in our system'}`);
+                console.error('Send OTP error:', err);
+                toast.error(`${err.response?.data?.message || 'Failed to send verification code'}`);
             } finally {
                 setIsLoading(false);
             }
         }
     });
 
-    // Password reset form - simplified to match Profile component pattern
+    // OTP verification form
+    const otpFormik = useFormik({
+        initialValues: {
+            otp: ""
+        },
+        validationSchema: yup.object({
+            otp: yup.string()
+                .trim()
+                .required('Verification code is required')
+                .length(6, 'Verification code must be 6 digits')
+                .matches(/^\d+$/, 'Verification code must contain only numbers')
+        }),
+        onSubmit: async (data) => {
+            setIsLoading(true);
+            try {
+                const payload = {
+                    email: userEmail,
+                    otp: data.otp.trim()
+                };
+
+                const response = await http.post('/user/verify-reset-otp', payload);
+                console.log('OTP verification response:', response.data);
+
+                setOtpVerified(true);
+                toast.success('Verification code verified successfully!');
+
+            } catch (err) {
+                console.error('OTP verification error:', err);
+                toast.error(`${err.response?.data?.message || 'Invalid or expired verification code'}`);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+    });
+
+    // Password reset form
     const passwordFormik = useFormik({
         initialValues: {
             password: "",
@@ -94,7 +130,6 @@ function ForgotPassword() {
         onSubmit: async (data) => {
             setIsLoading(true);
             
-            // Simplified payload - just like Profile component
             const payload = {
                 email: userEmail,
                 password: data.password.trim()
@@ -103,7 +138,6 @@ function ForgotPassword() {
             console.log('Payload being sent:', payload);
             
             try {
-                // Using the same profile endpoint pattern for consistency
                 const response = await http.put('/user/reset-password', payload);
                 console.log('Password reset response:', response.data);
 
@@ -118,7 +152,6 @@ function ForgotPassword() {
             } catch (err) {
                 console.error('Password reset error:', err);
                 
-                // Simplified error handling - same pattern as Profile
                 if (err.response) {
                     const message = err.response.data?.message || `Server error: ${err.response.status}`;
                     toast.error(message);
@@ -138,10 +171,32 @@ function ForgotPassword() {
     };
 
     const handleBackToEmail = () => {
-        setEmailVerified(false);
+        setEmailSent(false);
+        setOtpVerified(false);
         setUserEmail('');
         emailFormik.resetForm();
+        otpFormik.resetForm();
         passwordFormik.resetForm();
+    };
+
+    const handleBackToOtp = () => {
+        setOtpVerified(false);
+        otpFormik.resetForm();
+        passwordFormik.resetForm();
+    };
+
+    const handleResendOtp = async () => {
+        setIsLoading(true);
+        try {
+            const payload = { email: userEmail };
+            const response = await http.post('/user/send-reset-otp', payload);
+            toast.success('New verification code sent to your email!');
+        } catch (err) {
+            console.error('Resend OTP error:', err);
+            toast.error('Failed to resend verification code. Please try again.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const togglePasswordVisibility = () => {
@@ -243,7 +298,7 @@ function ForgotPassword() {
     }
 
     // Password reset form screen
-    if (emailVerified) {
+    if (otpVerified) {
         return (
             <>
                 <Box sx={{
@@ -464,6 +519,238 @@ function ForgotPassword() {
                                     <Link
                                         component="button"
                                         type="button"
+                                        onClick={handleBackToOtp}
+                                        sx={{
+                                            color: '#667eea',
+                                            textDecoration: 'none',
+                                            fontWeight: 600,
+                                            '&:hover': {
+                                                textDecoration: 'underline',
+                                                color: '#5a6fd8'
+                                            }
+                                        }}
+                                    >
+                                        Back to OTP
+                                    </Link>
+                                    <Typography variant="body2" sx={{ color: '#666' }}>
+                                        •
+                                    </Typography>
+                                    <Link
+                                        component="button"
+                                        type="button"
+                                        onClick={handleBackToLogin}
+                                        sx={{
+                                            color: '#667eea',
+                                            textDecoration: 'none',
+                                            fontWeight: 600,
+                                            '&:hover': {
+                                                textDecoration: 'underline',
+                                                color: '#5a6fd8'
+                                            }
+                                        }}
+                                    >
+                                        Back to Login
+                                    </Link>
+                                </Box>
+                            </Box>
+                        </Box>
+                    </Paper>
+                </Box>
+                <ToastContainer />
+            </>
+        );
+    }
+
+    // OTP verification screen
+    if (emailSent) {
+        return (
+            <>
+                <Box sx={{
+                    minHeight: '100vh',
+                    display: 'flex',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    p: 2
+                }}>
+                    <Paper
+                        elevation={24}
+                        sx={{
+                            maxWidth: 450,
+                            width: '100%',
+                            borderRadius: 4,
+                            overflow: 'hidden',
+                            background: 'rgba(255, 255, 255, 0.95)',
+                            backdropFilter: 'blur(10px)',
+                            border: '1px solid rgba(255, 255, 255, 0.2)'
+                        }}
+                    >
+                        {/* Header */}
+                        <Box sx={{
+                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            p: 4,
+                            textAlign: 'center',
+                            color: 'white'
+                        }}>
+                            <Box sx={{
+                                width: 70,
+                                height: 70,
+                                borderRadius: '50%',
+                                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                mx: 'auto',
+                                mb: 2,
+                                backdropFilter: 'blur(10px)'
+                            }}>
+                                <VerifiedUserIcon sx={{ fontSize: 35, color: 'white' }} />
+                            </Box>
+
+                            <Typography variant="h4" sx={{
+                                fontWeight: 700,
+                                mb: 1,
+                                fontFamily: '"Segoe UI", "Roboto", sans-serif'
+                            }}>
+                                AUTOSUME
+                            </Typography>
+
+                            <Typography variant="h5" sx={{
+                                fontWeight: 500,
+                                opacity: 0.9
+                            }}>
+                                Verify Code
+                            </Typography>
+                        </Box>
+
+                        {/* Form Content */}
+                        <Box sx={{ p: 4 }}>
+                            <Alert
+                                severity="info"
+                                sx={{
+                                    mb: 3,
+                                    borderRadius: 2
+                                }}
+                            >
+                                Code sent to: {userEmail}
+                            </Alert>
+
+                            <Typography variant="body1" sx={{
+                                mb: 4,
+                                textAlign: 'center',
+                                color: '#555',
+                                fontSize: '1.1rem',
+                                lineHeight: 1.6
+                            }}>
+                                Enter the 6-digit verification code sent to your email.
+                            </Typography>
+
+                            <Box component="form" onSubmit={otpFormik.handleSubmit}>
+                                <TextField
+                                    fullWidth
+                                    margin="dense"
+                                    autoComplete="off"
+                                    label="Verification Code"
+                                    name="otp"
+                                    type="text"
+                                    inputProps={{ 
+                                        maxLength: 6,
+                                        style: { 
+                                            textAlign: 'center',
+                                            fontSize: '1.5rem',
+                                            letterSpacing: '0.5rem',
+                                            fontFamily: 'monospace'
+                                        }
+                                    }}
+                                    value={otpFormik.values.otp}
+                                    onChange={otpFormik.handleChange}
+                                    onBlur={otpFormik.handleBlur}
+                                    error={otpFormik.touched.otp && Boolean(otpFormik.errors.otp)}
+                                    helperText={otpFormik.touched.otp && otpFormik.errors.otp}
+                                    disabled={isLoading}
+                                    sx={{
+                                        mb: 4,
+                                        '& .MuiOutlinedInput-root': {
+                                            borderRadius: 2,
+                                            '&:hover fieldset': {
+                                                borderColor: '#667eea',
+                                            },
+                                            '&.Mui-focused fieldset': {
+                                                borderColor: '#667eea',
+                                            }
+                                        },
+                                        '& .MuiInputLabel-root.Mui-focused': {
+                                            color: '#667eea'
+                                        }
+                                    }}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <VerifiedUserIcon sx={{
+                                                    color: otpFormik.touched.otp && otpFormik.errors.otp ? "error.main" : "#667eea"
+                                                }} />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+
+                                <Button
+                                    type="submit"
+                                    variant="contained"
+                                    fullWidth
+                                    size="large"
+                                    disabled={isLoading || otpFormik.isSubmitting}
+                                    sx={{
+                                        py: 1.8,
+                                        mb: 3,
+                                        borderRadius: 2,
+                                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                        fontSize: '1.1rem',
+                                        fontWeight: 600,
+                                        '&:hover': {
+                                            background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                                            transform: 'translateY(-2px)',
+                                            boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
+                                        },
+                                        '&:disabled': {
+                                            background: '#ccc'
+                                        },
+                                        transition: 'all 0.2s ease'
+                                    }}
+                                >
+                                    {isLoading || otpFormik.isSubmitting ? (
+                                        <CircularProgress size={24} sx={{ color: 'white' }} />
+                                    ) : (
+                                        'Verify Code'
+                                    )}
+                                </Button>
+
+                                <Box sx={{ textAlign: 'center', mb: 3 }}>
+                                    <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
+                                        Didn't receive the code?
+                                    </Typography>
+                                    <Button
+                                        variant="text"
+                                        onClick={handleResendOtp}
+                                        disabled={isLoading}
+                                        sx={{
+                                            color: '#667eea',
+                                            fontWeight: 600,
+                                            '&:hover': {
+                                                backgroundColor: 'rgba(102, 126, 234, 0.1)'
+                                            }
+                                        }}
+                                    >
+                                        Resend Code
+                                    </Button>
+                                </Box>
+
+                                <Divider sx={{ mb: 3 }} />
+
+                                <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+                                    <Link
+                                        component="button"
+                                        type="button"
                                         onClick={handleBackToEmail}
                                         sx={{
                                             color: '#667eea',
@@ -506,7 +793,7 @@ function ForgotPassword() {
         );
     }
 
-    // Email verification screen (original screen)
+    // Email input screen (original screen)
     return (
         <>
             <Box sx={{
@@ -576,7 +863,7 @@ function ForgotPassword() {
                             fontSize: '1.1rem',
                             lineHeight: 1.6
                         }}>
-                            Enter your email address to verify your account and reset your password.
+                            Enter your email address and we'll send you a verification code to reset your password.
                         </Typography>
 
                         <Box component="form" onSubmit={emailFormik.handleSubmit}>
