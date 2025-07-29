@@ -22,7 +22,11 @@ const userSchema = new mongoose.Schema({
   gender: { type: String },
   country: { type: String },
   language: { type: String },
-  timeZone: { type: String }
+  timeZone: { type: String },
+  // OTP fields for password reset
+  resetPasswordOTP: { type: String },
+  resetPasswordOTPExpires: { type: Date },
+  resetPasswordOTPVerified: { type: Boolean, default: false }
 }, { timestamps: true });
 
 // Hash password before saving
@@ -41,6 +45,33 @@ userSchema.pre('save', async function(next) {
 // Compare password method
 userSchema.methods.comparePassword = function(candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
+};
+
+// Generate OTP method
+userSchema.methods.generateResetPasswordOTP = function() {
+  // Generate 6-digit OTP
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  
+  this.resetPasswordOTP = otp;
+  this.resetPasswordOTPExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+  this.resetPasswordOTPVerified = false;
+  
+  return otp;
+};
+
+// Verify OTP method
+userSchema.methods.verifyResetPasswordOTP = function(otp) {
+  return (
+    this.resetPasswordOTP === otp &&
+    this.resetPasswordOTPExpires > Date.now()
+  );
+};
+
+// Clear OTP method
+userSchema.methods.clearResetPasswordOTP = function() {
+  this.resetPasswordOTP = undefined;
+  this.resetPasswordOTPExpires = undefined;
+  this.resetPasswordOTPVerified = false;
 };
 
 module.exports = mongoose.model('User', userSchema);
