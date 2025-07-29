@@ -242,20 +242,20 @@ router.post(
 );
 
 // Reset password endpoint
-router.post(
-  "/reset-password",
+// Change this in routes/user.js
+router.put("/reset-password",  // Change POST to PUT
   [
     body("email")
       .trim()
       .isEmail()
       .withMessage("Please enter a valid email")
       .normalizeEmail(),
-    body("newPassword")
+    body("password")  // Change "newPassword" to "password"
       .trim()
       .isLength({ min: 8, max: 50 })
       .withMessage("Password must be between 8 and 50 characters")
-      .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
-      .withMessage("Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"),
+      .matches(/^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/)  // Match your Profile validation
+      .withMessage("Password must contain at least 1 letter and 1 number"),
   ],
   async (req, res) => {
     try {
@@ -267,7 +267,7 @@ router.post(
         });
       }
 
-      const { email, newPassword } = req.body;
+      const { email, password } = req.body;  // Change "newPassword" to "password"
 
       // Find user by email
       const user = await User.findOne({
@@ -282,7 +282,7 @@ router.post(
       }
 
       // Update password (will be hashed by pre-save hook)
-      user.password = newPassword.trim();
+      user.password = password.trim();  // Change "newPassword" to "password"
       await user.save();
 
       res.status(200).json({
