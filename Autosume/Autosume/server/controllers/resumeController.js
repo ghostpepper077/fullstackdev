@@ -1,0 +1,206 @@
+const { OpenAI } = require('openai');
+const pdf = require('pdf-parse');
+const fs = require('fs');
+const path = require('path');
+const Job = require('../models/jobs'); // Adjust path if needed
+
+// Maximum allowed PDF size (5MB)
+const MAX_PDF_SIZE = 5 * 1024 * 1024;
+
+// Process Resume Function
+exports.processResume = async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ 
+      error: "No file uploaded",
+      details: "Please select a PDF file"
+    });
+  }
+
+  try {
+    console.log(`Processing file: ${req.file.originalname}`);
+    
+    // 1. Validate file type and size
+    if (!req.file.mimetype.includes('pdf')) {
+      throw new Error("Only PDF files are accepted");
+    }
+
+    if (req.file.size > MAX_PDF_SIZE) {
+      throw new Error("File size exceeds 5MB limit");
+    }
+
+    // 2. Read and parse PDF
+    const dataBuffer = fs.readFileSync(req.file.path);
+    const pdfText = await pdf(dataBuffer);
+    
+    if (!pdfText.text || pdfText.text.length < 50) {
+      throw new Error("PDF contains no readable text");
+    }
+
+    // 3. Process with OpenAI
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY
+    });
+
+    const prompt = `
+Respond ONLY with valid JSON in this format:
+{
+  "skills": ["array", "of", "technical", "skills"],
+  "experience": "years of experience as number",
+  "summary": "2-3 sentence professional summary"
+}
+
+Resume Text:
+${pdfText.text.substring(0, 3000)}
+    `.trim();
+
+    const completion = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 500
+    });
+
+    // 4. Validate and format response
+    let result;
+    try {
+      result = JSON.parse(completion.choices[0].message.content);
+    } catch (parseError) {
+      console.error("Error parsing OpenAI response as JSON:", parseError);
+      console.error("OpenAI raw response:", completion.choices[0].message.content);
+      return res.status(500).json({
+        error: "Invalid JSON response from AI",
+        rawResponse: completion.choices[0].message.content
+      });
+    }
+
+    if (!result.skills || !result.experience) {
+      throw new Error("AI returned incomplete data");
+    }
+
+    res.json({
+      success: true,
+      data: {
+        skills: result.skills,
+        experience: result.experience,
+        summary: result.summary || ""
+      }
+    });
+
+  } catch (error) {
+    console.error("Processing error:", error);
+    if (error.response) {
+      // If error from axios or OpenAI API
+      console.error("Error response data:", error.response.data);
+    }
+    if (error.stack) {
+      console.error("Stack trace:", error.stack);
+    }
+    res.status(500).json({
+      error: "Resume processing failed",
+      details: error.message || error.toString(),
+      suggestion: "Try a different PDF file or check server logs"
+    });
+  } finally {
+    // Clean up uploaded file
+    if (req.file?.path && fs.existsSync(req.file.path)) {
+      try {
+        fs.unlinkSync(req.file.path);
+      } catch (unlinkError) {
+        console.error("Error deleting uploaded file:", unlinkError);
+      }
+    }
+  }
+};
+
+// Screen Candidate Function
+exports.screenCandidate = async (req, res) => {
+  try {
+
+    const { jobId, skills, experience } = req.body;
+
+    // Validate input
+    if (!jobId || !skills || !experience) {
+      return res.status(400).json({
+        error: 'Missing required fields',
+        details: 'jobId, skills, and experience are required'
+      });
+    }
+
+    // Import Criteria model
+    const Criteria = require('../models/Criteria');
+
+    // Get criteria for this job
+    const criteria = await Criteria.findOne({ jobId }).populate('jobId');
+    if (!criteria) {
+      return res.status(404).json({ error: 'Criteria not found for this job' });
+    }
+
+    // Initialize OpenAI
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY
+    });
+
+    // Prepare prompt for AI screening
+    const prompt = `
+Analyze how well this candidate matches the ${criteria.jobId.role} position:
+
+Candidate Skills: ${Array.isArray(skills) ? skills.join(', ') : skills}
+Candidate Experience: ${experience} years
+
+Job Criteria:
+Required Experience: ${criteria.experience}
+Required Skills: ${criteria.skills.join(', ')}
+
+Return a JSON response with:
+{
+  "matchPercentage": 0-100,
+  "matchedSkills": ["array", "of", "matched", "skills"],
+  "missingSkills": ["array", "of", "missing", "skills"],
+  "strengths": ["array", "of", "strengths"],
+  "weaknesses": ["array", "of", "weaknesses"],
+  "recommendation": "short text recommendation"
+}
+    `.trim();
+
+    // Call OpenAI API
+    const completion = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.3
+    });
+
+    let result;
+    try {
+      result = JSON.parse(completion.choices[0].message.content);
+    } catch (parseError) {
+      console.error("Error parsing AI screening response as JSON:", parseError);
+      console.error("OpenAI raw response:", completion.choices[0].message.content);
+      return res.status(500).json({
+        error: "Invalid JSON response from AI screening",
+        rawResponse: completion.choices[0].message.content
+      });
+    }
+
+    res.json({
+      success: true,
+      matchPercentage: result.matchPercentage,
+      matchedSkills: result.matchedSkills,
+      missingSkills: result.missingSkills,
+      strengths: result.strengths,
+      weaknesses: result.weaknesses,
+      recommendation: result.recommendation
+    });
+
+  } catch (error) {
+    console.error('Screening error:', error);
+    if (error.response) {
+      console.error("Error response data:", error.response.data);
+    }
+    if (error.stack) {
+      console.error("Stack trace:", error.stack);
+    }
+    res.status(500).json({
+      error: 'Screening failed',
+      details: error.message || error.toString()
+    });
+  }
+};

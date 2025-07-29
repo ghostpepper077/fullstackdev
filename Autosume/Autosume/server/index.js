@@ -30,6 +30,7 @@ const interviewRoutes = require('./routes/interviewRoutes');
 const scheduleRoutes = require('./routes/scheduleRoutes');
 const criteriaRoutes = require('./routes/criteria');
 const aiRoutes = require('./routes/aiRoutes');
+const aiHariz = require('./routes/aiHariz');
 
 // --- Use Routes ---
 app.use('/api/auth', authRoutes);
@@ -38,6 +39,8 @@ app.use('/api/interviews', interviewRoutes);
 app.use('/api/schedules', scheduleRoutes);
 app.use('/api/criteria', criteriaRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api', require('./routes/aiHariz'));
+
 // --- Job Routes ---
 app.get('/api/jobs', async (req, res) => {
   try {
