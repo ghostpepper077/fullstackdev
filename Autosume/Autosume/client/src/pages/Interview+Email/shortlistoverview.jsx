@@ -19,8 +19,18 @@ import PhoneIcon from "@mui/icons-material/Phone";
 import WorkIcon from "@mui/icons-material/Work";
 import NotesIcon from "@mui/icons-material/Notes";
 import PsychologyIcon from "@mui/icons-material/Psychology";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import EventAvailableIcon from "@mui/icons-material/EventAvailable";
+import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
+import BlockIcon from "@mui/icons-material/Block";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+
+const statusIcon = {
+  Scheduled: <EventAvailableIcon fontSize="inherit" />,
+  Pending: <HourglassEmptyIcon fontSize="inherit" />,
+  Unscheduled: <BlockIcon fontSize="inherit" />,
+};
 
 function CandidateCard({ candidate, selected, onSelect }) {
   return (
@@ -52,6 +62,7 @@ function CandidateCard({ candidate, selected, onSelect }) {
         }
       >
         <Chip
+          icon={statusIcon[candidate.status]}
           label={candidate.status}
           size="small"
           color={
@@ -114,6 +125,10 @@ export default function ShortlistOverview() {
         Shortlist Overview
       </Typography>
 
+      <Typography variant="subtitle2" display="flex" alignItems="center" gap={1} mb={1}>
+        <FilterListIcon fontSize="small" /> Filters
+      </Typography>
+
       {/* Filters */}
       <Box display="flex" gap={2} mb={2} flexWrap="wrap">
         <TextField
@@ -140,7 +155,7 @@ export default function ShortlistOverview() {
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
         >
-          {["All", "Scheduled", "Pending", "Not Sent"].map((s) => (
+          {["All", "Scheduled", "Pending", "Unscheduled"].map((s) => (
             <MenuItem key={s} value={s}>
               Status: {s}
             </MenuItem>
@@ -198,7 +213,9 @@ export default function ShortlistOverview() {
 
           {/* Candidate Details */}
           <Grid item xs={12} md={8}>
-            {selected && (
+            {loading ? (
+              <CircularProgress />
+            ) : selected ? (
               <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
                 <Box
                   sx={{
@@ -277,6 +294,8 @@ export default function ShortlistOverview() {
                   </Tooltip>
                 </Box>
               </Paper>
+            ) : (
+              <Typography variant="body2">Select a candidate to view details</Typography>
             )}
           </Grid>
         </Grid>

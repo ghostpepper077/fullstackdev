@@ -65,7 +65,7 @@ ${scheduled
 // ✅ Get All Currently Booked Slots
 router.get("/availability", async (req, res) => {
   try {
-    const candidates = await Candidate.find({ status: { $ne: "Not Sent" } });
+    const candidates = await Candidate.find({ status: { $ne: "Unscheduled" } });
 
     const takenSlots = candidates.map((c) => {
       return `${c.date}__${c.time}__${c.interviewer}`;

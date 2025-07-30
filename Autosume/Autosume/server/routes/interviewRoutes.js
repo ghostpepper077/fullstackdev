@@ -55,7 +55,7 @@ router.put('/clear/:id', async (req, res) => {
           date: "-",
           time: "-",
           interviewer: "-",
-          status: "Not Sent",
+          status: "Unscheduled",
         },
       },
       { new: true }
