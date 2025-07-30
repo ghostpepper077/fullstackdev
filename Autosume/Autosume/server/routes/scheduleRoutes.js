@@ -43,8 +43,18 @@ ${scheduled
       ],
     });
 
-    const suggestion = completion.choices[0].message.content;
+    let suggestion = completion.choices[0].message.content.trim();
+
+    // Remove markdown code block wrapper if present
+    if (suggestion.startsWith("```")) {
+      suggestion = suggestion
+        .replace(/```[a-z]*\\n?/gi, "")
+        .replace(/```$/, "")
+        .trim();
+    }
+
     const parsed = JSON.parse(suggestion);
+
     res.json(parsed);
   } catch (error) {
     console.error("AI scheduling error:", error.message);
