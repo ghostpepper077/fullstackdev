@@ -160,16 +160,36 @@ const ChatbotPage = () => {
     setSelectedChatId(newId);
   };
 
-  const handleSendMessage = (text) => {
-    const response = getChatbotResponse(text);
+  const handleSendMessage = async (text) => {
+    // Show user message
+    setChats((prevChats) =>
+      prevChats.map((chat) =>
+        chat.id === selectedChatId
+          ? { ...chat, messages: [...chat.messages, { text, isUser: true }] }
+          : chat
+      )
+    );
+
+    // Show loading message from bot
+    setChats((prevChats) =>
+      prevChats.map((chat) =>
+        chat.id === selectedChatId
+          ? { ...chat, messages: [...chat.messages, { text: 'Typing...', isUser: false }] }
+          : chat
+      )
+    );
+
+    // Get AI response
+    const response = await getChatbotResponse(text);
+
+    // Replace 'Typing...' with actual response
     setChats((prevChats) =>
       prevChats.map((chat) =>
         chat.id === selectedChatId
           ? {
               ...chat,
               messages: [
-                ...chat.messages,
-                { text, isUser: true },
+                ...chat.messages.slice(0, -1),
                 { text: response, isUser: false },
               ],
             }
@@ -182,62 +202,56 @@ const ChatbotPage = () => {
 
   return (
     <Box sx={{ display: 'flex', height: '100%', p: 3 }}>
-    
       <Box sx={{ width: 250, pr: 2 }}>
         <PageTitle title="Chats" />
         <Button variant="contained" fullWidth onClick={handleCreateNewChat} sx={{ mb: 2 }}>
           + New Chat
         </Button>
         <List>
-  {chats.map((chat) => (
-    <ListItem
-      key={chat.id}
-      selected={chat.id === selectedChatId}
-      sx={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        bgcolor: chat.id === selectedChatId ? 'action.selected' : 'transparent',
-        borderRadius: 1,
-        px: 1,
-        py: 0.5,
-        mb: 1,
-        cursor: 'pointer',
-        '&:hover': {
-          bgcolor: 'action.hover',
-        },
-      }}
-    >
-    
-      <Box onClick={() => setSelectedChatId(chat.id)} sx={{ flexGrow: 1 }}>
-        <Typography variant="body1">{chat.title}</Typography>
+          {chats.map((chat) => (
+            <ListItem
+              key={chat.id}
+              selected={chat.id === selectedChatId}
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                bgcolor: chat.id === selectedChatId ? 'action.selected' : 'transparent',
+                borderRadius: 1,
+                px: 1,
+                py: 0.5,
+                mb: 1,
+                cursor: 'pointer',
+                '&:hover': {
+                  bgcolor: 'action.hover',
+                },
+              }}
+            >
+              <Box onClick={() => setSelectedChatId(chat.id)} sx={{ flexGrow: 1 }}>
+                <Typography variant="body1">{chat.title}</Typography>
+              </Box>
+
+              <IconButton
+                size="small"
+                edge="end"
+                color="error"
+                onClick={() => {
+                  setChats((prev) => {
+                    const updated = prev.filter((c) => c.id !== chat.id);
+                    if (chat.id === selectedChatId) {
+                      setSelectedChatId(updated[0]?.id || null);
+                    }
+                    return updated;
+                  });
+                }}
+              >
+                <DeleteIcon fontSize="small" />
+              </IconButton>
+            </ListItem>
+          ))}
+        </List>
       </Box>
 
-     
-      <IconButton
-        size="small"
-        edge="end"
-        color="error"
-        onClick={() => {
-          setChats((prev) => {
-            const updated = prev.filter((c) => c.id !== chat.id);
-       
-            if (chat.id === selectedChatId) {
-              setSelectedChatId(updated[0]?.id || null);
-            }
-            return updated;
-          });
-        }}
-      >
-        <DeleteIcon fontSize="small" />
-      </IconButton>
-    </ListItem>
-  ))}
-</List>
-
-      </Box>
-
-  
       <Box sx={{ flex: 1 }}>
         <PageTitle title="Staff Handbook Assistant" />
         {selectedChat ? (
