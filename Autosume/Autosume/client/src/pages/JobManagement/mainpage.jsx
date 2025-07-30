@@ -104,7 +104,7 @@ const JobManagement = () => {
                 </select>
               </div>
               <button className="create-job" onClick={handleCreateJob}>
-                Create Job
+                CREATE JOB
               </button>
             </div>
           </div>
