@@ -28,7 +28,7 @@ export default function ShortlistOverview() {
   // Fetch candidates
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/candidates/all")
+      .get("http://localhost:5000/api/candidates")
       .then((res) => {
         setCandidates(res.data);
         setFiltered(res.data);
