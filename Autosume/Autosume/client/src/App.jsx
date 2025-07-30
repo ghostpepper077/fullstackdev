@@ -196,6 +196,12 @@ function Dashboard() {
 
 // Support component - Help/Contact page
 function Support() {
+  const navigate = useNavigate();
+
+  const handleContactSupportClick = () => {
+    navigate('/chatbot'); // Redirect to the Chatbot page
+  };
+
   return (
     <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
       <div style={{ textAlign: 'center', marginBottom: '50px' }}>
@@ -258,7 +264,7 @@ function Support() {
       <div style={{ textAlign: 'center', backgroundColor: '#fff', padding: '40px', borderRadius: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.05)' }}>
         <h2 style={{ color: '#2c3e50', marginBottom: '20px' }}>Still Need Help?</h2>
         <p style={{ fontSize: '1.1rem', color: '#666', marginBottom: '30px', lineHeight: '1.6' }}>
-          Our dedicated support team is always ready to assist you. Don't hesitate to reach out!
+          We have a Chatbot ready to answer your queries and alleviate your concerns.
         </p>
         <button style={{
           backgroundColor: '#2ecc71',
@@ -269,19 +275,10 @@ function Support() {
           fontSize: '1.1rem',
           cursor: 'pointer',
           marginRight: '15px'
-        }}>
-          Contact Support
-        </button>
-        <button style={{
-          backgroundColor: '#95a5a6',
-          color: 'white',
-          padding: '15px 30px',
-          border: 'none',
-          borderRadius: '8px',
-          fontSize: '1.1rem',
-          cursor: 'pointer'
-        }}>
-          Live Chat
+        }}
+         onClick={handleContactSupportClick} // Redirect to the chatbot page
+        >
+          Chat Now
         </button>
       </div>
     </div>
