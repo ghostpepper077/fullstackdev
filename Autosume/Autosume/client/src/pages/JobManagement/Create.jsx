@@ -22,7 +22,7 @@ const Create = () => {
   const [aiLoading, setAiLoading] = useState(false);
   const [fetching, setFetching] = useState(isEdit); // Only true in edit mode
   const [error, setError] = useState('');
-  
+
 
   // Fetch existing job for edit
   useEffect(() => {
@@ -135,9 +135,15 @@ const Create = () => {
                 style={{ flex: 1 }}
                 required
               />
-              <button type="button" onClick={generateDescription} disabled={aiLoading}>
-                {aiLoading ? 'Generating...' : 'Enhance with AI'}
+              <button
+                type="button"
+                onClick={generateDescription}
+                className="enhance-ai-button"
+                disabled={aiLoading}
+              >
+                {aiLoading ? 'Generating...' : '✨ Enhance with AI'}
               </button>
+
             </div>
           </div>
 

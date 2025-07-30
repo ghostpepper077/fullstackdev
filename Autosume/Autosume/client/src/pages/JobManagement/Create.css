@@ -87,3 +87,29 @@ textarea {
 .submit-button:hover {
   background: #3d8b40;
 }
+.enhance-ai-button {
+  background: #4a6bdf;
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.enhance-ai-button:hover {
+  background: #3b55c3;
+  transform: scale(1.02);
+}
+
+.enhance-ai-button:disabled {
+  background: #b3c1f0;
+  cursor: not-allowed;
+  transform: none;
+}
