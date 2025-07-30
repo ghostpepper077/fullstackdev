@@ -1,15 +1,20 @@
 // Frontend - Register.jsx (React Component)
-import React from 'react';
-import { Box, Typography, TextField, Button } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Typography, TextField, Button, IconButton, InputAdornment } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import http from '../../http';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 function Register() {
     const navigate = useNavigate();
+
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
 
     const formik = useFormik({
         initialValues: {
@@ -41,10 +46,10 @@ function Register() {
             data.name = data.name.trim();
             data.email = data.email.trim().toLowerCase();
             data.password = data.password.trim();
-            
+
             // Remove confirmPassword before sending to backend
             const { confirmPassword, ...registrationData } = data;
-            
+
             http.post("/user/register", registrationData)
                 .then((res) => {
                     console.log(res.data);
@@ -118,23 +123,53 @@ function Register() {
                     <TextField
                         fullWidth margin="dense" autoComplete="off"
                         label="Password"
-                        name="password" type="password"
+                        name="password"
+                        type={showPassword ? 'text' : 'password'}
                         value={formik.values.password}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         error={formik.touched.password && Boolean(formik.errors.password)}
                         helperText={formik.touched.password && formik.errors.password}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        edge="end"
+                                        aria-label="toggle password visibility"
+                                    >
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            )
+                        }}
                     />
+
                     <TextField
                         fullWidth margin="dense" autoComplete="off"
                         label="Confirm Password"
-                        name="confirmPassword" type="password"
+                        name="confirmPassword"
+                        type={showConfirmPassword ? 'text' : 'password'}
                         value={formik.values.confirmPassword}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
                         helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                        edge="end"
+                                        aria-label="toggle confirm password visibility"
+                                    >
+                                        {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            )
+                        }}
                     />
+
                     <Button
                         fullWidth
                         variant="contained"
