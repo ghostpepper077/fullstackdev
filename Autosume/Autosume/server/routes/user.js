@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const { body, validationResult } = require("express-validator");
 const { authenticateToken } = require("../middlewares/auth");
-const { sendOTPEmail } = require("../services/emailService");
+const emailService = require("../services/emailService");
 
 // JWT Secrets
 const JWT_SECRET =
@@ -195,65 +195,42 @@ router.post(
   }
 );
 
+
 // Send OTP for password reset
-router.post(
-  "/send-reset-otp",
-  [
-    body("email")
-      .trim()
-      .isEmail()
-      .withMessage("Please enter a valid email")
-      .normalizeEmail(),
-  ],
-  async (req, res) => {
-    try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({
-          message: "Invalid email format",
-          errors: errors.array(),
-        });
-      }
+router.post('/send-reset-otp', async (req, res) => {
+  const { email } = req.body;
 
-      const { email } = req.body;
-
-      // Find user by email
-      const user = await User.findOne({
-        email: email.toLowerCase(),
-        isActive: true,
-      });
-
-      if (!user) {
-        return res.status(404).json({
-          message: "No account found with this email address",
-        });
-      }
-
-      // Generate OTP
-      const otp = user.generateResetPasswordOTP();
-      await user.save();
-
-      // Send OTP email
-      const emailResult = await sendOTPEmail(user.email, otp, user.name);
-
-      if (!emailResult.success) {
-        return res.status(500).json({
-          message: "Failed to send verification email. Please try again.",
-        });
-      }
-
-      res.status(200).json({
-        message: "Verification code sent to your email",
-        email: user.email,
-      });
-    } catch (error) {
-      console.error("Send OTP error:", error);
-      res.status(500).json({
-        message: "Internal server error",
-      });
+  try {
+    // Find user
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
+
+    // Generate OTP
+    const otp = user.generateResetPasswordOTP();
+    await user.save();
+    
+    // Send OTP email
+    const result = await emailService.sendEmail(email, user.name, otp);
+    
+    // CHECK: Your emailService now returns {success: true, statusCode: 202, response: [...]}
+    if (result && result.success && result.statusCode === 202) {
+      return res.status(200).json({ message: 'OTP email sent successfully!' });
+    } else {
+      // Log what we actually received for debugging
+      console.log('Unexpected result structure:', result);
+      throw new Error('Failed to send email');
+    }
+
+  } catch (error) {
+    console.error('Error sending OTP:', error.message);
+    return res.status(500).json({ 
+      message: 'Failed to send verification email. Please try again.',
+      errors: []
+    });
   }
-);
+});
 
 // Verify OTP for password reset
 router.post(
@@ -320,7 +297,8 @@ router.post(
 );
 
 // Reset password endpoint (now requires verified OTP)
-router.put("/reset-password",
+router.put(
+  "/reset-password",
   [
     body("email")
       .trim()
@@ -374,10 +352,10 @@ router.put("/reset-password",
 
       // Update password (will be hashed by pre-save hook)
       user.password = password.trim();
-      
+
       // Clear OTP data
       user.clearResetPasswordOTP();
-      
+
       await user.save();
 
       res.status(200).json({
@@ -432,7 +410,7 @@ router.post(
       await user.save();
 
       // Send OTP email
-      const emailResult = await sendOTPEmail(user.email, otp, user.name);
+      const emailResult = await sendEmail(user.email, otp, user.name);
 
       if (!emailResult.success) {
         return res.status(500).json({
@@ -456,17 +434,17 @@ router.post(
 // Get authenticated user info
 router.get("/auth", authenticateToken, (req, res) => {
   const userInfo = {
-  id: req.user._id,
-  email: req.user.email,
-  name: req.user.name,
-  role: req.user.role,
-  lastLogin: req.user.lastLogin,
-  dateOfBirth: req.user.dateOfBirth,
-  gender: req.user.gender,
-  country: req.user.country,
-  language: req.user.language,
-  timeZone: req.user.timeZone,
-};
+    id: req.user._id,
+    email: req.user.email,
+    name: req.user.name,
+    role: req.user.role,
+    lastLogin: req.user.lastLogin,
+    dateOfBirth: req.user.dateOfBirth,
+    gender: req.user.gender,
+    country: req.user.country,
+    language: req.user.language,
+    timeZone: req.user.timeZone,
+  };
   res.json({ user: userInfo });
 });
 
