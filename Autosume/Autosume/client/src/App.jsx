@@ -1,7 +1,7 @@
 import './App.css';
 import { useState, useEffect } from 'react';
 import { Container, Box } from '@mui/material';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import MyTheme from './themes/MyTheme';
 import MyForm from './pages/UserProfile/MyForm';
@@ -131,6 +131,12 @@ function App() {
 
 // Dashboard component - Welcome/About page
 function Dashboard() {
+  const navigate = useNavigate();
+
+  const handleGetStartedClick = () => {
+    navigate('/job-management');
+  };
+  
   return (
     <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
       <div style={{ textAlign: 'center', marginBottom: '50px' }}>
@@ -177,8 +183,10 @@ function Dashboard() {
           borderRadius: '8px',
           fontSize: '1.1rem',
           cursor: 'pointer',
-          transition: 'background-color 0.3s'
-        }}>
+          transition: 'background-color 0.3s',
+        }}
+        onClick={handleGetStartedClick} // Trigger navigate when clicked
+        > 
           Get Started Today
         </button>
       </div>
