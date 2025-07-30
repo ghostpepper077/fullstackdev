@@ -25,12 +25,14 @@ const Job = require("./models/jobs");
 const Criteria = require("./models/Criteria");
 
 // --- Routers ---
-const authRoutes = require("./routes/auth");
-const userRoutes = require("./routes/user");
-const interviewRoutes = require("./routes/interviewRoutes");
-const scheduleRoutes = require("./routes/scheduleRoutes");
-const criteriaRoutes = require("./routes/criteria");
-const aiRoutes = require("./routes/aiRoutes");
+const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/user');
+const interviewRoutes = require('./routes/interviewRoutes');
+const scheduleRoutes = require('./routes/scheduleRoutes');
+const criteriaRoutes = require('./routes/criteria');
+const aiRoutes = require('./routes/aiRoutes');
+const aiRoutesJason = require('./routes/aiRoutesJason');
+
 
 // --- Use Routes ---
 app.use("/api/auth", authRoutes);
@@ -39,6 +41,7 @@ app.use("/api/interviews", interviewRoutes);
 app.use("/api/schedules", scheduleRoutes);
 app.use("/api/criteria", criteriaRoutes);
 app.use("/api/ai", aiRoutes);
+app.use('/api/ai', aiRoutesJason);
 
 // --- New Email Routes ---
 // Send OTP email (Example route for email)
