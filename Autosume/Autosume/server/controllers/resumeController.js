@@ -180,6 +180,31 @@ Return a JSON response with:
       });
     }
 
+    // Save candidate to MongoDB
+    const Candidate = require('../models/Candidate');
+    const candidateData = {
+      name: req.body.name || result.name || '',
+      phone: req.body.phone || result.phone || '',
+      email: req.body.email || result.email || '',
+      overview: req.body.overview || result.overview || '',
+      experienceDetails: req.body.experienceDetails || result.experienceDetails || '',
+      education: req.body.education || result.education || '',
+      aiSummary: result.summary || '',
+      match: result.matchPercentage || 0,
+      skills: result.matchedSkills || req.body.skills || [],
+      experience: req.body.experience || '',
+      role: criteria.jobId.role || '',
+      status: 'Not Sent',
+    };
+
+    let savedCandidate;
+    try {
+      savedCandidate = await Candidate.create(candidateData);
+    } catch (dbError) {
+      console.error('Error saving candidate:', dbError);
+      // Continue to send response even if DB save fails
+    }
+
     res.json({
       success: true,
       matchPercentage: result.matchPercentage,
@@ -187,7 +212,15 @@ Return a JSON response with:
       missingSkills: result.missingSkills,
       strengths: result.strengths,
       weaknesses: result.weaknesses,
-      recommendation: result.recommendation
+      recommendation: result.recommendation,
+      name: candidateData.name,
+      phone: candidateData.phone,
+      email: candidateData.email,
+      overview: candidateData.overview,
+      experienceDetails: candidateData.experienceDetails,
+      education: candidateData.education,
+      summary: candidateData.aiSummary,
+      _id: savedCandidate?._id || null
     });
 
   } catch (error) {

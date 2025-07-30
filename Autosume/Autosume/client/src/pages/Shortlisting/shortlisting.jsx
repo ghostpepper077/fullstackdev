@@ -26,7 +26,7 @@ export default function Shortlisting() {
     jobRole: 'Any',
     status: 'Under Review',
     experience: 'Any',
-    skills: 'Any',
+    skills: [],
   });
 
   useEffect(() => {
@@ -34,28 +34,42 @@ export default function Shortlisting() {
       try {
         setLoading(true);
         setError(null);
-        
-        // Try to fetch data from API, but fallback to local data if it fails
-        const [candidatesRes, optionsRes] = await Promise.all([
-          http.get('/candidates').catch(() => ({ data: [] })),
-          http.get('/criteria/options').catch(() => ({ 
-            data: {
-              experience: filterOptions.experience,
-              skills: filterOptions.skills,
-              jobs: filterOptions.jobs
-            }
-          }))
-        ]);
-        
-        setCandidates(candidatesRes.data || []);
-        
-        // Merge API response with fallback options
+
+        // Try to get AI-screened candidates from localStorage
+        const screened = localStorage.getItem('screenedCandidates');
+        let screenedCandidates = [];
+        if (screened) {
+          try {
+            screenedCandidates = JSON.parse(screened);
+          } catch {
+            screenedCandidates = [];
+          }
+        }
+
+        // Fetch filter options from API or fallback
+        const optionsRes = await http.get('/criteria/options').catch(() => ({ 
+          data: {
+            experience: filterOptions.experience,
+            skills: filterOptions.skills,
+            jobs: filterOptions.jobs
+          }
+        }));
+
         setFilterOptions({
           experience: optionsRes.data?.experience || filterOptions.experience,
           skills: optionsRes.data?.skills || filterOptions.skills,
           jobs: optionsRes.data?.jobs || filterOptions.jobs
         });
 
+        // Use AI-screened candidates if available, else fallback to API
+        let candidatesRes = { data: [] };
+        if (screenedCandidates.length > 0) {
+          candidatesRes.data = screenedCandidates;
+        } else {
+          candidatesRes = await http.get('/candidates').catch(() => ({ data: [] }));
+        }
+
+        setCandidates(candidatesRes.data || []);
         if (candidatesRes.data && candidatesRes.data.length > 0) {
           setSelectedCandidate(candidatesRes.data[0]);
         }
@@ -68,6 +82,28 @@ export default function Shortlisting() {
     };
     fetchData();
   }, []);
+
+  // Filtering logic for candidates
+  const filteredCandidates = candidates.filter(candidate => {
+    // Filter by job role
+    const jobMatch = filters.jobRole === 'Any' ||
+      candidate.jobRole === filters.jobRole ||
+      candidate.role === filters.jobRole ||
+      candidate.jobId === filters.jobRole;
+
+    // Filter by experience
+    const expMatch = filters.experience === 'Any' ||
+      candidate.experience === filters.experience;
+
+    // Filter by skills (multi-select)
+    const skillsMatch =
+      filters.skills.length === 0 ||
+      filters.skills.includes('Any') ||
+      (Array.isArray(candidate.skills) &&
+        filters.skills.every(skill => candidate.skills.includes(skill)));
+
+    return jobMatch && expMatch && skillsMatch;
+  });
 
   if (loading) {
     return (
@@ -96,7 +132,6 @@ export default function Shortlisting() {
           >
             <MenuItem value="Any">Any Job Role</MenuItem>
             {filterOptions.jobs.map((job) => {
-              // If job is an object (from API), use job.role and job._id
               if (typeof job === 'object' && job !== null && 'role' in job) {
                 return (
                   <MenuItem key={job._id || job.role} value={job._id}>
@@ -104,7 +139,6 @@ export default function Shortlisting() {
                   </MenuItem>
                 );
               }
-              // Fallback for string jobs (from local fallback)
               return (
                 <MenuItem key={job} value={job}>
                   {job}
@@ -132,8 +166,10 @@ export default function Shortlisting() {
           <InputLabel>Skills</InputLabel>
           <Select
             label="Skills"
+            multiple
             value={filters.skills}
-            onChange={(e) => setFilters({ ...filters, skills: e.target.value })}
+            onChange={(e) => setFilters({ ...filters, skills: typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value })}
+            renderValue={(selected) => selected.join(', ')}
           >
             <MenuItem value="Any">Any</MenuItem>
             {filterOptions.skills.map((skill) => (
@@ -160,8 +196,8 @@ export default function Shortlisting() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {candidates.length > 0 ? (
-                  candidates.map((candidate) => (
+                {filteredCandidates.length > 0 ? (
+                  filteredCandidates.map((candidate) => (
                     <TableRow
                       key={candidate._id || candidate.name}
                       onClick={() => setSelectedCandidate(candidate)}

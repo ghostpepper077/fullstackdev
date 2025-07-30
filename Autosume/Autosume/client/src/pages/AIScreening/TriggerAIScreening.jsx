@@ -130,11 +130,25 @@ export default function TriggerAIScreening() {
     setState(prev => ({ ...prev, loading: true, error: null }));
 
     try {
+      // Extract candidate info from resumeData if available
+      const candidateName = state.resumeData?.name || '';
+      const candidatePhone = state.resumeData?.phone || '';
+      const candidateEmail = state.resumeData?.email || '';
+      const candidateOverview = state.resumeData?.overview || '';
+      const candidateEducation = state.resumeData?.education || '';
+      const candidateExperienceDetails = state.resumeData?.experienceDetails || '';
+
       const response = await http.post('/screen', {
         jobId: state.jobId,
         skills: state.skills,
         experience: state.experience,
-        resumeText: state.resumeData?.resumeText || ''
+        resumeText: state.resumeData?.resumeText || '',
+        name: candidateName,
+        phone: candidatePhone,
+        email: candidateEmail,
+        overview: candidateOverview,
+        education: candidateEducation,
+        experienceDetails: candidateExperienceDetails
       });
 
       setState(prev => ({
@@ -185,6 +199,26 @@ export default function TriggerAIScreening() {
     : state.screeningResults
       ? [state.screeningResults]
       : [];
+
+  useEffect(() => {
+  if (state.showResults && results.length > 0) {
+    const normalizedCandidates = results.map(r => ({
+      _id: r._id || r.id || r.name,
+      name: r.name || '',
+      phone: r.phone || '',
+      email: r.email || '',
+      overview: r.overview || r.summary || '',
+      experienceDetails: r.experienceDetails || '',
+      education: r.education || '',
+      skills: r.matchedSkills || r.skills || [],
+      match: r.matchPercentage || r.match || 0,
+      jobRole: state.jobs.find(j => j._id === state.jobId)?.role || '',
+      jobId: state.jobId,
+      aiSummary: r.aiSummary || r.summary || ''
+    }));
+    localStorage.setItem('screenedCandidates', JSON.stringify(normalizedCandidates));
+  }
+}, [state.showResults, results, state.jobs, state.jobId]);
 
   return (
     <Paper sx={{ p: 4, maxWidth: '1200px', margin: 'auto', borderRadius: 3 }}>
