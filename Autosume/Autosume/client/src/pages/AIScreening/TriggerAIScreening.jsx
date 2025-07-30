@@ -566,9 +566,9 @@ export default function TriggerAIScreening() {
                         borderRadius: 1,
                         backgroundColor: '#f9f9f9',
                         borderLeft: `4px solid ${
-                          result.matchPercentage >= 80
+                          (result.match ?? 0) >= 80
                             ? '#4caf50'
-                            : result.matchPercentage >= 60
+                            : (result.match ?? 0) >= 60
                             ? '#ff9800'
                             : '#f44336'
                         }`
@@ -579,12 +579,12 @@ export default function TriggerAIScreening() {
                           {result.name}
                         </Typography>
                         <Chip
-                          label={`${result.matchPercentage}%`}
+                          label={`${result.match ?? 0}%`}
                           size="small"
                           color={
-                            result.matchPercentage >= 80
+                            (result.match ?? 0) >= 80
                               ? 'success'
-                              : result.matchPercentage >= 60
+                              : (result.match ?? 0) >= 60
                               ? 'warning'
                               : 'error'
                           }
@@ -598,7 +598,7 @@ export default function TriggerAIScreening() {
                           Matching Skills:
                         </Typography>
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 0.5 }}>
-                          {result.matchedSkills?.slice(0, 5).map((skill, i) => (
+                          {(result.matchedSkills ?? result.skills ?? []).slice(0, 5).map((skill, i) => (
                             <Chip key={i} label={skill} size="small" />
                           ))}
                         </Box>

@@ -41,26 +41,32 @@ exports.processResume = async (req, res) => {
       apiKey: process.env.OPENAI_API_KEY
     });
 
+    // New prompt: extract ALL candidates from the resume
     const prompt = `
-Extract the following fields from the resume below and respond ONLY with valid JSON in this format:
+Extract ALL candidate profiles from the resume text below. Respond ONLY with valid JSON in this format:
 {
-  "name": "full name of candidate",
-  "email": "email address",
-  "phone": "phone number",
-  "skills": ["array", "of", "technical", "skills"],
-  "experience": "years of experience as number",
-  "education": "education details",
-  "summary": "2-3 sentence professional summary"
+  "candidates": [
+    {
+      "name": "full name of candidate",
+      "email": "email address",
+      "phone": "phone number",
+      "skills": ["array", "of", "technical", "skills"],
+      "experience": "years of experience as number",
+      "education": "education details",
+      "summary": "2-3 sentence professional summary"
+    },
+    ...
+  ]
 }
 
 Resume Text:
-${pdfText.text.substring(0, 3000)}
+${pdfText.text.substring(0, 6000)}
     `.trim();
 
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [{ role: "user", content: prompt }],
-      max_tokens: 500
+      max_tokens: 1500
     });
 
     // 4. Validate and format response
@@ -76,20 +82,23 @@ ${pdfText.text.substring(0, 3000)}
       });
     }
 
-    if (!result.skills || !result.experience) {
-      throw new Error("AI returned incomplete data");
+    if (!result.candidates || !Array.isArray(result.candidates) || result.candidates.length === 0) {
+      throw new Error("AI did not return any candidates");
     }
 
+    // Optionally, add top-level preview fields for first candidate
+    const first = result.candidates[0];
     res.json({
       success: true,
       data: {
-        name: result.name || "",
-        email: result.email || "",
-        phone: result.phone || "",
-        skills: result.skills,
-        experience: result.experience,
-        education: result.education || "",
-        summary: result.summary || ""
+        candidates: result.candidates,
+        name: first?.name || "",
+        email: first?.email || "",
+        phone: first?.phone || "",
+        skills: first?.skills || [],
+        experience: first?.experience || "",
+        education: first?.education || "",
+        summary: first?.summary || ""
       }
     });
 
@@ -149,29 +158,35 @@ exports.screenCandidate = async (req, res) => {
 
     // Screen all candidates
     const results = [];
+    const CandidateModel = require('../models/Candidate');
     for (const cand of candidates) {
       const prompt = `
-Analyze how well this candidate matches the ${criteria.jobId.role} position:
+STRICTLY analyze this candidate for ${criteria.jobId.role} role and ONLY respond with the following JSON format:
 
-Candidate Name: ${cand.name}
-Candidate Skills: ${Array.isArray(cand.skills) ? cand.skills.join(', ') : cand.skills}
-Candidate Experience: ${cand.experience} years
-
-Job Criteria:
-Required Experience: ${criteria.experience}
-Required Skills: ${criteria.skills.join(', ')}
-
-Return a JSON response with:
 {
-  "matchPercentage": 0-100,
-  "matchedSkills": ["array", "of", "matched", "skills"],
-  "missingSkills": ["array", "of", "missing", "skills"],
-  "strengths": ["array", "of", "strengths"],
-  "weaknesses": ["array", "of", "weaknesses"],
-  "recommendation": "short text recommendation",
-  "name": "candidate name"
+  "matchPercentage": numberBetween50And100,
+  "matchedSkills": ["only","matching","skills"],
+  "missingSkills": ["only","missing","skills"],
+  "strengths": ["concise","strengths"],
+  "weaknesses": ["concise","weaknesses"],
+  "recommendation": "one sentence recommendation",
+  "name": "${cand.name}"
 }
-      `.trim();
+
+CANDIDATE PROFILE:
+- Skills: ${Array.isArray(cand.skills) ? cand.skills.join(', ') : cand.skills || 'None'}
+- Experience: ${cand.experience || 'Unknown'} years
+${cand.summary ? `- Summary: ${cand.summary}` : ''}
+
+JOB REQUIREMENTS:
+- Required Skills: ${criteria.skills.join(', ')}
+- Required Experience: ${criteria.experience} years
+
+RULES:
+1. matchPercentage MUST be between 50-100 based on skill/experience match
+2. ONLY include skills that actually appear in both candidate and job
+3. NEVER add any text outside the JSON object
+`.trim();
 
       let result;
       try {
@@ -185,20 +200,50 @@ Return a JSON response with:
         console.error("Error parsing AI screening response as JSON:", parseError);
         continue;
       }
-      results.push({
+      // Ensure matchPercentage is a number and fallback to 50 if missing or invalid
+      let matchValue = 50;
+      if (typeof result.matchPercentage === 'number' && !isNaN(result.matchPercentage)) {
+        matchValue = result.matchPercentage;
+      } else if (typeof result.matchPercentage === 'string') {
+        const parsed = parseInt(result.matchPercentage, 10);
+        matchValue = (!isNaN(parsed) && parsed >= 50 && parsed <= 100) ? parsed : 50;
+      }
+      // Fallback for matchedSkills
+      let matchedSkills = Array.isArray(result.matchedSkills) ? result.matchedSkills : [];
+      if (matchedSkills.length === 0 && Array.isArray(result.skills)) {
+        matchedSkills = result.skills;
+      } else if (matchedSkills.length === 0 && Array.isArray(cand.skills)) {
+        matchedSkills = cand.skills;
+      }
+      const candidateDoc = {
         name: cand.name || result.name || '',
         email: cand.email || '',
         phone: cand.phone || '',
         education: cand.education || '',
         summary: cand.summary || result.recommendation || '',
-        matchPercentage: result.matchPercentage,
-        matchedSkills: result.matchedSkills,
-        missingSkills: result.missingSkills,
-        strengths: result.strengths,
-        weaknesses: result.weaknesses,
-        recommendation: result.recommendation
-      });
+        match: matchValue,
+        skills: matchedSkills,
+        missingSkills: Array.isArray(result.missingSkills) ? result.missingSkills : [],
+        strengths: Array.isArray(result.strengths) ? result.strengths : [],
+        weaknesses: Array.isArray(result.weaknesses) ? result.weaknesses : [],
+        recommendation: result.recommendation,
+        experience: cand.experience || '',
+        role: criteria.jobId.role || '',
+        aiSummary: result.recommendation || '',
+        experienceDetails: cand.experienceDetails || '',
+        educationDetails: cand.education || ''
+      };
+      // Save or update candidate in DB (upsert by email+role)
+      await CandidateModel.findOneAndUpdate(
+        { email: candidateDoc.email, role: candidateDoc.role },
+        candidateDoc,
+        { upsert: true, new: true }
+      );
+      results.push(candidateDoc);
     }
+
+    // Sort results by matchPercentage descending
+    results.sort((a, b) => (b.match || 0) - (a.match || 0));
 
     res.json({ success: true, results });
 
