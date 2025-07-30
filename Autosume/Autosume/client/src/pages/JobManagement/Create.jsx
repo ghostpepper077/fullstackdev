@@ -19,8 +19,10 @@ const Create = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
   const [fetching, setFetching] = useState(isEdit); // Only true in edit mode
   const [error, setError] = useState('');
+  
 
   // Fetch existing job for edit
   useEffect(() => {
@@ -89,6 +91,25 @@ const Create = () => {
     }
   };
 
+  const generateDescription = async () => {
+    setAiLoading(true);
+    setError('');
+    try {
+      const res = await axios.post('http://localhost:5000/api/ai/generate-description', {
+        role: jobData.role,
+        timing: jobData.timing,
+        jobType: jobData.jobType
+      });
+      setJobData(prev => ({ ...prev, description: res.data.description }));
+    } catch (err) {
+      console.error(err);
+      setError('Failed to generate job description.');
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+
   return (
     <div className="create-container">
       <div className="create-header">
@@ -103,16 +124,23 @@ const Create = () => {
       ) : (
         <form onSubmit={handleSubmit} className="job-form">
           <div className="form-group">
-            <label>Job name/role</label>
-            <input
-              type="text"
-              name="role"
-              placeholder="e.g. Software Engineer"
-              value={jobData.role}
-              onChange={handleChange}
-              required
-            />
+            <label>Job description</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <textarea
+                name="description"
+                placeholder="Type job details here or use AI..."
+                value={jobData.description}
+                onChange={handleChange}
+                rows={5}
+                style={{ flex: 1 }}
+                required
+              />
+              <button type="button" onClick={generateDescription} disabled={aiLoading}>
+                {aiLoading ? 'Generating...' : 'Enhance with AI'}
+              </button>
+            </div>
           </div>
+
 
           <div className="form-group">
             <label>Timing/shifts</label>
