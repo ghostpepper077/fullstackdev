@@ -1,4 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import TextField from '@mui/material/TextField';
 import {
   Box,
   Typography,
@@ -24,6 +29,12 @@ import {
 import http from '../../http';
 
 export default function TriggerAIScreening() {
+  const [criteriaList, setCriteriaList] = useState([]);
+  const [criteriaLoading, setCriteriaLoading] = useState(false);
+  const [criteriaError, setCriteriaError] = useState(null);
+  const [criteriaDialogOpen, setCriteriaDialogOpen] = useState(false);
+  const [criteriaForm, setCriteriaForm] = useState({ jobId: '', experience: '', skills: [] });
+  const [criteriaSkillsInput, setCriteriaSkillsInput] = useState('');
   const [state, setState] = useState({
     loading: false,
     error: null,
@@ -65,6 +76,66 @@ export default function TriggerAIScreening() {
 
   useEffect(() => {
     fetchJobs();
+    fetchCriteria();
+  }, []);
+
+  // Fetch criteria for selected job
+  const fetchCriteria = async () => {
+    try {
+      setCriteriaLoading(true);
+      const response = await http.get('/criteria');
+      setCriteriaList(response.data);
+    } catch (err) {
+      setCriteriaError('Failed to fetch criteria. ' + (err.response?.data?.message || ''));
+    } finally {
+      setCriteriaLoading(false);
+    }
+  };
+
+  // Filter criteria for selected job
+  const selectedJobCriteria = criteriaList.filter(c => c.jobId === state.jobId || c.jobId?._id === state.jobId);
+
+  // Criteria dialog handlers
+  const handleOpenCriteriaDialog = () => {
+    setCriteriaForm({ jobId: state.jobId, experience: '', skills: [] });
+    setCriteriaSkillsInput('');
+    setCriteriaDialogOpen(true);
+  };
+  const handleCloseCriteriaDialog = () => {
+    setCriteriaDialogOpen(false);
+  };
+  const handleCriteriaSkillsChange = (e) => {
+    const value = e.target.value;
+    if (value.endsWith(',') || value.endsWith(' ')) {
+      const newSkill = value.slice(0, -1).trim();
+      if (newSkill && !criteriaForm.skills.includes(newSkill)) {
+        setCriteriaForm({ ...criteriaForm, skills: [...criteriaForm.skills, newSkill] });
+        setCriteriaSkillsInput('');
+        return;
+      }
+    }
+    setCriteriaSkillsInput(value);
+  };
+  const handleRemoveCriteriaSkill = (skillToRemove) => {
+    setCriteriaForm({ ...criteriaForm, skills: criteriaForm.skills.filter(skill => skill !== skillToRemove) });
+  };
+  const handleSaveCriteria = async () => {
+    if (!criteriaForm.jobId || !criteriaForm.experience || criteriaForm.skills.length === 0) {
+      setCriteriaError('Please fill all required fields');
+      return;
+    }
+    try {
+      await http.post('/criteria', criteriaForm);
+      setCriteriaDialogOpen(false);
+      fetchCriteria();
+    } catch (err) {
+      setCriteriaError('Failed to save criteria. ' + (err.response?.data?.message || ''));
+    }
+  };
+  
+  useEffect(() => {
+    fetchJobs();
+    fetchCriteria();
   }, []);
 
   const handleFileUpload = async (e) => {
@@ -89,14 +160,18 @@ export default function TriggerAIScreening() {
         timeout: 30000
       });
 
-      if (!response.data?.data?.skills || !response.data?.data?.experience) {
-        throw new Error("Invalid server response format");
+      // If multiple candidates detected, don't require top-level skills/experience
+      let skills = response.data.data.skills || [];
+      let experience = response.data.data.experience || '';
+      if (Array.isArray(response.data.data.candidates) && response.data.data.candidates.length > 0) {
+        // Use first candidate for preview, but show all in preview section
+        skills = response.data.data.candidates[0].skills || skills;
+        experience = response.data.data.candidates[0].experience || experience;
       }
-
       setState(prev => ({
         ...prev,
-        skills: response.data.data.skills,
-        experience: response.data.data.experience,
+        skills,
+        experience,
         resumeData: response.data.data, // Save resume data here
         fileUploading: false,
         success: 'Resume processed successfully!'
@@ -130,11 +205,25 @@ export default function TriggerAIScreening() {
     setState(prev => ({ ...prev, loading: true, error: null }));
 
     try {
+      // If resumeData contains multiple candidates, send all
+      let candidates = [];
+      if (Array.isArray(state.resumeData?.candidates)) {
+        candidates = state.resumeData.candidates;
+      } else if (state.resumeData) {
+        candidates = [{
+          name: state.resumeData.name || '',
+          email: state.resumeData.email || '',
+          phone: state.resumeData.phone || '',
+          education: state.resumeData.education || '',
+          summary: state.resumeData.summary || '',
+          skills: state.skills,
+          experience: state.experience
+        }];
+      }
+
       const response = await http.post('/screen', {
         jobId: state.jobId,
-        skills: state.skills,
-        experience: state.experience,
-        resumeText: state.resumeData?.resumeText || ''
+        candidates
       });
 
       setState(prev => ({
@@ -188,6 +277,66 @@ export default function TriggerAIScreening() {
 
   return (
     <Paper sx={{ p: 4, maxWidth: '1200px', margin: 'auto', borderRadius: 3 }}>
+      {/* Criteria Section */}
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h6" sx={{ fontWeight: 'medium', mb: 1 }}>
+          Criteria for Selected Job
+        </Typography>
+        {criteriaLoading ? (
+          <CircularProgress size={20} />
+        ) : selectedJobCriteria.length > 0 ? (
+          selectedJobCriteria.map((c, idx) => (
+            <Paper key={idx} sx={{ p: 2, mb: 1, background: '#f5f5f5' }}>
+              <Typography variant="subtitle2">Experience: {c.experience}</Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
+                {c.skills.map((skill, i) => (
+                  <Chip key={i} label={skill} size="small" />
+                ))}
+              </Box>
+            </Paper>
+          ))
+        ) : (
+          <Typography variant="body2" color="text.secondary">No criteria set for this job.</Typography>
+        )}
+        <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={handleOpenCriteriaDialog}>
+          Add Criteria
+        </Button>
+      </Box>
+
+      {/* Criteria Dialog */}
+      <Dialog open={criteriaDialogOpen} onClose={handleCloseCriteriaDialog}>
+        <DialogTitle>Add Criteria</DialogTitle>
+        <DialogContent>
+          <FormControl fullWidth sx={{ mb: 2 }}>
+            <InputLabel>Experience</InputLabel>
+            <TextField
+              label="Experience"
+              value={criteriaForm.experience}
+              onChange={e => setCriteriaForm({ ...criteriaForm, experience: e.target.value })}
+              fullWidth
+            />
+          </FormControl>
+          <FormControl fullWidth sx={{ mb: 2 }}>
+            <InputLabel>Skills</InputLabel>
+            <TextField
+              label="Skills (comma or space separated)"
+              value={criteriaSkillsInput}
+              onChange={handleCriteriaSkillsChange}
+              fullWidth
+            />
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
+              {criteriaForm.skills.map((skill, i) => (
+                <Chip key={i} label={skill} onDelete={() => handleRemoveCriteriaSkill(skill)} size="small" />
+              ))}
+            </Box>
+          </FormControl>
+          {criteriaError && <Alert severity="error" sx={{ mt: 2 }}>{criteriaError}</Alert>}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseCriteriaDialog}>Cancel</Button>
+          <Button onClick={handleSaveCriteria} variant="contained" color="primary">Save</Button>
+        </DialogActions>
+      </Dialog>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
           AI Resume Screening
@@ -290,34 +439,58 @@ export default function TriggerAIScreening() {
             {/* Detected Information */}
             {state.resumeData && (
               <>
-                <Box sx={{ mb: 2 }}>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    Detected Experience:
-                  </Typography>
-                  <Typography>{state.experience || 'Not specified'}</Typography>
-                </Box>
-
-                <Box sx={{ mb: 2 }}>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    Detected Skills:
-                  </Typography>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
-                    {state.skills.length > 0 ? (
-                      state.skills.map((skill) => (
-                        <Chip
-                          key={skill}
-                          label={skill}
-                          onDelete={() => removeSkill(skill)}
-                          size="small"
-                        />
-                      ))
-                    ) : (
-                      <Typography variant="caption" color="text.disabled">
-                        No skills detected
-                      </Typography>
-                    )}
+                {Array.isArray(state.resumeData.candidates) && state.resumeData.candidates.length > 0 ? (
+                  <Box sx={{ mb: 2 }}>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      Detected Candidates:
+                    </Typography>
+                    <Box sx={{ mt: 1 }}>
+                      {state.resumeData.candidates.map((cand, idx) => (
+                        <Paper key={idx} sx={{ p: 2, mb: 1, background: '#f5f5f5' }}>
+                          <Typography variant="body2"><strong>Name:</strong> {cand.name || 'N/A'}</Typography>
+                          <Typography variant="body2"><strong>Email:</strong> {cand.email || 'N/A'}</Typography>
+                          <Typography variant="body2"><strong>Phone:</strong> {cand.phone || 'N/A'}</Typography>
+                          <Typography variant="body2"><strong>Experience:</strong> {cand.experience || 'N/A'}</Typography>
+                          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
+                            {cand.skills && cand.skills.length > 0 ? cand.skills.map((skill, i) => (
+                              <Chip key={i} label={skill} size="small" />
+                            )) : <Typography variant="caption" color="text.disabled">No skills</Typography>}
+                          </Box>
+                        </Paper>
+                      ))}
+                    </Box>
                   </Box>
-                </Box>
+                ) : (
+                  <>
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="subtitle2" color="text.secondary">
+                        Detected Experience:
+                      </Typography>
+                      <Typography>{state.experience || 'Not specified'}</Typography>
+                    </Box>
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="subtitle2" color="text.secondary">
+                        Detected Skills:
+                      </Typography>
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
+                        {state.skills.length > 0 ? (
+                          state.skills.map((skill) => (
+                            <Chip
+                              key={skill}
+                              label={skill}
+                              onDelete={() => removeSkill(skill)}
+                              size="small"
+                            />
+                          ))
+                        ) : (
+                          <Typography variant="caption" color="text.disabled">
+                            No skills detected
+                          </Typography>
+                        )}
+                      </Box>
+                    </Box>
+                  </>
+                )}
               </>
             )}
 

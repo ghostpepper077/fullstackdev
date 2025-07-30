@@ -42,10 +42,14 @@ exports.processResume = async (req, res) => {
     });
 
     const prompt = `
-Respond ONLY with valid JSON in this format:
+Extract the following fields from the resume below and respond ONLY with valid JSON in this format:
 {
+  "name": "full name of candidate",
+  "email": "email address",
+  "phone": "phone number",
   "skills": ["array", "of", "technical", "skills"],
   "experience": "years of experience as number",
+  "education": "education details",
   "summary": "2-3 sentence professional summary"
 }
 
@@ -79,8 +83,12 @@ ${pdfText.text.substring(0, 3000)}
     res.json({
       success: true,
       data: {
+        name: result.name || "",
+        email: result.email || "",
+        phone: result.phone || "",
         skills: result.skills,
         experience: result.experience,
+        education: result.education || "",
         summary: result.summary || ""
       }
     });
@@ -115,36 +123,39 @@ ${pdfText.text.substring(0, 3000)}
 exports.screenCandidate = async (req, res) => {
   try {
 
-    const { jobId, skills, experience } = req.body;
-
-    // Validate input
-    if (!jobId || !skills || !experience) {
-      return res.status(400).json({
-        error: 'Missing required fields',
-        details: 'jobId, skills, and experience are required'
-      });
+    let candidates = req.body.candidates;
+    // If not provided, fallback to single candidate from request
+    if (!Array.isArray(candidates)) {
+      candidates = [{
+        name: req.body.name || '',
+        skills: req.body.skills || [],
+        experience: req.body.experience || '',
+        email: req.body.email || '',
+        phone: req.body.phone || '',
+        education: req.body.education || '',
+        summary: req.body.summary || ''
+      }];
     }
 
     // Import Criteria model
     const Criteria = require('../models/Criteria');
-
-    // Get criteria for this job
-    const criteria = await Criteria.findOne({ jobId }).populate('jobId');
+    const criteria = await Criteria.findOne({ jobId: req.body.jobId }).populate('jobId');
     if (!criteria) {
       return res.status(404).json({ error: 'Criteria not found for this job' });
     }
 
     // Initialize OpenAI
-    const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY
-    });
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-    // Prepare prompt for AI screening
-    const prompt = `
+    // Screen all candidates
+    const results = [];
+    for (const cand of candidates) {
+      const prompt = `
 Analyze how well this candidate matches the ${criteria.jobId.role} position:
 
-Candidate Skills: ${Array.isArray(skills) ? skills.join(', ') : skills}
-Candidate Experience: ${experience} years
+Candidate Name: ${cand.name}
+Candidate Skills: ${Array.isArray(cand.skills) ? cand.skills.join(', ') : cand.skills}
+Candidate Experience: ${cand.experience} years
 
 Job Criteria:
 Required Experience: ${criteria.experience}
@@ -157,38 +168,39 @@ Return a JSON response with:
   "missingSkills": ["array", "of", "missing", "skills"],
   "strengths": ["array", "of", "strengths"],
   "weaknesses": ["array", "of", "weaknesses"],
-  "recommendation": "short text recommendation"
+  "recommendation": "short text recommendation",
+  "name": "candidate name"
 }
-    `.trim();
+      `.trim();
 
-    // Call OpenAI API
-    const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.3
-    });
-
-    let result;
-    try {
-      result = JSON.parse(completion.choices[0].message.content);
-    } catch (parseError) {
-      console.error("Error parsing AI screening response as JSON:", parseError);
-      console.error("OpenAI raw response:", completion.choices[0].message.content);
-      return res.status(500).json({
-        error: "Invalid JSON response from AI screening",
-        rawResponse: completion.choices[0].message.content
+      let result;
+      try {
+        const completion = await openai.chat.completions.create({
+          model: "gpt-3.5-turbo",
+          messages: [{ role: "user", content: prompt }],
+          temperature: 0.3
+        });
+        result = JSON.parse(completion.choices[0].message.content);
+      } catch (parseError) {
+        console.error("Error parsing AI screening response as JSON:", parseError);
+        continue;
+      }
+      results.push({
+        name: cand.name || result.name || '',
+        email: cand.email || '',
+        phone: cand.phone || '',
+        education: cand.education || '',
+        summary: cand.summary || result.recommendation || '',
+        matchPercentage: result.matchPercentage,
+        matchedSkills: result.matchedSkills,
+        missingSkills: result.missingSkills,
+        strengths: result.strengths,
+        weaknesses: result.weaknesses,
+        recommendation: result.recommendation
       });
     }
 
-    res.json({
-      success: true,
-      matchPercentage: result.matchPercentage,
-      matchedSkills: result.matchedSkills,
-      missingSkills: result.missingSkills,
-      strengths: result.strengths,
-      weaknesses: result.weaknesses,
-      recommendation: result.recommendation
-    });
+    res.json({ success: true, results });
 
   } catch (error) {
     console.error('Screening error:', error);
