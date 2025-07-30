@@ -21,6 +21,8 @@ import InterviewScheduling from './pages/Interview+Email/scheduling';
 import EmailAutomation from './pages/Interview+Email/emailautomation';
 import InterviewDashboard from './pages/Interview+Email/interviewdashboard';
 import Sidebar from './components/Sidebar';
+import axios from 'axios';
+
 // ===================================================================
 // ★★★ 1. IMPORT THE NEW COMPONENT ★★★
 // ===================================================================

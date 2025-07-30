@@ -33,45 +33,15 @@ const criteriaRoutes = require('./routes/criteria');
 const aiRoutes = require('./routes/aiRoutes');
 const aiRoutesJason = require('./routes/aiRoutesJason');
 
+const aiHariz = require('./routes/aiHariz');
 
 // --- Use Routes ---
-app.use("/api/auth", authRoutes);
-app.use("/api/user", userRoutes);
-app.use("/api/interviews", interviewRoutes);
-app.use("/api/schedules", scheduleRoutes);
-app.use("/api/criteria", criteriaRoutes);
-app.use("/api/ai", aiRoutes);
-app.use('/api/ai', aiRoutesJason);
-
-// --- New Email Routes ---
-// Send OTP email (Example route for email)
-app.post("/api/email/send-reset-otp", async (req, res) => {
-  const { email, recipientName, otp } = req.body;
-
-  try {
-    // Send OTP email
-    const result = await emailService.sendEmail(email, user.name, otp);
-
-    // Simple check - if we get a result and first element has statusCode 202, it's success
-    if (result && result[0] && result[0].statusCode === 202) {
-      return res.status(200).json({ message: "OTP email sent successfully!" });
-    } else {
-      throw new Error("Failed to send email");
-    }
-
-    if (result) {
-      return res.status(200).json({ message: "OTP email sent successfully!" });
-    } else {
-      return res.status(500).json({ message: "Failed to send OTP email." });
-    }
-  } catch (error) {
-    console.error("Error in /send-reset-otp route:", error);
-    return res
-      .status(500)
-      .json({ message: "An error occurred while sending the email." });
-  }
-});
-
+app.use('/api/auth', authRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api/interviews', interviewRoutes);
+app.use('/api/schedules', scheduleRoutes);
+app.use('/api/criteria', criteriaRoutes);
+app.use('/api/ai', aiRoutes);
 // --- Job Routes ---
 app.get("/api/jobs", async (req, res) => {
   try {
