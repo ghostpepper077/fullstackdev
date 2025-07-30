@@ -3,9 +3,15 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import './Create.css';
 
+// MUI DatePicker imports
+import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import TextField from '@mui/material/TextField';
+import dayjs from 'dayjs';
+
 const Create = () => {
   const navigate = useNavigate();
-  const { id } = useParams(); // Used to check if edit mode
+  const { id } = useParams();
   const isEdit = Boolean(id);
 
   const [jobData, setJobData] = useState({
@@ -14,17 +20,15 @@ const Create = () => {
     salaryMin: '',
     salaryMax: '',
     jobType: 'Full Time',
-    deadline: '',
+    deadline: null, // dayjs object or null
     description: ''
   });
 
   const [loading, setLoading] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
-  const [fetching, setFetching] = useState(isEdit); // Only true in edit mode
+  const [fetching, setFetching] = useState(isEdit);
   const [error, setError] = useState('');
 
-
-  // Fetch existing job for edit
   useEffect(() => {
     if (isEdit) {
       const fetchJob = async () => {
@@ -41,7 +45,7 @@ const Create = () => {
             salaryMin: salaryMin || '',
             salaryMax: salaryMax || '',
             jobType: data.jobType || 'Full Time',
-            deadline: data.deadline ? data.deadline.slice(0, 10) : '',
+            deadline: data.deadline ? dayjs(data.deadline) : null,
             description: data.description || ''
           });
           setFetching(false);
@@ -61,6 +65,10 @@ const Create = () => {
     setJobData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleDateChange = (newValue) => {
+    setJobData(prev => ({ ...prev, deadline: newValue }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -68,7 +76,8 @@ const Create = () => {
 
     const payload = {
       ...jobData,
-      salaryRange: `${jobData.salaryMin} ~ ${jobData.salaryMax}`
+      salaryRange: `${jobData.salaryMin} ~ ${jobData.salaryMax}`,
+      deadline: jobData.deadline ? jobData.deadline.toISOString() : null,
     };
 
     try {
@@ -94,21 +103,31 @@ const Create = () => {
   const generateDescription = async () => {
     setAiLoading(true);
     setError('');
+
     try {
       const res = await axios.post('http://localhost:5000/api/ai/generate-description', {
-        role: jobData.role,
-        timing: jobData.timing,
-        jobType: jobData.jobType
+        pointers: jobData.description,
+        role: jobData.role
       });
-      setJobData(prev => ({ ...prev, description: res.data.description }));
+
+      const data = res.data;
+
+      setJobData(prev => ({
+        ...prev,
+        description: data.description || prev.description,
+        timing: data.timing || prev.timing,
+        salaryMin: data.salaryMin || prev.salaryMin,
+        salaryMax: data.salaryMax || prev.salaryMax,
+        jobType: data.jobType || prev.jobType,
+        deadline: data.deadline ? dayjs(data.deadline) : prev.deadline,
+      }));
     } catch (err) {
       console.error(err);
-      setError('Failed to generate job description.');
+      setError('Failed to enhance job with AI.');
     } finally {
       setAiLoading(false);
     }
   };
-
 
   return (
     <div className="create-container">
@@ -124,7 +143,11 @@ const Create = () => {
       ) : (
         <form onSubmit={handleSubmit} className="job-form">
           <div className="form-group">
-            <label>Job description</label>
+            <label>Job Pointers / Description</label>
+            <small className="helper-text">
+              Write a few pointers here and let AI generate the full job post.
+            </small>
+
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <textarea
                 name="description"
@@ -141,12 +164,22 @@ const Create = () => {
                 className="enhance-ai-button"
                 disabled={aiLoading}
               >
-                {aiLoading ? 'Generating...' : '✨ Enhance with AI'}
+                {aiLoading ? 'Generating...' : '✨ Auto-fill Job with AI'}
               </button>
-
             </div>
           </div>
 
+          <div className="form-group">
+            <label>Job Title</label>
+            <input
+              type="text"
+              name="role"
+              placeholder="Fullstack Developer, Data Scientist, etc."
+              value={jobData.role}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
           <div className="form-group">
             <label>Timing/shifts</label>
@@ -187,6 +220,7 @@ const Create = () => {
             <div className="form-group">
               <label>Job type</label>
               <select
+                className="form-control"
                 name="jobType"
                 value={jobData.jobType}
                 onChange={handleChange}
@@ -201,24 +235,13 @@ const Create = () => {
 
           <div className="form-group">
             <label>Application Deadline</label>
-            <input
-              type="date"
-              name="deadline"
-              value={jobData.deadline}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Job description</label>
-            <textarea
-              name="description"
-              placeholder="Type job details here..."
-              value={jobData.description}
-              onChange={handleChange}
-              required
-            />
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                value={jobData.deadline}
+                onChange={handleDateChange}
+                renderInput={(params) => <TextField {...params} fullWidth required />}
+              />
+            </LocalizationProvider>
           </div>
 
           <button type="submit" className="submit-button" disabled={loading}>
