@@ -3,79 +3,132 @@ import { useNavigate } from 'react-router-dom';
 import {
   Box, Typography, Select, MenuItem, Button, Grid, Paper,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  CircularProgress, Alert, FormControl, InputLabel
+  CircularProgress, Alert, FormControl, InputLabel, TextField,
+  Chip, Avatar, TablePagination
 } from '@mui/material';
 import http from '../../http';
 
 export default function Shortlisting() {
   const navigate = useNavigate();
-  
   const [candidates, setCandidates] = useState([]);
+  const [filteredCandidates, setFilteredCandidates] = useState([]);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [searchTerm, setSearchTerm] = useState('');
 
-  // Fallback filter options in case API fails
-  const [filterOptions, setFilterOptions] = useState({ 
-    experience: ['0-1 years', '1-3 years', '3-5 years', '5+ years'],
-    skills: ['JavaScript', 'React', 'Node.js', 'Python', 'AWS'],
-    jobs: ['Frontend Developer', 'Backend Developer', 'DevOps Engineer']
+  // Filter options and state
+  const [filterOptions, setFilterOptions] = useState({
+    experience: [],
+    skills: [],
+    jobs: []
   });
 
   const [filters, setFilters] = useState({
     jobRole: 'Any',
-    status: 'Under Review',
+    status: 'Screened',
     experience: 'Any',
     skills: 'Any',
   });
 
+  // Fetch all data on initial load
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchInitialData = async () => {
       try {
         setLoading(true);
-        setError(null);
         
-        // Try to fetch data from API, but fallback to local data if it fails
-        const [candidatesRes, optionsRes] = await Promise.all([
-          http.get('/candidates').catch(() => ({ data: [] })),
-          http.get('/criteria/options').catch(() => ({ 
-            data: {
-              experience: filterOptions.experience,
-              skills: filterOptions.skills,
-              jobs: filterOptions.jobs
-            }
-          }))
-        ]);
+        // Fetch jobs for job role filter
+        const jobsResponse = await http.get('/jobs');
+        setFilterOptions(prev => ({
+          ...prev,
+          jobs: jobsResponse.data.map(job => job.role)
+        }));
         
-        setCandidates(candidatesRes.data || []);
+        // Fetch criteria for experience and skills filters
+        const criteriaResponse = await http.get('/criteria');
+        const experiences = [...new Set(criteriaResponse.data.map(c => c.experience).filter(Boolean))];
+        const skills = [...new Set(criteriaResponse.data.flatMap(c => c.skills).filter(Boolean))];
+        setFilterOptions(prev => ({
+          ...prev,
+          experience: experiences,
+          skills: skills
+        }));
         
-        // Merge API response with fallback options
-        setFilterOptions({
-          experience: optionsRes.data?.experience || filterOptions.experience,
-          skills: optionsRes.data?.skills || filterOptions.skills,
-          jobs: optionsRes.data?.jobs || filterOptions.jobs
-        });
-
-        if (candidatesRes.data && candidatesRes.data.length > 0) {
-          setSelectedCandidate(candidatesRes.data[0]);
-        }
+        // Fetch screened candidates
+        const candidatesResponse = await http.get('/screened-candidates?status=Screened');
+        setCandidates(candidatesResponse.data);
+        setFilteredCandidates(candidatesResponse.data);
+        
       } catch (err) {
-        console.error('Fetch error:', err);
-        setError('Failed to fetch page data. Using fallback data instead.');
+        console.error('Initial data fetch error:', err);
+        setError('Failed to load initial data');
       } finally {
         setLoading(false);
       }
     };
-    fetchData();
+
+    fetchInitialData();
   }, []);
 
-  if (loading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
-        <CircularProgress />
-      </Box>
+  // Apply filters whenever filters or search term changes
+// inside useEffect where filtering happens:
+useEffect(() => {
+  if (candidates.length === 0) return;
+
+  let filtered = [...candidates];
+
+  // Job Role filter
+  if (filters.jobRole !== 'Any') {
+    filtered = filtered.filter(candidate =>
+      candidate.role === filters.jobRole
     );
   }
+
+  // Experience filter
+  if (filters.experience !== 'Any') {
+    filtered = filtered.filter(candidate =>
+      candidate.experience === filters.experience
+    );
+  }
+
+  // Skills filter
+  if (filters.skills !== 'Any') {
+    filtered = filtered.filter(candidate =>
+      candidate.skills &&
+      candidate.skills.some(skill =>
+        skill.toLowerCase() === filters.skills.toLowerCase()
+      )
+    );
+  }
+
+  // Search filter (Fix here ✅)
+  if (searchTerm.trim()) {
+    const searchLower = searchTerm.toLowerCase();
+    filtered = filtered.filter(candidate =>
+      candidate.name?.toLowerCase().includes(searchLower) ||
+      candidate.email?.toLowerCase().includes(searchLower) ||
+      (candidate.skills &&
+        candidate.skills.some(skill =>
+          skill.toLowerCase().includes(searchLower)
+        ))
+    );
+  }
+
+  setFilteredCandidates(filtered);
+  setPage(0);
+}, [filters, searchTerm, candidates]);
+
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   return (
     <Box sx={{ flex: 1, p: 4, overflowY: 'auto', backgroundColor: '#fdfdfd' }}>
@@ -95,22 +148,9 @@ export default function Shortlisting() {
             onChange={(e) => setFilters({ ...filters, jobRole: e.target.value })}
           >
             <MenuItem value="Any">Any Job Role</MenuItem>
-            {filterOptions.jobs.map((job) => {
-              // If job is an object (from API), use job.role and job._id
-              if (typeof job === 'object' && job !== null && 'role' in job) {
-                return (
-                  <MenuItem key={job._id || job.role} value={job._id}>
-                    {job.role}
-                  </MenuItem>
-                );
-              }
-              // Fallback for string jobs (from local fallback)
-              return (
-                <MenuItem key={job} value={job}>
-                  {job}
-                </MenuItem>
-              );
-            })}
+            {filterOptions.jobs.map((job, index) => (
+              <MenuItem key={index} value={job}>{job}</MenuItem>
+            ))}
           </Select>
         </FormControl>
 
@@ -122,8 +162,8 @@ export default function Shortlisting() {
             onChange={(e) => setFilters({ ...filters, experience: e.target.value })}
           >
             <MenuItem value="Any">Any</MenuItem>
-            {filterOptions.experience.map((exp) => (
-              <MenuItem key={exp} value={exp}>{exp}</MenuItem>
+            {filterOptions.experience.map((exp, index) => (
+              <MenuItem key={index} value={exp}>{exp}</MenuItem>
             ))}
           </Select>
         </FormControl>
@@ -136,13 +176,25 @@ export default function Shortlisting() {
             onChange={(e) => setFilters({ ...filters, skills: e.target.value })}
           >
             <MenuItem value="Any">Any</MenuItem>
-            {filterOptions.skills.map((skill) => (
-              <MenuItem key={skill} value={skill}>{skill}</MenuItem>
+            {filterOptions.skills.map((skill, index) => (
+              <MenuItem key={index} value={skill}>{skill}</MenuItem>
             ))}
           </Select>
         </FormControl>
 
-        <Button variant="outlined" onClick={() => navigate('/create-criteria')}>+ ADD CRITERIA</Button>
+        <TextField
+          label="Search"
+          variant="outlined"
+          size="small"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          sx={{ width: 250 }}
+          placeholder="Search by name, email, or skills"
+        />
+
+        <Button variant="outlined" onClick={() => navigate('/create-criteria')}>
+          + ADD CRITERIA
+        </Button>
       </Box>
       
       {/* Main Content Grid */}
@@ -160,34 +212,73 @@ export default function Shortlisting() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {candidates.length > 0 ? (
-                  candidates.map((candidate) => (
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={4} align="center">
+                      <CircularProgress />
+                    </TableCell>
+                  </TableRow>
+                ) : filteredCandidates.length > 0 ? (
+                  filteredCandidates
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((candidate) => (
                     <TableRow
-                      key={candidate._id || candidate.name}
+                      key={`${candidate._id || candidate.email}`}
                       onClick={() => setSelectedCandidate(candidate)}
                       hover
                       sx={{
                         cursor: 'pointer',
-                        backgroundColor: selectedCandidate && candidate._id === selectedCandidate?._id ? '#f5f5f5' : 'transparent'
+                        backgroundColor: selectedCandidate?.email === candidate.email ? '#f5f5f5' : 'transparent'
                       }}
                     >
-                      <TableCell>{candidate.name}</TableCell>
-                      <TableCell sx={{ color: candidate.match >= 90 ? 'green' : 'inherit', fontWeight: 'medium' }}>
-                        {candidate.match}%
+                      <TableCell>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <Avatar sx={{ bgcolor: getColorByScore(candidate.match || candidate.matchPercentage) }}>
+                            {candidate.name?.charAt(0) || '?'}
+                          </Avatar>
+                          <Box>
+                            <Typography>{candidate.name || 'Unknown'}</Typography>
+                            <Typography variant="caption" color="text.secondary">
+                              {candidate.email || 'No email'}
+                            </Typography>
+                          </Box>
+                        </Box>
                       </TableCell>
-                      <TableCell>{Array.isArray(candidate.skills) ? candidate.skills.join(', ') : candidate.skills}</TableCell>
-                      <TableCell>{candidate.experience}</TableCell>
+                      <TableCell>
+                        <Chip
+                          label={`${candidate.match || candidate.matchPercentage || 0}%`}
+                          color={getColorByScore(candidate.match || candidate.matchPercentage || 0)}
+                          size="small"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                          {(candidate.skills || []).slice(0, 3).map((skill, index) => (
+                            <Chip key={`${skill}-${index}`} label={skill} size="small" />
+                          ))}
+                        </Box>
+                      </TableCell>
+                      <TableCell>{candidate.experience || 'Not specified'}</TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
                     <TableCell colSpan={4} align="center">
-                      No candidates found
+                      {candidates.length === 0 ? 'No candidates available' : 'No matching candidates found'}
                     </TableCell>
                   </TableRow>
                 )}
               </TableBody>
             </Table>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={filteredCandidates.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
           </TableContainer>
         </Grid>
 
@@ -200,7 +291,7 @@ export default function Shortlisting() {
               <Typography color="text.secondary" gutterBottom>{selectedCandidate.email || 'No email provided'}</Typography>
               
               <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2 }}>Overview</Typography>
-              <Typography variant="body2">{selectedCandidate.overview || 'No overview available'}</Typography>
+              <Typography variant="body2">{selectedCandidate.summary || 'No overview available'}</Typography>
               
               <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2 }}>Experience</Typography>
               <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
@@ -209,8 +300,6 @@ export default function Shortlisting() {
               
               <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2 }}>Education</Typography>
               <Typography variant="body2">{selectedCandidate.education || 'No education information available'}</Typography>
-              
-              <Button variant="contained" sx={{ mt: 3 }}>View Full Resume</Button>
             </Paper>
           ) : (
             <Paper sx={{ p: 3, textAlign: 'center' }}>
@@ -229,4 +318,12 @@ export default function Shortlisting() {
       )}
     </Box>
   );
+}
+
+// Helper function for color coding
+function getColorByScore(score) {
+  const numScore = typeof score === 'number' ? score : parseInt(score) || 0;
+  if (numScore >= 80) return 'success';
+  if (numScore >= 60) return 'warning';
+  return 'error';
 }

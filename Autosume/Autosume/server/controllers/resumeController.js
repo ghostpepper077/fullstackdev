@@ -7,6 +7,25 @@ const Job = require('../models/jobs'); // Adjust path if needed
 // Maximum allowed PDF size (5MB)
 const MAX_PDF_SIZE = 5 * 1024 * 1024;
 
+// Helper function to format experience with "years"
+const formatExperience = (experience) => {
+  if (!experience) return '';
+  
+  // If it's already a string with "years", return as is
+  if (typeof experience === 'string' && experience.toLowerCase().includes('year')) {
+    return experience;
+  }
+  
+  // If it's a number or string number, add "years"
+  const num = typeof experience === 'number' ? experience : parseInt(experience);
+  if (!isNaN(num)) {
+    return num === 1 ? `${num} year` : `${num} years`;
+  }
+  
+  // If it's a string but not a number, return as is
+  return experience.toString();
+};
+
 // Process Resume Function
 exports.processResume = async (req, res) => {
   if (!req.file) {
@@ -41,32 +60,38 @@ exports.processResume = async (req, res) => {
       apiKey: process.env.OPENAI_API_KEY
     });
 
-    // New prompt: extract ALL candidates from the resume
+    // Updated prompt to ensure consistent experience format
     const prompt = `
 Extract ALL candidate profiles from the resume text below. Respond ONLY with valid JSON in this format:
 {
   "candidates": [
     {
-      "name": "full name of candidate",
-      "email": "email address",
-      "phone": "phone number",
-      "skills": ["array", "of", "technical", "skills"],
-      "experience": "years of experience as number",
-      "education": "education details",
-      "summary": "2-3 sentence professional summary"
-    },
-    ...
+      "name": "full name",
+      "email": "email",
+      "phone": "phone",
+      "skills": ["array", "of", "skills"],
+      "experience": "number (just the number of years, e.g., 3 not '3 years')",
+      "education": "education",
+      "summary": "2-3 sentence summary"
+    }
   ]
 }
 
-Resume Text:
-${pdfText.text.substring(0, 6000)}
-    `.trim();
+Important Rules:
+1. Include ALL candidates found in the resume
+2. For experience, provide ONLY the number (e.g., 3, not "3 years")
+3. If the list is truncated, you MUST continue from where you left off
+4. Never omit candidates due to length
 
+Resume Text:
+${pdfText.text.substring(0, 20000)}
+    `.trim();
+    
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [{ role: "user", content: prompt }],
-      max_tokens: 1500
+      response_format: { type: "json_object" },
+      max_tokens: 4000  // Increase token limit
     });
 
     // 4. Validate and format response
@@ -85,6 +110,12 @@ ${pdfText.text.substring(0, 6000)}
     if (!result.candidates || !Array.isArray(result.candidates) || result.candidates.length === 0) {
       throw new Error("AI did not return any candidates");
     }
+
+    // Format experience for all candidates
+    result.candidates = result.candidates.map(candidate => ({
+      ...candidate,
+      experience: formatExperience(candidate.experience)
+    }));
 
     // Optionally, add top-level preview fields for first candidate
     const first = result.candidates[0];
@@ -175,12 +206,12 @@ STRICTLY analyze this candidate for ${criteria.jobId.role} role and ONLY respond
 
 CANDIDATE PROFILE:
 - Skills: ${Array.isArray(cand.skills) ? cand.skills.join(', ') : cand.skills || 'None'}
-- Experience: ${cand.experience || 'Unknown'} years
+- Experience: ${cand.experience || 'Unknown'}
 ${cand.summary ? `- Summary: ${cand.summary}` : ''}
 
 JOB REQUIREMENTS:
 - Required Skills: ${criteria.skills.join(', ')}
-- Required Experience: ${criteria.experience} years
+- Required Experience: ${criteria.experience}
 
 RULES:
 1. matchPercentage MUST be between 50-100 based on skill/experience match
@@ -215,6 +246,7 @@ RULES:
       } else if (matchedSkills.length === 0 && Array.isArray(cand.skills)) {
         matchedSkills = cand.skills;
       }
+      
       const candidateDoc = {
         name: cand.name || result.name || '',
         email: cand.email || '',
@@ -227,7 +259,8 @@ RULES:
         strengths: Array.isArray(result.strengths) ? result.strengths : [],
         weaknesses: Array.isArray(result.weaknesses) ? result.weaknesses : [],
         recommendation: result.recommendation,
-        experience: cand.experience || '',
+        matchPercentage: matchValue,
+        experience: formatExperience(cand.experience), // Format experience here
         role: criteria.jobId.role || '',
         aiSummary: result.recommendation || '',
         experienceDetails: cand.experienceDetails || '',
@@ -258,6 +291,80 @@ RULES:
     res.status(500).json({
       error: 'Screening failed',
       details: error.message || error.toString()
+    });
+  }
+};
+
+// Add this new function to resumeController.js
+exports.saveCandidates = async (req, res) => {
+  try {
+    const CandidateModel = require('../models/Candidate');
+    const candidates = req.body.candidates || [];
+    
+    if (!Array.isArray(candidates) || candidates.length === 0) {
+      return res.status(400).json({ error: "No candidates provided" });
+    }
+
+    // 1. First remove duplicates by email (in-memory) and format experience
+    const uniqueCandidates = candidates.reduce((acc, current) => {
+      const exists = acc.some(item => item.email === current.email && item.role === current.role);
+      if (!exists) {
+        // Format experience before saving
+        const formattedCandidate = {
+          ...current,
+          experience: formatExperience(current.experience)
+        };
+        acc.push(formattedCandidate);
+      }
+      return acc;
+    }, []);
+
+    // 2. Bulk upsert operation (atomic)
+    const bulkOps = uniqueCandidates.map(candidate => ({
+      updateOne: {
+        filter: { email: candidate.email, role: candidate.role },
+        update: { $set: candidate },
+        upsert: true
+      }
+    }));
+
+    const result = await CandidateModel.bulkWrite(bulkOps);
+    
+    res.json({
+      success: true,
+      inserted: result.upsertedCount,
+      updated: result.modifiedCount,
+      total: result.upsertedCount + result.modifiedCount
+    });
+  } catch (error) {
+    console.error('Error saving candidates:', error);
+    res.status(500).json({
+      error: 'Failed to save candidates',
+      details: error.message,
+      suggestion: 'Check for duplicate emails or invalid data'
+    });
+  }
+};
+
+// Add this to your controller
+exports.getCandidates = async (req, res) => {
+  try {
+    const CandidateModel = require('../models/Candidate');
+    const { jobRole, experience, skills } = req.query;
+    
+    const query = {};
+    if (jobRole) query.role = jobRole;
+    if (experience) query.experience = experience;
+    if (skills) query.skills = { $in: [skills] };
+
+    const candidates = await CandidateModel.find(query).sort({ match: -1 });
+    
+    res.json(candidates);
+  } catch (error) {
+    console.error('Error fetching candidates:', error);
+    res.status(500).json({
+      error: 'Failed to fetch candidates',
+      details: error.message
     });
   }
 };

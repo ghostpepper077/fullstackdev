@@ -92,6 +92,25 @@ export default function TriggerAIScreening() {
     }
   };
 
+    const handleSaveCriteria = async () => {
+    if (!criteriaForm.jobId || !criteriaForm.experience || criteriaForm.skills.length === 0) {
+      setCriteriaError('Please fill all fields and add at least one skill');
+      return;
+    }
+
+    setCriteriaLoading(true);
+    try {
+      const response = await http.post('/criteria', criteriaForm);
+      setCriteriaList(prev => [...prev, response.data]);
+      setCriteriaDialogOpen(false);
+      setCriteriaError(null);
+    } catch (err) {
+      setCriteriaError('Failed to save criteria. ' + (err.response?.data?.message || ''));
+    } finally {
+      setCriteriaLoading(false);
+    }
+  };
+
   // Filter criteria for selected job
   const selectedJobCriteria = criteriaList.filter(c => c.jobId === state.jobId || c.jobId?._id === state.jobId);
 
@@ -119,19 +138,60 @@ export default function TriggerAIScreening() {
   const handleRemoveCriteriaSkill = (skillToRemove) => {
     setCriteriaForm({ ...criteriaForm, skills: criteriaForm.skills.filter(skill => skill !== skillToRemove) });
   };
-  const handleSaveCriteria = async () => {
-    if (!criteriaForm.jobId || !criteriaForm.experience || criteriaForm.skills.length === 0) {
-      setCriteriaError('Please fill all required fields');
-      return;
-    }
-    try {
-      await http.post('/criteria', criteriaForm);
-      setCriteriaDialogOpen(false);
-      fetchCriteria();
-    } catch (err) {
-      setCriteriaError('Failed to save criteria. ' + (err.response?.data?.message || ''));
-    }
-  };
+
+  const [saveLoading, setSaveLoading] = useState(false);
+
+const handleSaveCandidates = async () => {
+  if (!state.screeningResults) {
+    setState(prev => ({ ...prev, error: { message: 'No screening results to save' } }));
+    return;
+  }
+
+  setSaveLoading(true);
+  try {
+    const results = Array.isArray(state.screeningResults.results)
+      ? state.screeningResults.results
+      : [state.screeningResults];
+
+    const saveResponse = await http.post('/screened-candidates', {
+      candidates: results.map(result => ({
+        ...result,
+        jobId: state.jobId,
+        role: state.jobs.find(j => j._id === state.jobId)?.role || 'Unknown'
+      }))
+    });
+
+    setState(prev => ({
+      ...prev,
+      success: `Successfully saved ${saveResponse.data.count} candidates to shortlist!`
+    }));
+  } catch (err) {
+    setState(prev => ({
+      ...prev,
+      error: {
+        message: 'Failed to save candidates',
+        details: err.response?.data?.message || 'Please try again'
+      }
+    }));
+  } finally {
+    setSaveLoading(false);
+  }
+};
+
+// Add this button to your results section (after the screening results display)
+{state.showResults && (
+  <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
+    <Button
+      variant="contained"
+      color="secondary"
+      onClick={handleSaveCandidates}
+      disabled={saveLoading || !state.screeningResults}
+      startIcon={saveLoading ? <CircularProgress size={20} /> : null}
+    >
+      {saveLoading ? 'Saving...' : 'Save to Shortlist'}
+    </Button>
+  </Box>
+)}
   
   useEffect(() => {
     fetchJobs();
@@ -190,60 +250,73 @@ export default function TriggerAIScreening() {
     }
   };
 
-  const handleRunScreening = async () => {
-    if (!state.jobId || state.skills.length === 0) {
-      setState(prev => ({
-        ...prev,
-        error: {
-          message: 'Missing information',
-          details: 'Please select a job and ensure skills were detected'
-        }
-      }));
-      return;
-    }
-
-    setState(prev => ({ ...prev, loading: true, error: null }));
-
-    try {
-      // If resumeData contains multiple candidates, send all
-      let candidates = [];
-      if (Array.isArray(state.resumeData?.candidates)) {
-        candidates = state.resumeData.candidates;
-      } else if (state.resumeData) {
-        candidates = [{
-          name: state.resumeData.name || '',
-          email: state.resumeData.email || '',
-          phone: state.resumeData.phone || '',
-          education: state.resumeData.education || '',
-          summary: state.resumeData.summary || '',
-          skills: state.skills,
-          experience: state.experience
-        }];
+// In TriggerAIScreening.jsx, update the handleRunScreening function:
+const handleRunScreening = async () => {
+  if (!state.jobId || state.skills.length === 0) {
+    setState(prev => ({
+      ...prev,
+      error: {
+        message: 'Missing information',
+        details: 'Please select a job and ensure skills were detected'
       }
+    }));
+    return;
+  }
 
-      const response = await http.post('/screen', {
-        jobId: state.jobId,
-        candidates
-      });
+  setState(prev => ({ ...prev, loading: true, error: null }));
 
-      setState(prev => ({
-        ...prev,
-        loading: false,
-        success: `Screening completed against ${state.jobs.find(j => j._id === state.jobId)?.role || 'selected job'}`,
-        screeningResults: response.data,
-        showResults: true
-      }));
-    } catch (err) {
-      setState(prev => ({
-        ...prev,
-        loading: false,
-        error: {
-          message: 'Screening failed',
-          details: err.response?.data?.error || 'Please try again'
-        }
-      }));
+  try {
+    let candidates = [];
+    if (Array.isArray(state.resumeData?.candidates)) {
+      candidates = state.resumeData.candidates;
+    } else if (state.resumeData) {
+      candidates = [{
+        name: state.resumeData.name || '',
+        email: state.resumeData.email || '',
+        phone: state.resumeData.phone || '',
+        education: state.resumeData.education || '',
+        summary: state.resumeData.summary || '',
+        skills: state.skills,
+        experience: state.experience
+      }];
     }
-  };
+
+    // First screen the candidates
+    const screeningResponse = await http.post('/screen', {
+      jobId: state.jobId,
+      candidates
+    });
+
+    // Then save the screened candidates to database
+    const saveResponse = await http.post('/screened-candidates', {
+      candidates: screeningResponse.data.results.map(result => ({
+        ...result,
+        jobId: state.jobId,
+        role: state.jobs.find(j => j._id === state.jobId)?.role || 'Unknown',
+        status: 'Screened',
+        dateScreened: new Date().toISOString()
+      }))
+    });
+
+    setState(prev => ({
+      ...prev,
+      loading: false,
+      success: `Screening completed and ${saveResponse.data.total} candidates saved to shortlist!`,
+      screeningResults: screeningResponse.data,
+      showResults: true
+    }));
+
+  } catch (err) {
+    setState(prev => ({
+      ...prev,
+      loading: false,
+      error: {
+        message: 'Screening failed',
+        details: err.response?.data?.error || 'Please try again'
+      }
+    }));
+  }
+};
 
   const removeSkill = (skillToRemove) => {
     setState(prev => ({
@@ -298,9 +371,6 @@ export default function TriggerAIScreening() {
         ) : (
           <Typography variant="body2" color="text.secondary">No criteria set for this job.</Typography>
         )}
-        <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={handleOpenCriteriaDialog}>
-          Add Criteria
-        </Button>
       </Box>
 
       {/* Criteria Dialog */}
@@ -341,14 +411,7 @@ export default function TriggerAIScreening() {
         <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
           AI Resume Screening
         </Typography>
-        <Button
-          variant="outlined"
-          startIcon={<RefreshIcon />}
-          onClick={fetchJobs}
-          disabled={state.refreshingJobs}
-        >
-          {state.refreshingJobs ? 'Refreshing...' : 'Refresh Jobs'}
-        </Button>
+
       </Box>
 
       {/* Error Display */}
