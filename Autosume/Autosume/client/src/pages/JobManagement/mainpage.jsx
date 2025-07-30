@@ -9,6 +9,9 @@ const JobManagement = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [applicantFilter, setApplicantFilter] = useState('');
+
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -40,9 +43,22 @@ const JobManagement = () => {
     }
   };
 
-  const filteredJobs = jobs.filter(job =>
-    (job?.role || '').toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredJobs = jobs.filter((job) => {
+    const matchesSearch = (job?.role || '').toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesStatus =
+      !statusFilter || (job?.status || '').toLowerCase() === statusFilter.toLowerCase();
+
+    const applicants = job.applicants || 0;
+    const matchesApplicants =
+      applicantFilter === ''
+      || (applicantFilter === 'none' && applicants === 0)
+      || (applicantFilter === '1-10' && applicants > 0 && applicants <= 10)
+      || (applicantFilter === '10+' && applicants > 10);
+
+    return matchesSearch && matchesStatus && matchesApplicants;
+  });
+
 
 
   if (loading) {
@@ -73,8 +89,22 @@ const JobManagement = () => {
           <div className="header">
             <h2>Job Roles ({filteredJobs.length})</h2>
             <div className="user-actions">
+              <div className="filters">
+                <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                  <option value="">All Statuses</option>
+                  <option value="active">Active</option>
+                  <option value="closed">Closed</option>
+                </select>
+
+                <select value={applicantFilter} onChange={(e) => setApplicantFilter(e.target.value)}>
+                  <option value="">All Applicants</option>
+                  <option value="none">0 Applicants</option>
+                  <option value="1-10">1-10 Applicants</option>
+                  <option value="10+">10+ Applicants</option>
+                </select>
+              </div>
               <button className="create-job" onClick={handleCreateJob}>
-                Create Job
+                CREATE JOB
               </button>
             </div>
           </div>
@@ -85,8 +115,10 @@ const JobManagement = () => {
               <div>Date Created</div>
               <div># Applicants</div>
               <div>Status</div>
-              <div>Actions</div>
+              <div>Edit</div>
+              <div>Delete</div>
             </div>
+
 
             {filteredJobs.length > 0 ? (
               filteredJobs.map((job) => (
@@ -95,28 +127,32 @@ const JobManagement = () => {
                   <div>{new Date(job.createdAt).toLocaleDateString()}</div>
                   <div>{job.applicants || 0}</div>
                   <div>{job.status || 'Active'}</div>
-                  <div className="action-buttons">
+                  <div className="action-cell">
                     <button
-                      className="action-btn view"
+                      className="action-btn edit"
                       onClick={() => navigate(`/jobs/edit/${job._id}`)}
+                      title="Edit"
                     >
-                      View
+                      &#9998;
                     </button>
-
+                  </div>
+                  <div className="action-cell">
                     <button
                       className="action-btn delete"
                       onClick={() => handleDeleteJob(job._id)}
+                      title="Delete"
                     >
-                      Delete
+                      &#128465;
                     </button>
                   </div>
                 </div>
               ))
             ) : (
               <div className="no-jobs">
-                {searchTerm ? 'No matching jobs found' : 'No jobs available. Create your first job!'}
+                {searchTerm ? 'No matching jobs found' : 'No jobs available.'}
               </div>
             )}
+
           </div>
         </div>
       </div>

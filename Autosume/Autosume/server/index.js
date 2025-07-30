@@ -31,6 +31,9 @@ const scheduleRoutes = require('./routes/scheduleRoutes');
 const criteriaRoutes = require('./routes/criteria');
 const aiRoutes = require('./routes/aiRoutes');
 const chatbotRoutes = require('./routes/chatbot');
+const aiRoutesJason = require('./routes/aiRoutesJason');
+app.use('/api/ai', aiRoutesJason);
+
 
 // --- Use Routes ---
 app.use('/api/auth', authRoutes);
