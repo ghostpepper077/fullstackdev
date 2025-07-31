@@ -47,7 +47,7 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/chatbot', chatbotRoutes);
 app.use('/api/ai-jason', aiRoutesJason);
 
-// ADD THIS MISSING LINE - Register the aiHariz routes
+// Register the aiHariz routes
 app.use('/api', aiHariz);
 
 // --- Job Routes ---
@@ -61,6 +61,52 @@ app.get("/api/jobs", async (req, res) => {
   }
 });
 
+app.post('/api/jobs', async (req, res) => {
+  try {
+    const { role } = req.body;
+    if (!role) return res.status(400).json({ message: 'Role is required.' });
+    const newJob = new Job({ role });
+    await newJob.save();
+    res.status(201).json(newJob);
+  } catch (error) {
+    console.error("Error creating job:", error);
+    res.status(500).json({ message: 'Server error creating job.' });
+  }
+});
+
+app.get('/api/jobs/:id', async (req, res) => {
+  try {
+    const job = await Job.findById(req.params.id);
+    if (!job) return res.status(404).json({ message: 'Job not found' });
+    res.json(job);
+  } catch (error) {
+    console.error("Error fetching job:", error);
+    res.status(500).json({ message: 'Server error fetching job.' });
+  }
+});
+
+app.put('/api/jobs/:id', async (req, res) => {
+  try {
+    const updatedJob = await Job.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!updatedJob) return res.status(404).json({ message: 'Job not found' });
+    res.json(updatedJob);
+  } catch (error) {
+    console.error("Error updating job:", error);
+    res.status(500).json({ message: 'Server error updating job.' });
+  }
+});
+
+app.delete('/api/jobs/:id', async (req, res) => {
+  try {
+    const deletedJob = await Job.findByIdAndDelete(req.params.id);
+    if (!deletedJob) return res.status(404).json({ message: 'Job not found' });
+    res.json({ message: 'Job deleted successfully', job: deletedJob });
+  } catch (error) {
+    console.error("Error deleting job:", error);
+    res.status(500).json({ message: 'Server error deleting job.' });
+  }
+});
+
 // --- Candidate Routes ---
 app.get("/api/candidates", async (req, res) => {
   try {
@@ -69,6 +115,54 @@ app.get("/api/candidates", async (req, res) => {
   } catch (error) {
     console.error("Error fetching candidates:", error);  
     res.status(500).json({ message: "Server error fetching candidates." });
+  }
+});
+
+app.get('/api/candidates/all', async (req, res) => {
+  try {
+    const allCandidates = await Candidate.find({});
+    res.json(allCandidates);
+  } catch (error) {
+    console.error("Error fetching all candidates:", error);
+    res.status(500).json({ message: 'Server error fetching all candidates.' });
+  }
+});
+
+// --- Criteria Routes ---
+app.post('/api/criteria', async (req, res) => {
+  try {
+    const { jobId, experience, skills } = req.body;
+    if (!jobId || !experience || !skills) {
+      return res.status(400).json({ message: 'Missing required fields.' });
+    }
+
+    const skillsArray = skills.split(',').map(skill => skill.trim());
+
+    const newCriteria = new Criteria({ jobId, experience, skills: skillsArray });
+    await newCriteria.save();
+    res.status(201).json(newCriteria);
+  } catch (error) {
+    console.error("Error creating criteria:", error);
+    res.status(500).json({ message: 'Server error creating criteria.' });
+  }
+});
+
+app.get('/api/criteria/options', async (req, res) => {
+  try {
+    const [experienceOptions, skillsOptions, jobOptions] = await Promise.all([
+      Criteria.distinct('experience'),
+      Criteria.distinct('skills'),
+      Job.find({}).select('role').sort({ role: 1 })
+    ]);
+
+    res.json({
+      experience: experienceOptions,
+      skills: skillsOptions,
+      jobs: jobOptions
+    });
+  } catch (error) {
+    console.error("Error fetching criteria options:", error);
+    res.status(500).json({ message: 'Server error fetching options.' });
   }
 });
 
