@@ -33,7 +33,6 @@ const criteriaRoutes = require('./routes/criteria');
 const aiRoutes = require('./routes/aiRoutes');
 const chatbotRoutes = require('./routes/chatbot');
 const aiRoutesJason = require('./routes/aiRoutesJason');
-
 const aiHariz = require('./routes/aiHariz');
 
 // --- Use Routes ---
@@ -43,12 +42,17 @@ app.use('/api/interviews', interviewRoutes);
 app.use('/api/schedules', scheduleRoutes);
 app.use('/api/criteria', criteriaRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/chatbot', chatbotRoutes);
+app.use('/api/ai-jason', aiRoutesJason);
+app.use('/api', aiHariz);
+
 // --- Job Routes ---
 app.get("/api/jobs", async (req, res) => {
   try {
     const jobs = await Job.find({}).sort({ createdAt: -1 });
     res.json(jobs);
   } catch (error) {
+    console.error("Error fetching jobs:", error);
     res.status(500).json({ message: "Server error fetching jobs." });
   }
 });
@@ -59,6 +63,7 @@ app.get("/api/candidates", async (req, res) => {
     const topCandidates = await Candidate.find({}).sort({ match: -1 }).limit(5);
     res.json(topCandidates);
   } catch (error) {
+    console.error("Error fetching candidates:", error);  
     res.status(500).json({ message: "Server error fetching candidates." });
   }
 });
@@ -98,33 +103,3 @@ mongoose
     console.error("❌ MongoDB connection error:", err.message);
     process.exit(1);
   });
-
-// const express = require('express');
-// const { OpenAI } = require('openai');
-
-// const router = express.Router();
-
-// const openai = new OpenAI({
-//   apiKey: process.env.OPENAI_API_KEY
-// });
-
-// router.post('/chat', async (req, res) => {
-//   try {
-//     const { message } = req.body;
-
-//     const response = await openai.chat.completions.create({
-//       model: "gpt-4", // or "gpt-3.5-turbo"
-//       messages: [{ role: "user", content: message }]
-//     });
-
-//     res.json({ reply: response.choices[0].message.content });
-//   } catch (err) {
-//     console.error("OpenAI error:", err);
-//     res.status(500).json({ error: "OpenAI API request failed" });
-//   }
-// });
-
-// module.exports = router;
-
-// const chatRoute = require('./routes/api'); // Adjust path
-// app.use('/api', chatRoute);
