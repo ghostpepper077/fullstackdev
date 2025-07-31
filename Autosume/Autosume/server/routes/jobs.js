@@ -5,7 +5,33 @@ const Job = require('../models/jobs'); // adjust path if needed
 // POST /api/jobs → create a new job
 router.post('/', async (req, res) => {
   try {
-    const newJob = new Job(req.body);
+    const {
+      role,
+      description,
+      deadline,
+      salaryRange,
+      timing,
+      jobType,
+      department
+    } = req.body;
+
+    if (!role || !description || !deadline || !salaryRange || !timing || !department) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const newJob = new Job({
+      role,
+      description,
+      deadline,
+      salaryRange,
+      timing,
+      jobType,
+      department,
+      applicants: 0,
+      createdAt: new Date(),
+      status: 'Active'
+    });
+
     await newJob.save();
     res.status(201).json(newJob);
   } catch (err) {
@@ -13,6 +39,7 @@ router.post('/', async (req, res) => {
     res.status(500).json({ error: 'Failed to create job' });
   }
 });
+
 
 // GET /api/jobs → fetch jobs for dropdown (only _id and title)
 router.get('/', async (req, res) => {
@@ -46,15 +73,17 @@ router.get('/:id', async (req, res) => {
       timing: job.timing,
       salaryMin: job.salaryMin,
       salaryMax: job.salaryMax,
-      salaryRange, 
+      salaryRange,
       jobType: job.jobType,
       deadline: job.deadline ? job.deadline.toISOString() : null,
       description: job.description,
       status: job.status,
       applicants: job.applicants,
       createdAt: job.createdAt,
+      department: job.department, 
       _id: job._id,
     });
+
   } catch (err) {
     console.error('❌ Failed to fetch job:', err.message);
     res.status(500).json({ error: 'Failed to fetch job' });
