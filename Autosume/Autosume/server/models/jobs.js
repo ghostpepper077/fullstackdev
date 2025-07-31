@@ -6,11 +6,13 @@ const jobSchema = new mongoose.Schema({
   deadline: { type: Date, required: true },
   salaryRange: { type: String, required: true },
   timing: { type: String, required: true },
+  department: { type: String, required: true }, // 🆕 Add this line
   jobType: { type: String, default: 'Full Time' },
   applicants: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now },
   status: { type: String, enum: ['Active', 'Closed'], default: 'Active' }
 });
+
 
 
 // Use exact collection name 'jobs'

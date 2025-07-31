@@ -16,19 +16,20 @@ const Create = () => {
 
   const [jobData, setJobData] = useState({
     role: '',
-    timing: '',
+    description: '',
+    deadline: null,
     salaryMin: '',
     salaryMax: '',
+    timing: '',
     jobType: 'Full Time',
-    deadline: null, // dayjs object or null
-    description: ''
+    department: '', // ✅ department added
   });
 
   const [loading, setLoading] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
   const [fetching, setFetching] = useState(isEdit);
   const [error, setError] = useState('');
-  const [validationError, setValidationError] = useState(''); // single error message
+  const [validationError, setValidationError] = useState('');
 
   useEffect(() => {
     if (isEdit) {
@@ -46,6 +47,7 @@ const Create = () => {
             salaryMin: salaryMin || '',
             salaryMax: salaryMax || '',
             jobType: data.jobType || 'Full Time',
+            department: data.department || '', // ✅ pre-fill department
             deadline: data.deadline ? dayjs(data.deadline) : null,
             description: data.description || ''
           });
@@ -74,6 +76,7 @@ const Create = () => {
     if (!jobData.role.trim()) return 'Job title is required.';
     if (!jobData.timing.trim()) return 'Timing/shifts is required.';
     if (!jobData.description.trim()) return 'Job description is required.';
+    if (!jobData.department.trim()) return 'Department is required.';
     if (jobData.salaryMin === '' || jobData.salaryMin === null) return 'Minimum salary is required.';
     if (isNaN(jobData.salaryMin) || Number(jobData.salaryMin) < 0) return 'Minimum salary must be a number ≥ 0.';
     if (jobData.salaryMax === '' || jobData.salaryMax === null) return 'Maximum salary is required.';
@@ -86,7 +89,6 @@ const Create = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setValidationError('');
     setError('');
 
@@ -108,6 +110,8 @@ const Create = () => {
       if (isEdit) {
         await axios.put(`http://localhost:5000/api/jobs/${id}`, payload);
       } else {
+        console.log("Payload being sent:", payload);
+
         await axios.post('http://localhost:5000/api/jobs', {
           ...payload,
           applicants: 0,
@@ -218,6 +222,25 @@ const Create = () => {
             />
           </div>
 
+          <div className="form-group">
+            <label>Department</label>
+            <select
+              name="department"
+              value={jobData.department}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Department</option>
+              <option value="IT">IT</option>
+              <option value="Sales">Sales</option>
+              <option value="Logistics">Logistics</option>
+              <option value="Marketing">Marketing</option>
+              <option value="HR">HR</option>
+              <option value="Finance">Finance</option>
+              <option value="Customer Support">Customer Support</option>
+            </select>
+          </div>
+
           <div className="form-row">
             <div className="form-group">
               <label>Salary Range</label>
@@ -276,7 +299,6 @@ const Create = () => {
             {loading ? (isEdit ? 'Updating...' : 'Creating...') : isEdit ? 'Update Job' : 'Create Job'}
           </button>
 
-          {/* Show one validation error or backend error here */}
           {(validationError || error) && (
             <div className="validation-error-block" style={{ marginTop: '1rem' }}>
               <p style={{ color: 'red', fontWeight: '600' }}>{validationError || error}</p>

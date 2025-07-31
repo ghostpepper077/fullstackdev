@@ -69,10 +69,11 @@ app.post('/api/jobs', async (req, res) => {
       deadline,
       salaryRange,
       timing,
-      jobType
+      jobType,
+      department // 🆕 Add this line
     } = req.body;
 
-    if (!role || !description || !deadline || !salaryRange || !timing) {
+    if (!role || !description || !deadline || !salaryRange || !timing || !department) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
@@ -83,6 +84,7 @@ app.post('/api/jobs', async (req, res) => {
       salaryRange,
       timing,
       jobType,
+      department,
       applicants: 0,
       createdAt: new Date()
     });
