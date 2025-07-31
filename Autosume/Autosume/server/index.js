@@ -42,10 +42,6 @@ app.use('/api/interviews', interviewRoutes);
 app.use('/api/schedules', scheduleRoutes);
 app.use('/api/criteria', criteriaRoutes);
 app.use('/api/ai', aiRoutes);
-app.use('/api/chatbot', chatbotRoutes);
-app.use('/api/ai-jason', aiRoutesJason);
-app.use('/api', aiHariz);
-
 // --- Job Routes ---
 app.get("/api/jobs", async (req, res) => {
   try {
