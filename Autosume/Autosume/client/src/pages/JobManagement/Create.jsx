@@ -28,6 +28,7 @@ const Create = () => {
   const [aiLoading, setAiLoading] = useState(false);
   const [fetching, setFetching] = useState(isEdit);
   const [error, setError] = useState('');
+  const [validationError, setValidationError] = useState(''); // single error message
 
   useEffect(() => {
     if (isEdit) {
@@ -69,10 +70,33 @@ const Create = () => {
     setJobData(prev => ({ ...prev, deadline: newValue }));
   };
 
+  const validate = () => {
+    if (!jobData.role.trim()) return 'Job title is required.';
+    if (!jobData.timing.trim()) return 'Timing/shifts is required.';
+    if (!jobData.description.trim()) return 'Job description is required.';
+    if (jobData.salaryMin === '' || jobData.salaryMin === null) return 'Minimum salary is required.';
+    if (isNaN(jobData.salaryMin) || Number(jobData.salaryMin) < 0) return 'Minimum salary must be a number ≥ 0.';
+    if (jobData.salaryMax === '' || jobData.salaryMax === null) return 'Maximum salary is required.';
+    if (isNaN(jobData.salaryMax) || Number(jobData.salaryMax) < 0) return 'Maximum salary must be a number ≥ 0.';
+    if (Number(jobData.salaryMin) > Number(jobData.salaryMax)) return 'Minimum salary cannot be greater than maximum salary.';
+    if (!jobData.deadline) return 'Please select an application deadline.';
+    if (dayjs(jobData.deadline).isBefore(dayjs(), 'day')) return 'Application deadline cannot be in the past.';
+    return null;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+
+    setValidationError('');
     setError('');
+
+    const validationMsg = validate();
+    if (validationMsg) {
+      setValidationError(validationMsg);
+      return;
+    }
+
+    setLoading(true);
 
     const payload = {
       ...jobData,
@@ -103,6 +127,7 @@ const Create = () => {
   const generateDescription = async () => {
     setAiLoading(true);
     setError('');
+    setValidationError('');
 
     try {
       const res = await axios.post('http://localhost:5000/api/ai/generate-description', {
@@ -141,7 +166,7 @@ const Create = () => {
       {fetching ? (
         <p>Loading job data...</p>
       ) : (
-        <form onSubmit={handleSubmit} className="job-form">
+        <form onSubmit={handleSubmit} className="job-form" noValidate>
           <div className="form-group">
             <label>Job Pointers / Description</label>
             <small className="helper-text">
@@ -204,6 +229,7 @@ const Create = () => {
                   value={jobData.salaryMin}
                   onChange={handleChange}
                   required
+                  min="0"
                 />
                 <span>to</span>
                 <input
@@ -213,6 +239,7 @@ const Create = () => {
                   value={jobData.salaryMax}
                   onChange={handleChange}
                   required
+                  min="0"
                 />
               </div>
             </div>
@@ -239,6 +266,7 @@ const Create = () => {
               <DatePicker
                 value={jobData.deadline}
                 onChange={handleDateChange}
+                disablePast
                 renderInput={(params) => <TextField {...params} fullWidth required />}
               />
             </LocalizationProvider>
@@ -248,7 +276,12 @@ const Create = () => {
             {loading ? (isEdit ? 'Updating...' : 'Creating...') : isEdit ? 'Update Job' : 'Create Job'}
           </button>
 
-          {error && <p style={{ color: 'red', marginTop: '1rem' }}>{error}</p>}
+          {/* Show one validation error or backend error here */}
+          {(validationError || error) && (
+            <div className="validation-error-block" style={{ marginTop: '1rem' }}>
+              <p style={{ color: 'red', fontWeight: '600' }}>{validationError || error}</p>
+            </div>
+          )}
         </form>
       )}
     </div>
