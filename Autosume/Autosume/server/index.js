@@ -45,7 +45,7 @@ app.use('/api/schedules', scheduleRoutes);
 app.use('/api/criteria', criteriaRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/chatbot', chatbotRoutes);
-app.use('/api/ai-jason', aiRoutesJason);
+app.use('/api/ai', aiRoutesJason);
 
 // Register the aiHariz routes
 app.use('/api', aiHariz);
