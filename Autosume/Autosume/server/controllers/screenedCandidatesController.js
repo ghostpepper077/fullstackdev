@@ -1,6 +1,6 @@
-import ScreenedCandidate from '../models/ScreenedCandidate.js';
+const ScreenedCandidate = require('../models/ScreenedCandidate');
 
-export const saveScreenedCandidates = async (req, res) => {
+const saveScreenedCandidates = async (req, res) => {
   try {
     const candidates = req.body.candidates || [];
     
@@ -8,8 +8,17 @@ export const saveScreenedCandidates = async (req, res) => {
       return res.status(400).json({ error: "No candidates provided" });
     }
 
+    // Add timestamps and default status if not provided
+    const candidatesWithDefaults = candidates.map(candidate => ({
+      ...candidate,
+      status: candidate.status || 'Screened',
+      dateScreened: candidate.dateScreened || new Date().toISOString(),
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }));
+
     // Bulk upsert operation
-    const bulkOps = candidates.map(candidate => ({
+    const bulkOps = candidatesWithDefaults.map(candidate => ({
       updateOne: {
         filter: { email: candidate.email, jobId: candidate.jobId },
         update: { $set: candidate },
@@ -23,9 +32,11 @@ export const saveScreenedCandidates = async (req, res) => {
       success: true,
       inserted: result.upsertedCount,
       updated: result.modifiedCount,
-      total: result.upsertedCount + result.modifiedCount
+      total: result.upsertedCount + result.modifiedCount,
+      count: result.upsertedCount + result.modifiedCount
     });
   } catch (error) {
+    console.error('Error saving screened candidates:', error);
     res.status(500).json({
       error: 'Failed to save candidates',
       details: error.message
@@ -33,7 +44,7 @@ export const saveScreenedCandidates = async (req, res) => {
   }
 };
 
-export const getScreenedCandidates = async (req, res) => {
+const getScreenedCandidates = async (req, res) => {
   try {
     const { jobId, role, status } = req.query;
     const query = {};
@@ -43,13 +54,19 @@ export const getScreenedCandidates = async (req, res) => {
     if (status) query.status = status;
 
     const candidates = await ScreenedCandidate.find(query)
-      .sort({ matchPercentage: -1, createdAt: -1 });
+      .sort({ match: -1, matchPercentage: -1, createdAt: -1 });
 
     res.json(candidates);
   } catch (error) {
+    console.error('Error fetching screened candidates:', error);
     res.status(500).json({
       error: 'Failed to fetch candidates',
       details: error.message
     });
   }
+};
+
+module.exports = {
+  saveScreenedCandidates,
+  getScreenedCandidates
 };
