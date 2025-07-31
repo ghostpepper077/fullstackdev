@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import http from '../../http'; // Import your HTTP client
 import './mainpage.css';
 
+// Import MUI components
+import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+
 const JobManagement = () => {
   const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
@@ -11,7 +14,6 @@ const JobManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [applicantFilter, setApplicantFilter] = useState('');
-
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -59,8 +61,6 @@ const JobManagement = () => {
     return matchesSearch && matchesStatus && matchesApplicants;
   });
 
-
-
   if (loading) {
     return <div className="loading">Loading jobs...</div>;
   }
@@ -89,19 +89,38 @@ const JobManagement = () => {
           <div className="header">
             <h2>Job Roles ({filteredJobs.length})</h2>
             <div className="user-actions">
-              <div className="filters">
-                <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-                  <option value="">All Statuses</option>
-                  <option value="active">Active</option>
-                  <option value="closed">Closed</option>
-                </select>
+              <div className="filters" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                
+                {/* STATUS FILTER */}
+                <FormControl variant="outlined" size="small" sx={{ minWidth: 140 }}>
+                  <InputLabel id="status-filter-label">Status</InputLabel>
+                  <Select
+                    labelId="status-filter-label"
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    label="Status"
+                  >
+                    <MenuItem value="">All Statuses</MenuItem>
+                    <MenuItem value="active">Active</MenuItem>
+                    <MenuItem value="closed">Closed</MenuItem>
+                  </Select>
+                </FormControl>
 
-                <select value={applicantFilter} onChange={(e) => setApplicantFilter(e.target.value)}>
-                  <option value="">All Applicants</option>
-                  <option value="none">0 Applicants</option>
-                  <option value="1-10">1-10 Applicants</option>
-                  <option value="10+">10+ Applicants</option>
-                </select>
+                {/* APPLICANT FILTER */}
+                <FormControl variant="outlined" size="small" sx={{ minWidth: 160 }}>
+                  <InputLabel id="applicant-filter-label">Applicants</InputLabel>
+                  <Select
+                    labelId="applicant-filter-label"
+                    value={applicantFilter}
+                    onChange={(e) => setApplicantFilter(e.target.value)}
+                    label="Applicants"
+                  >
+                    <MenuItem value="">All Applicants</MenuItem>
+                    <MenuItem value="none">0 Applicants</MenuItem>
+                    <MenuItem value="1-10">1-10 Applicants</MenuItem>
+                    <MenuItem value="10+">10+ Applicants</MenuItem>
+                  </Select>
+                </FormControl>
               </div>
               <button className="create-job" onClick={handleCreateJob}>
                 CREATE JOB
@@ -118,7 +137,6 @@ const JobManagement = () => {
               <div>Edit</div>
               <div>Delete</div>
             </div>
-
 
             {filteredJobs.length > 0 ? (
               filteredJobs.map((job) => (
@@ -152,7 +170,6 @@ const JobManagement = () => {
                 {searchTerm ? 'No matching jobs found' : 'No jobs available.'}
               </div>
             )}
-
           </div>
         </div>
       </div>

@@ -49,7 +49,7 @@ const CandidateSchema = new mongoose.Schema(
     date: { type: String, default: "" },
     time: { type: String, default: "" },
     interviewer: { type: String, default: "" },
-    status: { type: String, default: "Not Sent" },
+    status: { type: String, default: "Unscheduled" },
   },
   {
     // Automatically add 'createdAt' and 'updatedAt' fields

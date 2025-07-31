@@ -43,8 +43,18 @@ ${scheduled
       ],
     });
 
-    const suggestion = completion.choices[0].message.content;
+    let suggestion = completion.choices[0].message.content.trim();
+
+    // Remove markdown code block wrapper if present
+    if (suggestion.startsWith("```")) {
+      suggestion = suggestion
+        .replace(/```[a-z]*\\n?/gi, "")
+        .replace(/```$/, "")
+        .trim();
+    }
+
     const parsed = JSON.parse(suggestion);
+
     res.json(parsed);
   } catch (error) {
     console.error("AI scheduling error:", error.message);
@@ -55,7 +65,7 @@ ${scheduled
 // ✅ Get All Currently Booked Slots
 router.get("/availability", async (req, res) => {
   try {
-    const candidates = await Candidate.find({ status: { $ne: "Not Sent" } });
+    const candidates = await Candidate.find({ status: { $ne: "Unscheduled" } });
 
     const takenSlots = candidates.map((c) => {
       return `${c.date}__${c.time}__${c.interviewer}`;

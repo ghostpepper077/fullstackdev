@@ -21,6 +21,8 @@ import InterviewScheduling from './pages/Interview+Email/scheduling';
 import EmailAutomation from './pages/Interview+Email/emailautomation';
 import InterviewDashboard from './pages/Interview+Email/interviewdashboard';
 import Sidebar from './components/Sidebar';
+import axios from 'axios';
+
 // ===================================================================
 // ★★★ 1. IMPORT THE NEW COMPONENT ★★★
 // ===================================================================
@@ -232,7 +234,7 @@ function Support() {
           <p style={{ color: '#555', lineHeight: '1.6', marginBottom: '20px' }}>
             Send us a detailed message and we'll get back to you within 24 hours with a comprehensive solution.
           </p>
-          <p style={{ color: '#2c3e50', fontWeight: 'bold', fontSize: '1.2rem' }}>support@autosume.com</p>
+          <p style={{ color: '#2c3e50', fontWeight: 'bold', fontSize: '1.2rem' }}>contact.autosume@gmail.com</p>
           <p style={{ color: '#7f8c8d', fontSize: '0.9rem' }}>Average response time: 4 hours</p>
         </div>
       </div>

@@ -12,14 +12,17 @@ import {
   Button,
   TextField,
   Stack,
+  Tooltip,
 } from "@mui/material";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import UndoIcon from "@mui/icons-material/Undo";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const statusColor = {
   Scheduled: "success",
   Pending: "warning",
-  "Not Sent": "error",
+  Unscheduled: "error",
 };
 
 export default function InterviewDashboard() {
@@ -34,13 +37,13 @@ export default function InterviewDashboard() {
       .catch((err) => console.error("❌ Failed to fetch interviews:", err));
   }, []);
 
-  const handleEdit = (row) => {
-    const route = row.status === "Scheduled" ? "/emailautomation" : "/scheduling";
+  const handleSchedule = (row) => {
+    const route = "/scheduling";
     navigate(route, { state: { candidate: row } });
   };
 
-  const handleClearSchedule = async (id) => {
-    const confirm = window.confirm("Clear this candidate's interview schedule?");
+  const handleUnschedule = async (id) => {
+    const confirm = window.confirm("Withdraw this candidate's interview?");
     if (!confirm) return;
 
     try {
@@ -51,8 +54,8 @@ export default function InterviewDashboard() {
         prev.map((c) => (c._id === id ? updated : c))
       );
     } catch (err) {
-      console.error("❌ Clear schedule failed:", err);
-      alert("Failed to clear schedule.");
+      console.error("❌ Withdraw failed:", err);
+      alert("Failed to withdraw interview.");
     }
   };
 
@@ -66,9 +69,28 @@ export default function InterviewDashboard() {
     const blob = new Blob([csv], { type: "text/csv" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = "interview_dashboard.csv";
+    link.download = `interview_dashboard_${new Date().toISOString().slice(0, 10)}.csv`;
     link.click();
   };
+
+  const isToday = (date) => {
+    return new Date(date).toDateString() === new Date().toDateString();
+  };
+
+  const filtered = interviews
+    .map((row) => ({
+      ...row,
+      status: row.status === "Not Sent" ? "Unscheduled" : row.status,
+    }))
+    .filter((row) =>
+      row.name?.toLowerCase().includes(search) ||
+      row.role?.toLowerCase().includes(search)
+    )
+    .sort((a, b) => {
+      const aDate = new Date(`${a.date} ${a.time}`);
+      const bDate = new Date(`${b.date} ${b.time}`);
+      return aDate - bDate;
+    });
 
   return (
     <Box p={5} bgcolor="#f0f2f5" minHeight="100vh">
@@ -104,23 +126,34 @@ export default function InterviewDashboard() {
               <TableCell><strong>Time</strong></TableCell>
               <TableCell><strong>Interviewer</strong></TableCell>
               <TableCell><strong>Status</strong></TableCell>
-              <TableCell><strong>Action</strong></TableCell>
+              <TableCell><strong>Manage</strong></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {interviews
-              .filter((row) =>
-                row.name?.toLowerCase().includes(search) ||
-                row.role?.toLowerCase().includes(search)
-              )
-              .sort((a, b) => {
-                const aDate = new Date(`${a.date} ${a.time}`);
-                const bDate = new Date(`${b.date} ${b.time}`);
-                return aDate - bDate;
-              })
-              .map((row, index) => (
-                <TableRow key={index}>
-                  <TableCell>{row.name}</TableCell>
+            {filtered.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} align="center">
+                  🔍 No interviews found.
+                </TableCell>
+              </TableRow>
+            ) : (
+              filtered.map((row, index) => (
+                <TableRow
+                  key={index}
+                  sx={{
+                    backgroundColor: isToday(row.date) ? "#fffde7" : "inherit",
+                  }}
+                >
+                  <TableCell>
+                    <Typography
+                      variant="body2"
+                      color="primary"
+                      sx={{ cursor: "pointer" }}
+                      onClick={() => navigate("/scheduling", { state: { candidate: row } })}
+                    >
+                      {row.name}
+                    </Typography>
+                  </TableCell>
                   <TableCell>{row.role}</TableCell>
                   <TableCell>{row.date}</TableCell>
                   <TableCell>{row.time}</TableCell>
@@ -134,26 +167,37 @@ export default function InterviewDashboard() {
                   </TableCell>
                   <TableCell>
                     <Stack direction="row" spacing={1}>
-                      <Button
-                        variant="outlined"
-                        color="primary"
-                        size="small"
-                        onClick={() => handleEdit(row)}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        color="warning"
-                        size="small"
-                        onClick={() => handleClearSchedule(row._id)}
-                      >
-                        🧹 Clear
-                      </Button>
+                      {row.status === "Unscheduled" && (
+                        <Tooltip title="Assign an interview slot">
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            size="small"
+                            startIcon={<AssignmentIcon />}
+                            onClick={() => handleSchedule(row)}
+                          >
+                            Assign
+                          </Button>
+                        </Tooltip>
+                      )}
+                      {row.status === "Scheduled" && (
+                        <Tooltip title="Withdraw interview assignment">
+                          <Button
+                            variant="outlined"
+                            color="warning"
+                            size="small"
+                            startIcon={<UndoIcon />}
+                            onClick={() => handleUnschedule(row._id)}
+                          >
+                            Withdraw
+                          </Button>
+                        </Tooltip>
+                      )}
                     </Stack>
                   </TableCell>
                 </TableRow>
-              ))}
+              ))
+            )}
           </TableBody>
         </Table>
       </Paper>
