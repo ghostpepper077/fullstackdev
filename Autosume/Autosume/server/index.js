@@ -33,6 +33,8 @@ const criteriaRoutes = require('./routes/criteria');
 const aiRoutes = require('./routes/aiRoutes');
 const chatbotRoutes = require('./routes/chatbot');
 const aiRoutesJason = require('./routes/aiRoutesJason');
+
+// Import the missing aiHariz routes
 const aiHariz = require('./routes/aiHariz');
 
 // --- Use Routes ---
@@ -42,6 +44,12 @@ app.use('/api/interviews', interviewRoutes);
 app.use('/api/schedules', scheduleRoutes);
 app.use('/api/criteria', criteriaRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/chatbot', chatbotRoutes);
+app.use('/api/ai-jason', aiRoutesJason);
+
+// ADD THIS MISSING LINE - Register the aiHariz routes
+app.use('/api', aiHariz);
+
 // --- Job Routes ---
 app.get("/api/jobs", async (req, res) => {
   try {
