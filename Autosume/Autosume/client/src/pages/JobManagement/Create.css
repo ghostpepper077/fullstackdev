@@ -113,3 +113,14 @@ textarea {
   cursor: not-allowed;
   transform: none;
 }
+.validation-error {
+  color: red;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.general-error {
+  color: red;
+  margin-top: 1rem;
+  font-weight: 600;
+}

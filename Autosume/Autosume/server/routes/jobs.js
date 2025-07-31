@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Job = require('../models/jobs'); // make sure this path is correct
+const Job = require('../models/jobs'); // adjust path if needed
 
 // POST /api/jobs → create a new job
 router.post('/', async (req, res) => {
@@ -14,14 +14,50 @@ router.post('/', async (req, res) => {
   }
 });
 
-// ✅ GET /api/jobs → fetch only _id and title for dropdown
+// GET /api/jobs → fetch jobs for dropdown (only _id and title)
 router.get('/', async (req, res) => {
   try {
-    const jobs = await Job.find({}, { _id: 1, title: 1 }); // Only return _id and title
+    const jobs = await Job.find({}, { _id: 1, role: 1 }); // Assuming 'role' is your job title field
     res.json(jobs);
   } catch (err) {
     console.error('❌ Failed to fetch jobs:', err.message);
     res.status(500).json({ error: 'Failed to fetch jobs' });
+  }
+});
+
+// NEW! GET /api/jobs/:id → fetch full job details for edit page
+router.get('/:id', async (req, res) => {
+  try {
+    const job = await Job.findById(req.params.id);
+    if (!job) {
+      return res.status(404).json({ error: 'Job not found' });
+    }
+
+    // Format salaryRange string (if stored separately)
+    let salaryRange = '';
+    if (job.salaryMin !== undefined && job.salaryMax !== undefined) {
+      salaryRange = `${job.salaryMin} ~ ${job.salaryMax}`;
+    } else if (job.salaryRange) {
+      salaryRange = job.salaryRange;
+    }
+
+    res.json({
+      role: job.role,
+      timing: job.timing,
+      salaryMin: job.salaryMin,
+      salaryMax: job.salaryMax,
+      salaryRange, 
+      jobType: job.jobType,
+      deadline: job.deadline ? job.deadline.toISOString() : null,
+      description: job.description,
+      status: job.status,
+      applicants: job.applicants,
+      createdAt: job.createdAt,
+      _id: job._id,
+    });
+  } catch (err) {
+    console.error('❌ Failed to fetch job:', err.message);
+    res.status(500).json({ error: 'Failed to fetch job' });
   }
 });
 
