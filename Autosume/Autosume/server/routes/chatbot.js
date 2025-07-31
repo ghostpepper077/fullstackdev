@@ -22,7 +22,6 @@ Company Handbook:
 - Sick Leave: Submit your medical certificate to HR via email within 2 days of absence.
 - Working Hours: Standard working hours are 9:00 AM to 6:00 PM, Monday to Friday.
 - Remote Work Policy: Employees can work remotely up to 2 days per week with manager approval.
-- Creator: Francisco Marcus Lee
 `;
 
   // Create the prompt for OpenAI
