@@ -1,24 +1,19 @@
 const mongoose = require('mongoose');
 
 const jobSchema = new mongoose.Schema({
-  role: {
-    type: String,
-    required: [true, 'Job role is required']
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  applicants: {
-    type: Number,
-    default: 0
-  },
-  status: {
-    type: String,
-    enum: ['Active', 'Closed'],
-    default: 'Active'
-  }
+  role: { type: String, required: true },
+  description: { type: String, required: true },
+  deadline: { type: Date, required: true },
+  salaryRange: { type: String, required: true },
+  timing: { type: String, required: true },
+  department: { type: String, required: true }, // 🆕 Add this line
+  jobType: { type: String, default: 'Full Time' },
+  applicants: { type: Number, default: 0 },
+  createdAt: { type: Date, default: Date.now },
+  status: { type: String, enum: ['Active', 'Closed'], default: 'Active' }
 });
 
-// 👇 The third argument 'jobs' tells Mongoose to use that exact collection name
+
+
+// Use exact collection name 'jobs'
 module.exports = mongoose.model('Job', jobSchema, 'jobs');

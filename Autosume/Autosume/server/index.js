@@ -63,16 +63,40 @@ app.get("/api/jobs", async (req, res) => {
 
 app.post('/api/jobs', async (req, res) => {
   try {
-    const { role } = req.body;
-    if (!role) return res.status(400).json({ message: 'Role is required.' });
-    const newJob = new Job({ role });
-    await newJob.save();
-    res.status(201).json(newJob);
-  } catch (error) {
-    console.error("Error creating job:", error);
-    res.status(500).json({ message: 'Server error creating job.' });
+    const {
+      role,
+      description,
+      deadline,
+      salaryRange,
+      timing,
+      jobType,
+      department // 🆕 Add this line
+    } = req.body;
+
+    if (!role || !description || !deadline || !salaryRange || !timing || !department) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    const job = new Job({
+      role,
+      description,
+      deadline,
+      salaryRange,
+      timing,
+      jobType,
+      department,
+      applicants: 0,
+      createdAt: new Date()
+    });
+
+    await job.save();
+    res.status(201).json(job);
+  } catch (err) {
+    console.error('Error creating job:', err);
+    res.status(500).json({ message: err.message });
   }
 });
+
 
 app.get('/api/jobs/:id', async (req, res) => {
   try {

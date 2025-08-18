@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Typography,
@@ -9,15 +9,15 @@ import {
   ListItem,
   Divider,
   IconButton,
-  Drawer,
 } from '@mui/material';
 import {
   Send as SendIcon,
   Psychology as BotIcon,
   Person as PersonIcon,
 } from '@mui/icons-material';
-import { getChatbotResponse } from './ChatbotService';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { getChatbotResponse, fetchChatHistory } from './ChatbotService';
+import { v4 as uuidv4 } from 'uuid';
 
 const PageTitle = ({ title }) => (
   <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 3, fontWeight: 600 }}>
@@ -83,9 +83,7 @@ const ChatWindow = ({ messages, onSendMessage }) => {
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleSend();
-    }
+    if (e.key === 'Enter') handleSend();
   };
 
   return (
@@ -106,9 +104,7 @@ const ChatWindow = ({ messages, onSendMessage }) => {
           ))}
         </List>
       </Box>
-
       <Divider />
-
       <Box sx={{ p: 2, display: 'flex', gap: 1 }}>
         <TextField
           fullWidth
@@ -128,77 +124,72 @@ const ChatWindow = ({ messages, onSendMessage }) => {
 };
 
 const ChatbotPage = () => {
-  const [chats, setChats] = useState([
-    {
-      id: 1,
-      title: 'Chat 1',
+  const [chats, setChats] = useState([]);
+  const [selectedChatId, setSelectedChatId] = useState(null);
+
+  const loadChatMessages = async (chat) => {
+    const messages = await fetchChatHistory(chat.sessionId);
+    return { ...chat, messages };
+  };
+
+  useEffect(() => {
+    const storedChats = JSON.parse(localStorage.getItem('chatbot_sessions')) || [];
+    Promise.all(storedChats.map(loadChatMessages)).then((loadedChats) => {
+      setChats(loadedChats);
+      if (loadedChats.length > 0) setSelectedChatId(loadedChats[0].id);
+    });
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('chatbot_sessions', JSON.stringify(chats.map(({ messages, ...rest }) => rest)));
+  }, [chats]);
+
+  const handleCreateNewChat = async () => {
+    const id = Date.now();
+    const sessionId = uuidv4();
+    const newChat = {
+      id,
+      title: `Chat ${chats.length + 1}`,
+      sessionId,
       messages: [
         {
           text: "Hello! I'm your Staff Handbook Assistant. Ask me anything about company policies!",
           isUser: false,
         },
       ],
-    },
-  ]);
-  const [selectedChatId, setSelectedChatId] = useState(1);
-
-  const handleCreateNewChat = () => {
-    const newId = Date.now();
-    setChats((prev) => [
-      ...prev,
-      {
-        id: newId,
-        title: `Chat ${prev.length + 1}`,
-        messages: [
-          {
-            text: "Hello! I'm your Staff Handbook Assistant. Ask me anything about company policies!",
-            isUser: false,
-          },
-        ],
-      },
-    ]);
-    setSelectedChatId(newId);
+    };
+    setChats((prev) => [...prev, newChat]);
+    setSelectedChatId(id);
   };
 
   const handleSendMessage = async (text) => {
-    // Show user message
-    setChats((prevChats) =>
-      prevChats.map((chat) =>
-        chat.id === selectedChatId
-          ? { ...chat, messages: [...chat.messages, { text, isUser: true }] }
-          : chat
-      )
-    );
+    const chatIndex = chats.findIndex((c) => c.id === selectedChatId);
+    if (chatIndex === -1) return;
 
-    // Show loading message from bot
-    setChats((prevChats) =>
-      prevChats.map((chat) =>
-        chat.id === selectedChatId
-          ? { ...chat, messages: [...chat.messages, { text: 'Typing...', isUser: false }] }
-          : chat
-      )
-    );
+    const updatedChats = [...chats];
+    const chat = updatedChats[chatIndex];
 
-    // Get AI response
-    const response = await getChatbotResponse(text);
+    chat.messages.push({ text, isUser: true });
+    chat.messages.push({ text: 'Typing...', isUser: false });
+    setChats(updatedChats);
 
-    // Replace 'Typing...' with actual response
-    setChats((prevChats) =>
-      prevChats.map((chat) =>
-        chat.id === selectedChatId
-          ? {
-              ...chat,
-              messages: [
-                ...chat.messages.slice(0, -1),
-                { text: response, isUser: false },
-              ],
-            }
-          : chat
-      )
-    );
+    const reply = await getChatbotResponse(text, chat.sessionId);
+
+    chat.messages.pop(); // remove 'Typing...'
+    chat.messages.push({ text: reply, isUser: false });
+
+    setChats([...updatedChats]);
   };
 
-  const selectedChat = chats.find((chat) => chat.id === selectedChatId);
+  const handleDeleteChat = (id) => {
+    const updated = chats.filter((c) => c.id !== id);
+    setChats(updated);
+    if (selectedChatId === id) {
+      setSelectedChatId(updated[0]?.id || null);
+    }
+  };
+
+  const selectedChat = chats.find((c) => c.id === selectedChatId);
 
   return (
     <Box sx={{ display: 'flex', height: '100%', p: 3 }}>
@@ -230,21 +221,7 @@ const ChatbotPage = () => {
               <Box onClick={() => setSelectedChatId(chat.id)} sx={{ flexGrow: 1 }}>
                 <Typography variant="body1">{chat.title}</Typography>
               </Box>
-
-              <IconButton
-                size="small"
-                edge="end"
-                color="error"
-                onClick={() => {
-                  setChats((prev) => {
-                    const updated = prev.filter((c) => c.id !== chat.id);
-                    if (chat.id === selectedChatId) {
-                      setSelectedChatId(updated[0]?.id || null);
-                    }
-                    return updated;
-                  });
-                }}
-              >
+              <IconButton size="small" edge="end" color="error" onClick={() => handleDeleteChat(chat.id)}>
                 <DeleteIcon fontSize="small" />
               </IconButton>
             </ListItem>
@@ -265,3 +242,4 @@ const ChatbotPage = () => {
 };
 
 export default ChatbotPage;
+
