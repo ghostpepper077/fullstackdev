@@ -2,6 +2,21 @@ const express = require('express');
 const router = express.Router();
 const Candidate = require('../models/Candidate');
 
+// Helper to combine date + "h:mm AM/PM" into a Date
+function toDateTime(dateStr, timeStr) {
+  if (!dateStr || !timeStr) return null;
+  const [tp, mer] = timeStr.split(" ");
+  if (!tp || !mer) return null;
+  let [h, m] = tp.split(":").map(Number);
+  if (/PM/i.test(mer) && h !== 12) h += 12;
+  if (/AM/i.test(mer) && h === 12) h = 0;
+
+  const dt = new Date(dateStr);
+  if (isNaN(dt)) return null;
+  dt.setHours(h, m ?? 0, 0, 0);
+  return dt;
+}
+
 // Get all candidates
 router.get('/all', async (req, res) => {
   try {
@@ -12,14 +27,24 @@ router.get('/all', async (req, res) => {
   }
 });
 
-// Schedule an interview with conflict check
+// Schedule an interview with conflict & past-time check
 router.post('/schedule', async (req, res) => {
   try {
     const { name, date, time, interviewer } = req.body;
 
+    // Validate and reject past datetime (covers past days and same-day past times)
+    const interviewDT = toDateTime(date, time);
+    if (!interviewDT) {
+      return res.status(400).json({ error: "Invalid date/time." });
+    }
+    const now = new Date();
+    if (interviewDT < now) {
+      return res.status(400).json({ error: "Cannot schedule in the past." });
+    }
+
     // Check for existing interview conflict
-    const normalized = interviewer.trim().replace(/\s+/g, " ");
-  const conflict = await Candidate.findOne({
+    const normalized = (interviewer || "").trim().replace(/\s+/g, " ");
+    const conflict = await Candidate.findOne({
       date,
       time,
       interviewer: new RegExp(`^${normalized}$`, 'i'),

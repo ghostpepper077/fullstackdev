@@ -39,6 +39,30 @@ const interviewers = ["Gabriel Tan", "Jace Lim", "Amira Soh"];
 
 const steps = ["Select Slot", "Confirm Interview", "Email Notification"];
 
+// Helpers to block same-day past times
+const isSameDay = (a, b) =>
+  a && b && a.toDateString() === b.toDateString();
+
+const buildDateWithTime = (baseDate, slot) => {
+  if (!baseDate || !slot) return null;
+  const [timePart, meridiem] = slot.split(" ");
+  if (!timePart || !meridiem) return null;
+  let [h, m] = timePart.split(":").map(Number);
+  if (meridiem?.toUpperCase() === "PM" && h !== 12) h += 12;
+  if (meridiem?.toUpperCase() === "AM" && h === 12) h = 0;
+  const d = new Date(baseDate);
+  d.setHours(h, m || 0, 0, 0);
+  return d;
+};
+
+const isPastTimeToday = (selectedDate, slot) => {
+  if (!selectedDate || !slot) return false;
+  const now = new Date();
+  if (!isSameDay(selectedDate, now)) return false;
+  const slotDT = buildDateWithTime(selectedDate, slot);
+  return slotDT && slotDT <= now;
+};
+
 export default function InterviewScheduling() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -67,21 +91,34 @@ export default function InterviewScheduling() {
     fetchSchedules();
   }, []);
 
-    const getAvailableTimeSlots = () => {
+  const getAvailableTimeSlots = () => {
     if (!selectedDate || !selectedInterviewer) {
-     return { available: timeSlots, conflicts: [] };
-   }
+      return { available: timeSlots, conflicts: [] };
+    }
     const selectedDateStr = format(selectedDate, "yyyy-MM-dd");
+
     const conflicts = existingSchedules
       .filter(
         (s) =>
           s.date === selectedDateStr && s.interviewer === selectedInterviewer
       )
       .map((s) => s.time);
-       return { available: timeSlots.filter((t) => !conflicts.includes(t)), conflicts };
+
+    const available = timeSlots
+      .filter((t) => !conflicts.includes(t))
+      .filter((t) => !isPastTimeToday(selectedDate, t)); // block earlier times today
+
+    return { available, conflicts };
   };
 
   const handleSchedule = async () => {
+    // Guard against race conditions: prevent past times at submit
+    if (!selectedDate || !selectedTime || !selectedInterviewer) return;
+    if (isPastTimeToday(selectedDate, selectedTime)) {
+      alert("The selected time is already in the past. Please choose a later time.");
+      return;
+    }
+
     const payload = {
       name: candidate.name,
       date: format(selectedDate, "yyyy-MM-dd"),
@@ -109,8 +146,8 @@ export default function InterviewScheduling() {
         });
       }, 1000);
     } catch (err) {
-      console.error("❌ Failed to save interview:", err);
-      alert("Error saving interview to database.");
+      console.error("❌ Failed to save interview:", err?.response?.data || err);
+      alert(err?.response?.data?.error || "Error saving interview to database.");
     }
   };
 
@@ -122,11 +159,19 @@ export default function InterviewScheduling() {
         "http://localhost:5000/api/schedules/ai-optimal-slot"
       );
       const { date, time, interviewer } = res.data;
-      setSelectedDate(new Date(date));
-      setSelectedTime(time);
-      setSelectedInterviewer(interviewer);
+
+      const d = date ? new Date(date) : null;
+      setSelectedDate(d);
+      setSelectedTime(time || "");
+      setSelectedInterviewer(interviewer || "");
+
+      // If AI suggested a same-day past time, clear it and prompt user
+      if (d && time && isPastTimeToday(d, time)) {
+        setSelectedTime("");
+        setOpenSnackbar(true);
+      }
+
       setActiveStep(1);
-      setOpenSnackbar(true);
       setConfirmOpen(true); // jump straight to confirm
     } catch (err) {
       console.error("AI slot suggestion failed:", err);
@@ -138,6 +183,10 @@ export default function InterviewScheduling() {
 
   const handleSubmitClick = () => {
     if (!selectedDate || !selectedTime || !selectedInterviewer) {
+      return;
+    }
+    if (isPastTimeToday(selectedDate, selectedTime)) {
+      alert("The selected time is already in the past. Please choose a later time.");
       return;
     }
     setConfirmOpen(true);
@@ -257,7 +306,14 @@ export default function InterviewScheduling() {
                   <DatePicker
                     label="Pick a date"
                     value={selectedDate}
-                    onChange={(newDate) => setSelectedDate(newDate)}
+                    onChange={(newDate) => {
+                      setSelectedDate(newDate);
+                      // Clear time if switching to today and previously selected time is now invalid
+                      if (newDate && selectedTime && isPastTimeToday(newDate, selectedTime)) {
+                        setSelectedTime("");
+                      }
+                    }}
+                    minDate={new Date()} // prevent past calendar dates
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -275,22 +331,29 @@ export default function InterviewScheduling() {
                     <AccessTime fontSize="small" /> Choose Time Slot
                   </Typography>
                   <Box display="flex" gap={2} flexWrap="wrap">
-                    {timeSlots.map((slot) => (
-                      <Button
-                        key={slot}
-                        variant={
-                          selectedTime === slot ? "contained" : "outlined"
-                        }
-                        color="primary"
-                        disabled={conflicts.includes(slot)}
-                        onClick={() => setSelectedTime(slot)}
-                      >
-                        {slot}
-                      </Button>
-                    ))}
+                    {timeSlots.map((slot) => {
+                      const disabled =
+                        conflicts.includes(slot) || isPastTimeToday(selectedDate, slot);
+                      return (
+                        <Button
+                          key={slot}
+                          variant={selectedTime === slot ? "contained" : "outlined"}
+                          color="primary"
+                          disabled={disabled}
+                          onClick={() => setSelectedTime(slot)}
+                        >
+                          {slot}
+                        </Button>
+                      );
+                    })}
                   </Box>
+                  {selectedDate && isSameDay(selectedDate, new Date()) && (
+                    <Typography variant="caption" color="text.secondary">
+                      Earlier times today are disabled automatically.
+                    </Typography>
+                  )}
                   {!selectedTime && (
-                    <Typography color="error" variant="caption">
+                    <Typography color="error" variant="caption" display="block" mt={0.5}>
                       Please select a time
                     </Typography>
                   )}
@@ -377,8 +440,7 @@ export default function InterviewScheduling() {
             severity="info"
             sx={{ width: "100%" }}
           >
-            🧠 GPT selected a conflict-free optimal slot based on current load
-            and distribution.
+            🧠 Adjusted to avoid past times today. Pick a visible slot.
           </Alert>
         </Snackbar>
 
