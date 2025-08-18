@@ -67,8 +67,10 @@ export default function InterviewScheduling() {
     fetchSchedules();
   }, []);
 
-  const getAvailableTimeSlots = () => {
-    if (!selectedDate || !selectedInterviewer) return timeSlots;
+    const getAvailableTimeSlots = () => {
+    if (!selectedDate || !selectedInterviewer) {
+     return { available: timeSlots, conflicts: [] };
+   }
     const selectedDateStr = format(selectedDate, "yyyy-MM-dd");
     const conflicts = existingSchedules
       .filter(
@@ -76,10 +78,7 @@ export default function InterviewScheduling() {
           s.date === selectedDateStr && s.interviewer === selectedInterviewer
       )
       .map((s) => s.time);
-    return {
-      available: timeSlots.filter((t) => !conflicts.includes(t)),
-      conflicts,
-    };
+       return { available: timeSlots.filter((t) => !conflicts.includes(t)), conflicts };
   };
 
   const handleSchedule = async () => {
@@ -128,6 +127,7 @@ export default function InterviewScheduling() {
       setSelectedInterviewer(interviewer);
       setActiveStep(1);
       setOpenSnackbar(true);
+      setConfirmOpen(true); // jump straight to confirm
     } catch (err) {
       console.error("AI slot suggestion failed:", err);
       alert("⚠️ Failed to generate AI-based slot. Try manual or fallback.");

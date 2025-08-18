@@ -18,10 +18,11 @@ router.post('/schedule', async (req, res) => {
     const { name, date, time, interviewer } = req.body;
 
     // Check for existing interview conflict
-    const conflict = await Candidate.findOne({
+    const normalized = interviewer.trim().replace(/\s+/g, " ");
+  const conflict = await Candidate.findOne({
       date,
       time,
-      interviewer: new RegExp(`^${interviewer}$`, 'i'),
+      interviewer: new RegExp(`^${normalized}$`, 'i'),
     });
 
     if (conflict) {

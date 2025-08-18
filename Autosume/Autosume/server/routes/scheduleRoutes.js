@@ -43,19 +43,52 @@ ${scheduled
       ],
     });
 
-    let suggestion = completion.choices[0].message.content.trim();
+     const raw = completion.choices[0].message.content.trim();
 
-    // Remove markdown code block wrapper if present
-    if (suggestion.startsWith("```")) {
-      suggestion = suggestion
-        .replace(/```[a-z]*\\n?/gi, "")
-        .replace(/```$/, "")
-        .trim();
-    }
+    // 1) Try to unwrap ```json ... ```
+   const fenced = raw.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
+   const body = fenced ? fenced[1] : raw;
 
-    const parsed = JSON.parse(suggestion);
+   // 2) Try strict JSON first; otherwise try to salvage fields
+    let parsed;
+   try {
+     parsed = JSON.parse(body);
+    } catch {
+      const date = body.match(/"date"\s*:\s*"([^"]+)"/)?.[1]
+              || body.match(/\b(\d{4}-\d{2}-\d{2})\b/)?.[1];
+      const time = body.match(/"time"\s*:\s*"([^"]+)"/)?.[1]
+               || body.match(/\b(1?\d:\d{2}\s?[AP]M)\b/i)?.[1];
+     const interviewer = body.match(/"interviewer"\s*:\s*"([^"]+)"/)?.[1];
+     parsed = { date, time, interviewer };
+   }
 
-    res.json(parsed);
+   // 3) Validate & clamp to next 14 days
+   const now = new Date();
+   const max = new Date(now); max.setDate(max.getDate() + 14);
+    const d = parsed?.date ? new Date(parsed.date) : null;
+    const okDate = d && d >= now && d <= max;
+   const ok = okDate && parsed?.time && parsed?.interviewer;
+
+   if (!ok) {
+      // Fallback: pick the first free slot by scanning current load
+     const taken = new Set((await Candidate.find({
+       date: { $ne: "-" }, time: { $ne: "-" }, interviewer: { $ne: "-" },
+      })).map(s => `${s.date}__${s.time}__${s.interviewer}`));
+
+      const times = ["10:00 AM", "12:00 PM", "2:00 PM", "4:00 PM"];
+     const interviewers = ["Gabriel Tan", "Jace Lim", "Amira Soh"];
+      let best = null;
+      for (let i = 1; i <= 14 && !best; i++) {
+       const day = new Date(now); day.setDate(day.getDate() + i);
+       const dateStr = day.toISOString().slice(0,10);
+       for (const t of times) for (const iv of interviewers) {
+         if (!taken.has(`${dateStr}__${t}__${iv}`)) { best = { date: dateStr, time: t, interviewer: iv }; break; }
+       }
+      }
+      parsed = best || { date: null, time: null, interviewer: null };
+   }
+
+   res.json(parsed);
   } catch (error) {
     console.error("AI scheduling error:", error.message);
     res.status(500).json({ error: "Failed to generate optimal slot." });

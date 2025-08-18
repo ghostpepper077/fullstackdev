@@ -80,7 +80,7 @@ export default function EmailAutomation() {
 
   const handleSend = () => {
     setSent(true);
-    setActiveStep(3);
+    setActiveStep(2);
     setConfirmOpen(false);
     setTimeout(() => {
       navigate("/interviewdashboard");

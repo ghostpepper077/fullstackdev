@@ -47,12 +47,12 @@ export default function InterviewDashboard() {
     if (!confirm) return;
 
     try {
-      const res = await axios.put(`http://localhost:5000/api/interviews/clear/${id}`);
+      const res = await axios.put(
+        `http://localhost:5000/api/interviews/clear/${id}`
+      );
       const updated = res.data.candidate;
 
-      setInterviews((prev) =>
-        prev.map((c) => (c._id === id ? updated : c))
-      );
+      setInterviews((prev) => prev.map((c) => (c._id === id ? updated : c)));
     } catch (err) {
       console.error("❌ Withdraw failed:", err);
       alert("Failed to withdraw interview.");
@@ -60,21 +60,43 @@ export default function InterviewDashboard() {
   };
 
   const handleExportCSV = () => {
-    const headers = ["Name", "Role", "Date", "Time", "Interviewer", "Status", "Email", "Phone"];
+    const headers = [
+      "Name",
+      "Role",
+      "Date",
+      "Time",
+      "Interviewer",
+      "Status",
+      "Email",
+      "Phone",
+    ];
     const rows = interviews.map((i) =>
-      [i.name, i.role, i.date, i.time, i.interviewer, i.status, i.email, i.phone].join(",")
+      [
+        i.name,
+        i.role,
+        i.date,
+        i.time,
+        i.interviewer,
+        i.status,
+        i.email,
+        i.phone,
+      ].join(",")
     );
 
     const csv = [headers.join(","), ...rows].join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = `interview_dashboard_${new Date().toISOString().slice(0, 10)}.csv`;
+    link.download = `interview_dashboard_${new Date()
+      .toISOString()
+      .slice(0, 10)}.csv`;
     link.click();
   };
 
   const isToday = (date) => {
-    return new Date(date).toDateString() === new Date().toDateString();
+    if (!date || date === "-") return false;
+    const d = new Date(date);
+    return !isNaN(d) && d.toDateString() === new Date().toDateString();
   };
 
   const filtered = interviews
@@ -82,9 +104,10 @@ export default function InterviewDashboard() {
       ...row,
       status: row.status === "Not Sent" ? "Unscheduled" : row.status,
     }))
-    .filter((row) =>
-      row.name?.toLowerCase().includes(search) ||
-      row.role?.toLowerCase().includes(search)
+    .filter(
+      (row) =>
+        row.name?.toLowerCase().includes(search) ||
+        row.role?.toLowerCase().includes(search)
     )
     .sort((a, b) => {
       const aDate = new Date(`${a.date} ${a.time}`);
@@ -120,13 +143,27 @@ export default function InterviewDashboard() {
         <Table>
           <TableHead sx={{ backgroundColor: "#e3f2fd" }}>
             <TableRow>
-              <TableCell><strong>Name</strong></TableCell>
-              <TableCell><strong>Role</strong></TableCell>
-              <TableCell><strong>Date</strong></TableCell>
-              <TableCell><strong>Time</strong></TableCell>
-              <TableCell><strong>Interviewer</strong></TableCell>
-              <TableCell><strong>Status</strong></TableCell>
-              <TableCell><strong>Manage</strong></TableCell>
+              <TableCell>
+                <strong>Name</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Role</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Date</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Time</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Interviewer</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Status</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Manage</strong>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -149,7 +186,9 @@ export default function InterviewDashboard() {
                       variant="body2"
                       color="primary"
                       sx={{ cursor: "pointer" }}
-                      onClick={() => navigate("/scheduling", { state: { candidate: row } })}
+                      onClick={() =>
+                        navigate("/scheduling", { state: { candidate: row } })
+                      }
                     >
                       {row.name}
                     </Typography>
