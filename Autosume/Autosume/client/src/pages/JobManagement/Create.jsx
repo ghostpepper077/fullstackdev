@@ -22,7 +22,8 @@ const Create = () => {
     salaryMax: '',
     timing: '',
     jobType: 'Full Time',
-    department: '', // ✅ department added
+    department: '',
+    status: 'Active', // ✅ default status
   });
 
   const [loading, setLoading] = useState(false);
@@ -47,9 +48,10 @@ const Create = () => {
             salaryMin: salaryMin || '',
             salaryMax: salaryMax || '',
             jobType: data.jobType || 'Full Time',
-            department: data.department || '', // ✅ pre-fill department
+            department: data.department || '',
             deadline: data.deadline ? dayjs(data.deadline) : null,
-            description: data.description || ''
+            description: data.description || '',
+            status: data.status || 'Active',
           });
           setFetching(false);
         } catch (err) {
@@ -70,6 +72,13 @@ const Create = () => {
 
   const handleDateChange = (newValue) => {
     setJobData(prev => ({ ...prev, deadline: newValue }));
+  };
+
+  const handleStatusToggle = () => {
+    setJobData(prev => ({
+      ...prev,
+      status: prev.status === 'Active' ? 'Inactive' : 'Active',
+    }));
   };
 
   const validate = () => {
@@ -110,12 +119,10 @@ const Create = () => {
       if (isEdit) {
         await axios.put(`http://localhost:5000/api/jobs/${id}`, payload);
       } else {
-        console.log("Payload being sent:", payload);
-
         await axios.post('http://localhost:5000/api/jobs', {
           ...payload,
           applicants: 0,
-          createdAt: new Date().toISOString()
+          createdAt: new Date().toISOString(),
         });
       }
 
@@ -171,6 +178,8 @@ const Create = () => {
         <p>Loading job data...</p>
       ) : (
         <form onSubmit={handleSubmit} className="job-form" noValidate>
+
+          {/* Job description + AI */}
           <div className="form-group">
             <label>Job Pointers / Description</label>
             <small className="helper-text">
@@ -198,6 +207,7 @@ const Create = () => {
             </div>
           </div>
 
+          {/* Job title */}
           <div className="form-group">
             <label>Job Title</label>
             <input
@@ -210,6 +220,7 @@ const Create = () => {
             />
           </div>
 
+          {/* Timing */}
           <div className="form-group">
             <label>Timing/shifts</label>
             <input
@@ -222,6 +233,7 @@ const Create = () => {
             />
           </div>
 
+          {/* Department */}
           <div className="form-group">
             <label>Department</label>
             <select
@@ -241,6 +253,7 @@ const Create = () => {
             </select>
           </div>
 
+          {/* Salary & Job type */}
           <div className="form-row">
             <div className="form-group">
               <label>Salary Range</label>
@@ -283,6 +296,7 @@ const Create = () => {
             </div>
           </div>
 
+          {/* Application Deadline */}
           <div className="form-group">
             <label>Application Deadline</label>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -295,6 +309,27 @@ const Create = () => {
             </LocalizationProvider>
           </div>
 
+          {/* Status toggle */}
+          {isEdit && (
+            <div className="form-group">
+              <label>Job Status</label>
+              <div className="status-toggle">
+                <label className="switch">
+                  <input
+                    type="checkbox"
+                    checked={jobData.status === 'Active'}
+                    onChange={handleStatusToggle}
+                  />
+                  <span className="slider round"></span>
+                </label>
+                <span style={{ marginLeft: '0.5rem', fontWeight: '600' }}>
+                  {jobData.status === 'Active' ? 'On' : 'Off'}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Submit button */}
           <button type="submit" className="submit-button" disabled={loading}>
             {loading ? (isEdit ? 'Updating...' : 'Creating...') : isEdit ? 'Update Job' : 'Create Job'}
           </button>

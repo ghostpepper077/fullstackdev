@@ -46,6 +46,8 @@ app.use('/api/criteria', criteriaRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/chatbot', chatbotRoutes);
 app.use('/api/ai', aiRoutesJason);
+app.use('/api/logs', require('./routes/logs'));
+
 
 // Register the aiHariz routes
 app.use('/api', aiHariz);
