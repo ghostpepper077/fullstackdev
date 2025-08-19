@@ -681,24 +681,40 @@ const handleRunScreening = async () => {
             </Paper>
           ) : (
             <Paper
+              elevation={2}
               sx={{
-                p: 3,
-                height: '100%',
+                p: 4,
+                height: '400px',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
                 textAlign: 'center',
-                backgroundColor: '#f9f9f9'
+                backgroundColor: '#fafafa',
+                border: '2px dashed #e0e0e0',
+                borderRadius: 2,
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  backgroundColor: '#f5f5f5',
+                  borderColor: '#bdbdbd'
+                }
               }}
             >
-              <AutoAwesomeIcon sx={{ fontSize: 60, color: 'action.disabled', mb: 2 }} />
-              <Typography variant="h6" color="text.secondary">
+              <AutoAwesomeIcon sx={{ 
+                fontSize: 80, 
+                color: 'action.disabled', 
+                mb: 3,
+                opacity: 0.6 
+              }} />
+              <Typography variant="h5" color="text.secondary" sx={{ mb: 1, fontWeight: 500 }}>
                 {state.loading ? 'Processing...' : 'Results will appear here'}
               </Typography>
-              <Typography variant="body2" color="text.disabled" sx={{ mt: 1 }}>
+              <Typography variant="body1" color="text.disabled" sx={{ maxWidth: '280px', lineHeight: 1.5 }}>
                 Upload a resume and run screening to see candidate matches
               </Typography>
+              {state.loading && (
+                <CircularProgress size={24} sx={{ mt: 2 }} />
+              )}
             </Paper>
           )}
         </Grid>
