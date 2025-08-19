@@ -244,7 +244,15 @@ export default function CreateCriteria() {
             fullWidth
             variant="outlined"
             value={currentCriteria.experience}
-            onChange={(e) => setCurrentCriteria({ ...currentCriteria, experience: e.target.value })}
+            onChange={(e) => {
+              const value = e.target.value;
+              // Check if the input starts with a negative number
+              const startsWithNegative = /^-\d/.test(value);
+              if (!startsWithNegative) {
+                setCurrentCriteria({ ...currentCriteria, experience: value });
+              }
+            }}
+            placeholder="e.g., 2 years, 6 months, 1-3 years"
             required
           />
           
