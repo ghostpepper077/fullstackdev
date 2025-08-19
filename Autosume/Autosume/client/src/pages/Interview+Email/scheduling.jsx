@@ -1,9 +1,8 @@
 // scheduling.jsx
-// (unchanged imports)
 import React, { useEffect, useState } from "react";
 import {
   Box, Typography, Grid, Button, Paper, Select, MenuItem, Chip, TextField,
-  Snackbar, Alert, Stepper, Step, StepLabel, CircularProgress, Dialog,
+  Snackbar, Alert, Stepper, Step, StepLabel, Dialog,
   DialogTitle, DialogContent, DialogActions, Tooltip,
 } from "@mui/material";
 import { CalendarToday, AccessTime, Person, DoneAll, SmartToy } from "@mui/icons-material";
@@ -48,7 +47,8 @@ export default function InterviewScheduling() {
   const [selectedTime, setSelectedTime] = useState("");
   const [selectedInterviewer, setSelectedInterviewer] = useState("");
   const [existingSchedules, setExistingSchedules] = useState([]);
-  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);     // past-time info
+  const [openAiSnackbar, setOpenAiSnackbar] = useState(false); // AI success
   const [loadingAI, setLoadingAI] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
@@ -97,12 +97,10 @@ export default function InterviewScheduling() {
     };
 
     try {
-      const res = await axios.post("http://localhost:5000/api/interviews/schedule", payload); // ✅ capture res
+      const res = await axios.post("http://localhost:5000/api/interviews/schedule", payload);
       setActiveStep(2);
       setConfirmOpen(false);
-
-      // Pass the updated candidate (with date/time/interviewer) to Email page
-      navigate("/emailautomation", { state: { candidate: res.data.candidate } }); // ✅ use res
+      navigate("/emailautomation", { state: { candidate: res.data.candidate } });
     } catch (err) {
       console.error("❌ Failed to save interview:", err?.response?.data || err);
       alert(err?.response?.data?.error || "Error saving interview to database.");
@@ -112,6 +110,7 @@ export default function InterviewScheduling() {
   const handleAutoSchedule = async () => {
     setLoadingAI(true);
     setOpenSnackbar(false);
+    setOpenAiSnackbar(false);
     try {
       const res = await axios.get("http://localhost:5000/api/schedules/ai-optimal-slot");
       const { date, time, interviewer } = res.data;
@@ -123,11 +122,14 @@ export default function InterviewScheduling() {
 
       if (d && time && isPastTimeToday(d, time)) {
         setSelectedTime("");
-        setOpenSnackbar(true);
+        setOpenSnackbar(true);      // show info snackbar for past-time
+      } else if (d && time && interviewer) {
+        setOpenAiSnackbar(true);    // show success snackbar
       }
 
-      setActiveStep(1);
-      setConfirmOpen(true);
+      setActiveStep(1);             // progress the stepper to "Confirm" stage
+      // ⛔️ DO NOT open the confirmation dialog here
+      // setConfirmOpen(true);  <-- removed on purpose
     } catch (err) {
       console.error("AI slot suggestion failed:", err);
       alert("⚠️ Failed to generate AI-based slot. Try manual or fallback.");
@@ -142,7 +144,7 @@ export default function InterviewScheduling() {
       alert("The selected time is already in the past. Please choose a later time.");
       return;
     }
-    setConfirmOpen(true);
+    setConfirmOpen(true);           // only open when user clicks Schedule
   };
 
   const { available, conflicts = [] } = getAvailableTimeSlots();
@@ -329,7 +331,7 @@ export default function InterviewScheduling() {
           </Grid>
         </Grid>
 
-        {/* Snackbar */}
+        {/* Snackbar (info) */}
         <Snackbar
           open={openSnackbar}
           autoHideDuration={6000}
@@ -338,6 +340,18 @@ export default function InterviewScheduling() {
         >
           <Alert onClose={() => setOpenSnackbar(false)} severity="info" sx={{ width: "100%" }}>
             🧠 Adjusted to avoid past times today. Pick a visible slot.
+          </Alert>
+        </Snackbar>
+
+        {/* Snackbar (AI success) */}
+        <Snackbar
+          open={openAiSnackbar}
+          autoHideDuration={6000}
+          onClose={() => setOpenAiSnackbar(false)}
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        >
+          <Alert onClose={() => setOpenAiSnackbar(false)} severity="success" sx={{ width: "100%" }}>
+            🧠 GPT selected a conflict‑free optimal slot based on current load and distribution.
           </Alert>
         </Snackbar>
 
