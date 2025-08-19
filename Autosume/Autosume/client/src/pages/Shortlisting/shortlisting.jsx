@@ -293,10 +293,6 @@ useEffect(() => {
               <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2 }}>Overview</Typography>
               <Typography variant="body2">{selectedCandidate.summary || 'No overview available'}</Typography>
               
-              <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2 }}>Experience</Typography>
-              <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
-                {selectedCandidate.experienceDetails || 'No experience details available'}
-              </Typography>
               
               <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2 }}>Education</Typography>
               <Typography variant="body2">{selectedCandidate.education || 'No education information available'}</Typography>
