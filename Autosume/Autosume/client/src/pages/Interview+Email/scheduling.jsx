@@ -1,33 +1,12 @@
+// scheduling.jsx
+// (unchanged imports)
 import React, { useEffect, useState } from "react";
 import {
-  Box,
-  Typography,
-  Grid,
-  Button,
-  Paper,
-  Select,
-  MenuItem,
-  Chip,
-  TextField,
-  Snackbar,
-  Alert,
-  Stepper,
-  Step,
-  StepLabel,
-  CircularProgress,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Tooltip,
+  Box, Typography, Grid, Button, Paper, Select, MenuItem, Chip, TextField,
+  Snackbar, Alert, Stepper, Step, StepLabel, CircularProgress, Dialog,
+  DialogTitle, DialogContent, DialogActions, Tooltip,
 } from "@mui/material";
-import {
-  CalendarToday,
-  AccessTime,
-  Person,
-  DoneAll,
-  SmartToy,
-} from "@mui/icons-material";
+import { CalendarToday, AccessTime, Person, DoneAll, SmartToy } from "@mui/icons-material";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -36,12 +15,9 @@ import { format } from "date-fns";
 
 const timeSlots = ["10:00 AM", "12:00 PM", "2:00 PM", "4:00 PM"];
 const interviewers = ["Gabriel Tan", "Jace Lim", "Amira Soh"];
-
 const steps = ["Select Slot", "Confirm Interview", "Email Notification"];
 
-// Helpers to block same-day past times
-const isSameDay = (a, b) =>
-  a && b && a.toDateString() === b.toDateString();
+const isSameDay = (a, b) => a && b && a.toDateString() === b.toDateString();
 
 const buildDateWithTime = (baseDate, slot) => {
   if (!baseDate || !slot) return null;
@@ -80,9 +56,7 @@ export default function InterviewScheduling() {
   useEffect(() => {
     const fetchSchedules = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:5000/api/interviews/all"
-        );
+        const response = await axios.get("http://localhost:5000/api/interviews/all");
         setExistingSchedules(response.data);
       } catch (error) {
         console.error("Error fetching existing schedules:", error);
@@ -96,23 +70,16 @@ export default function InterviewScheduling() {
       return { available: timeSlots, conflicts: [] };
     }
     const selectedDateStr = format(selectedDate, "yyyy-MM-dd");
-
     const conflicts = existingSchedules
-      .filter(
-        (s) =>
-          s.date === selectedDateStr && s.interviewer === selectedInterviewer
-      )
+      .filter((s) => s.date === selectedDateStr && s.interviewer === selectedInterviewer)
       .map((s) => s.time);
-
     const available = timeSlots
       .filter((t) => !conflicts.includes(t))
-      .filter((t) => !isPastTimeToday(selectedDate, t)); // block earlier times today
-
+      .filter((t) => !isPastTimeToday(selectedDate, t));
     return { available, conflicts };
   };
 
   const handleSchedule = async () => {
-    // Guard against race conditions: prevent past times at submit
     if (!selectedDate || !selectedTime || !selectedInterviewer) return;
     if (isPastTimeToday(selectedDate, selectedTime)) {
       alert("The selected time is already in the past. Please choose a later time.");
@@ -121,30 +88,21 @@ export default function InterviewScheduling() {
 
     const payload = {
       name: candidate.name,
+      email: candidate.email,
+      jobId: candidate.jobId,
+      role: candidate.role,
       date: format(selectedDate, "yyyy-MM-dd"),
       time: selectedTime,
       interviewer: selectedInterviewer,
     };
 
     try {
-      await axios.post(
-        "http://localhost:5000/api/interviews/schedule",
-        payload
-      );
+      const res = await axios.post("http://localhost:5000/api/interviews/schedule", payload); // ✅ capture res
       setActiveStep(2);
       setConfirmOpen(false);
 
-      setTimeout(() => {
-        navigate("/emailautomation", {
-          state: {
-            candidate: {
-              ...candidate,
-              ...payload,
-              status: "Scheduled",
-            },
-          },
-        });
-      }, 1000);
+      // Pass the updated candidate (with date/time/interviewer) to Email page
+      navigate("/emailautomation", { state: { candidate: res.data.candidate } }); // ✅ use res
     } catch (err) {
       console.error("❌ Failed to save interview:", err?.response?.data || err);
       alert(err?.response?.data?.error || "Error saving interview to database.");
@@ -155,9 +113,7 @@ export default function InterviewScheduling() {
     setLoadingAI(true);
     setOpenSnackbar(false);
     try {
-      const res = await axios.get(
-        "http://localhost:5000/api/schedules/ai-optimal-slot"
-      );
+      const res = await axios.get("http://localhost:5000/api/schedules/ai-optimal-slot");
       const { date, time, interviewer } = res.data;
 
       const d = date ? new Date(date) : null;
@@ -165,14 +121,13 @@ export default function InterviewScheduling() {
       setSelectedTime(time || "");
       setSelectedInterviewer(interviewer || "");
 
-      // If AI suggested a same-day past time, clear it and prompt user
       if (d && time && isPastTimeToday(d, time)) {
         setSelectedTime("");
         setOpenSnackbar(true);
       }
 
       setActiveStep(1);
-      setConfirmOpen(true); // jump straight to confirm
+      setConfirmOpen(true);
     } catch (err) {
       console.error("AI slot suggestion failed:", err);
       alert("⚠️ Failed to generate AI-based slot. Try manual or fallback.");
@@ -182,9 +137,7 @@ export default function InterviewScheduling() {
   };
 
   const handleSubmitClick = () => {
-    if (!selectedDate || !selectedTime || !selectedInterviewer) {
-      return;
-    }
+    if (!selectedDate || !selectedTime || !selectedInterviewer) return;
     if (isPastTimeToday(selectedDate, selectedTime)) {
       alert("The selected time is already in the past. Please choose a later time.");
       return;
@@ -200,11 +153,7 @@ export default function InterviewScheduling() {
         <Typography variant="h6" color="error">
           ⚠️ No candidate selected. Please return to the shortlist page.
         </Typography>
-        <Button
-          variant="contained"
-          sx={{ mt: 2 }}
-          onClick={() => navigate("/shortlistoverview")}
-        >
+        <Button variant="contained" sx={{ mt: 2 }} onClick={() => navigate("/shortlistoverview")}>
           Go Back to Shortlist
         </Button>
       </Box>
@@ -222,13 +171,7 @@ export default function InterviewScheduling() {
           {steps.map((label, index) => (
             <Step key={label}>
               <StepLabel
-                optional={
-                  activeStep > index ? (
-                    <Tooltip title="Completed">
-                      <DoneAll color="success" />
-                    </Tooltip>
-                  ) : null
-                }
+                optional={activeStep > index ? <Tooltip title="Completed"><DoneAll color="success" /></Tooltip> : null}
               >
                 {label}
               </StepLabel>
@@ -243,16 +186,11 @@ export default function InterviewScheduling() {
               <Box
                 sx={{
                   background: "linear-gradient(to right, #1976d2, #42a5f5)",
-                  px: 3,
-                  py: 1.5,
-                  borderTopLeftRadius: "inherit",
-                  borderTopRightRadius: "inherit",
+                  px: 3, py: 1.5, borderTopLeftRadius: "inherit", borderTopRightRadius: "inherit",
                   boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
                 }}
               >
-                <Typography color="white" variant="h6">
-                  👤 Candidate Info
-                </Typography>
+                <Typography color="white" variant="h6">👤 Candidate Info</Typography>
               </Box>
               <Box p={3}>
                 <Typography variant="h6">{candidate.name}</Typography>
@@ -262,17 +200,10 @@ export default function InterviewScheduling() {
                   <Typography variant="body2">{candidate.phone}</Typography>
                 </Box>
                 <Box mt={2}>
-                  <Typography fontWeight="bold" mb={1}>
-                    Skills:
-                  </Typography>
+                  <Typography fontWeight="bold" mb={1}>Skills:</Typography>
                   <Box display="flex" flexWrap="wrap" gap={1}>
                     {candidate.skills?.map((s, i) => (
-                      <Chip
-                        key={i}
-                        label={s}
-                        color="primary"
-                        variant="outlined"
-                      />
+                      <Chip key={i} label={s} color="primary" variant="outlined" />
                     ))}
                   </Box>
                 </Box>
@@ -286,50 +217,36 @@ export default function InterviewScheduling() {
               <Box
                 sx={{
                   background: "linear-gradient(to right, #1976d2, #42a5f5)",
-                  px: 3,
-                  py: 1.5,
-                  borderTopLeftRadius: "inherit",
-                  borderTopRightRadius: "inherit",
+                  px: 3, py: 1.5, borderTopLeftRadius: "inherit", borderTopRightRadius: "inherit",
                   boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
                 }}
               >
-                <Typography color="white" variant="h6">
-                  📅 Schedule Details
-                </Typography>
+                <Typography color="white" variant="h6">📅 Schedule Details</Typography>
               </Box>
               <Box p={4}>
-                {/* Date Picker */}
+                {/* Date */}
                 <Box mt={2}>
-                  <Typography variant="subtitle2" mb={1}>
-                    <CalendarToday fontSize="small" /> Select Interview Date
-                  </Typography>
+                  <Typography variant="subtitle2" mb={1}><CalendarToday fontSize="small" /> Select Interview Date</Typography>
                   <DatePicker
                     label="Pick a date"
                     value={selectedDate}
                     onChange={(newDate) => {
                       setSelectedDate(newDate);
-                      // Clear time if switching to today and previously selected time is now invalid
                       if (newDate && selectedTime && isPastTimeToday(newDate, selectedTime)) {
                         setSelectedTime("");
                       }
                     }}
-                    minDate={new Date()} // prevent past calendar dates
+                    minDate={new Date()}
                     renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        fullWidth
-                        error={!selectedDate}
-                        helperText={!selectedDate ? "Date is required" : ""}
-                      />
+                      <TextField {...params} fullWidth error={!selectedDate}
+                        helperText={!selectedDate ? "Date is required" : ""} />
                     )}
                   />
                 </Box>
 
                 {/* Time Slots */}
                 <Box mt={4}>
-                  <Typography variant="subtitle2" mb={1}>
-                    <AccessTime fontSize="small" /> Choose Time Slot
-                  </Typography>
+                  <Typography variant="subtitle2" mb={1}><AccessTime fontSize="small" /> Choose Time Slot</Typography>
                   <Box display="flex" gap={2} flexWrap="wrap">
                     {timeSlots.map((slot) => {
                       const disabled =
@@ -361,23 +278,15 @@ export default function InterviewScheduling() {
 
                 {/* Interviewer */}
                 <Box mt={4}>
-                  <Typography variant="subtitle2" mb={1}>
-                    <Person fontSize="small" /> Assign Interviewer
-                  </Typography>
+                  <Typography variant="subtitle2" mb={1}><Person fontSize="small" /> Assign Interviewer</Typography>
                   <Select
-                    fullWidth
-                    value={selectedInterviewer}
+                    fullWidth value={selectedInterviewer}
                     onChange={(e) => setSelectedInterviewer(e.target.value)}
-                    displayEmpty
-                    error={!selectedInterviewer}
+                    displayEmpty error={!selectedInterviewer}
                   >
-                    <MenuItem value="" disabled>
-                      Select Interviewer
-                    </MenuItem>
+                    <MenuItem value="" disabled>Select Interviewer</MenuItem>
                     {interviewers.map((name) => (
-                      <MenuItem key={name} value={name}>
-                        {name}
-                      </MenuItem>
+                      <MenuItem key={name} value={name}>{name}</MenuItem>
                     ))}
                   </Select>
                   {!selectedInterviewer && (
@@ -402,9 +311,7 @@ export default function InterviewScheduling() {
                     variant="contained"
                     color="primary"
                     onClick={handleSubmitClick}
-                    disabled={
-                      !selectedDate || !selectedTime || !selectedInterviewer
-                    }
+                    disabled={!selectedDate || !selectedTime || !selectedInterviewer}
                   >
                     Schedule Interview
                   </Button>
@@ -412,16 +319,10 @@ export default function InterviewScheduling() {
 
                 {/* Summary */}
                 <Box mt={5} bgcolor="#f9f9f9" p={3} borderRadius={2}>
-                  <Typography variant="subtitle1" fontWeight="bold" mb={1}>
-                    📝 Interview Summary
-                  </Typography>
-                  <Typography>
-                    📅 Date: {selectedDate?.toDateString() || "N/A"}
-                  </Typography>
+                  <Typography variant="subtitle1" fontWeight="bold" mb={1}>📝 Interview Summary</Typography>
+                  <Typography>📅 Date: {selectedDate?.toDateString() || "N/A"}</Typography>
                   <Typography>⏰ Time: {selectedTime || "N/A"}</Typography>
-                  <Typography>
-                    👤 Interviewer: {selectedInterviewer || "N/A"}
-                  </Typography>
+                  <Typography>👤 Interviewer: {selectedInterviewer || "N/A"}</Typography>
                 </Box>
               </Box>
             </Paper>
@@ -435,11 +336,7 @@ export default function InterviewScheduling() {
           onClose={() => setOpenSnackbar(false)}
           anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         >
-          <Alert
-            onClose={() => setOpenSnackbar(false)}
-            severity="info"
-            sx={{ width: "100%" }}
-          >
+          <Alert onClose={() => setOpenSnackbar(false)} severity="info" sx={{ width: "100%" }}>
             🧠 Adjusted to avoid past times today. Pick a visible slot.
           </Alert>
         </Snackbar>
@@ -449,21 +346,13 @@ export default function InterviewScheduling() {
           <DialogTitle>Confirm Interview</DialogTitle>
           <DialogContent>
             <Typography>
-              Are you sure you want to schedule this interview on{" "}
-              <strong>{selectedDate?.toDateString()}</strong> at{" "}
-              <strong>{selectedTime}</strong> with{" "}
-              <strong>{selectedInterviewer}</strong>?
+              Are you sure you want to schedule this interview on <strong>{selectedDate?.toDateString()}</strong> at{" "}
+              <strong>{selectedTime}</strong> with <strong>{selectedInterviewer}</strong>?
             </Typography>
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setConfirmOpen(false)}>Cancel</Button>
-            <Button
-              onClick={handleSchedule}
-              variant="contained"
-              color="primary"
-            >
-              Confirm
-            </Button>
+            <Button onClick={handleSchedule} variant="contained" color="primary">Confirm</Button>
           </DialogActions>
         </Dialog>
       </Box>

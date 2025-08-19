@@ -64,11 +64,7 @@ const ScreenedCandidateSchema = new mongoose.Schema({
     ref: 'Job', 
     required: true 
   },
-  status: { 
-    type: String, 
-    enum: ['Screened', 'Shortlisted', 'Rejected', 'Hired'], 
-    default: 'Screened' 
-  },
+      status: { type: String, enum: ['Screened','Unscheduled','Scheduled','Emailed','Shortlisted','Rejected','Hired'], default: 'Screened' },
   screeningDate: { 
     type: Date, 
     default: Date.now 
@@ -93,7 +89,12 @@ const ScreenedCandidateSchema = new mongoose.Schema({
   educationDetails: {
     type: String,
     default: ''
-  }
+  },
+
+  // NEW: schedule fields (live on ScreenedCandidate now)
+  date: { type: String, default: '-' },       // e.g. '2025-08-19'
+  time: { type: String, default: '-' },       // e.g. '14:30'
+  interviewer: { type: String, default: '-' },
 }, { 
   timestamps: true 
 });

@@ -80,11 +80,18 @@ export default function EmailAutomation() {
 
   const handleSend = () => {
     setSent(true);
-    setActiveStep(2);
-    setConfirmOpen(false);
-    setTimeout(() => {
-      navigate("/interviewdashboard");
-    }, 1500);
+  setActiveStep(2);
+  setConfirmOpen(false);
+  (async () => {
+    try {
+      await axios.put("http://localhost:5000/api/interviews/mark-sent", {
+        email: candidate.email,
+        jobId: candidate.jobId,
+        status: "Scheduled"    // or "Emailed" if you want that label
+      });
+    } catch (_) {}
+    navigate("/interviewdashboard");
+  })();
   };
 
   if (!candidate?.name || !interview?.date) {
@@ -214,33 +221,42 @@ export default function EmailAutomation() {
               )}
 
               <Box>
-                <Typography fontWeight="bold" gutterBottom>
-                  📬 Email Preview
-                </Typography>
-                <Box
-                  sx={{
-                    border: "1px solid #ccc",
-                    borderRadius: 2,
-                    padding: 2,
-                    maxHeight: 300,
-                    overflowY: "auto",
-                    backgroundColor: "#fffaf0",
-                    fontFamily: "Georgia, serif",
-                    position: "relative",
-                  }}
-                >
-                  <Button
-                    size="small"
-                    variant="text"
-                    onClick={() => navigator.clipboard.writeText(emailBody)}
-                    sx={{ position: "absolute", top: 5, right: 5 }}
-                    startIcon={<ContentCopyIcon />}
-                  >
-                    Copy
-                  </Button>
-                  <Typography whiteSpace="pre-wrap">{emailBody}</Typography>
-                </Box>
-              </Box>
+  <Typography fontWeight="bold" gutterBottom>
+    📬 Email Preview
+  </Typography>
+
+  <Box sx={{ position: "relative" }}>
+    <Button
+      size="small"
+      variant="text"
+      onClick={() => navigator.clipboard.writeText(emailBody)}
+      sx={{ position: "absolute", top: 5, right: 5 }}
+      startIcon={<ContentCopyIcon />}
+    >
+      Copy
+    </Button>
+
+    {/* ✅ Editable text field now */}
+    <TextField
+      value={emailBody}
+      onChange={(e) => setEmailBody(e.target.value)}
+      multiline
+      minRows={1.5}
+      fullWidth
+      variant="outlined"
+      sx={{
+        border: "1px solid #ccc",
+        borderRadius: 2,
+        "& .MuiInputBase-root": {
+          fontFamily: "Georgia, serif",
+          backgroundColor: "#fffaf0",
+          padding: 2,
+        },
+      }}
+    />
+  </Box>
+</Box>
+
 
               <Button
                 variant="contained"
