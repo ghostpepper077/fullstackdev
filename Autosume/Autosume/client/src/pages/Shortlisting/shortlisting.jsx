@@ -57,7 +57,7 @@ export default function Shortlisting() {
         }));
         
         // Fetch screened candidates
-        const candidatesResponse = await http.get('/screened-candidates?status=Screened');
+        const candidatesResponse = await http.get('/screened-candidates');
         setCandidates(candidatesResponse.data);
         setFilteredCandidates(candidatesResponse.data);
         
