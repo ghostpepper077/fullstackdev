@@ -57,10 +57,10 @@ export default function Shortlisting() {
         }));
         
         // Fetch screened candidates
-        const candidatesResponse = await http.get('/screened-candidates?status=Screened');
+       
         setCandidates(candidatesResponse.data);
         setFilteredCandidates(candidatesResponse.data);
-        
+         const candidatesResponse = await http.get('/screened-candidates');
       } catch (err) {
         console.error('Initial data fetch error:', err);
         setError('Failed to load initial data');
