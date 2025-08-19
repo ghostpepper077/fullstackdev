@@ -1,10 +1,24 @@
+// File: src/pages/job-management/JobManagement.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import http from '../../http'; // Import your HTTP client
+import http from '../../http';
 import './mainpage.css';
 
-// Import MUI components
-import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+// MUI
+import {
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
+  Chip,
+  Divider,
+} from '@mui/material';
 
 const JobManagement = () => {
   const navigate = useNavigate();
@@ -15,39 +29,80 @@ const JobManagement = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [applicantFilter, setApplicantFilter] = useState('');
 
+  // confirm delete
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [jobToDelete, setJobToDelete] = useState(null);
+
+  // audit logs
+  const [auditLogs, setAuditLogs] = useState([]);
+
+  // fetch jobs + logs
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const response = await http.get('/jobs'); // Adjust endpoint as needed
+        const response = await http.get('/jobs');
         setJobs(response.data);
-        setLoading(false);
       } catch (err) {
         setError(err.message || 'Failed to fetch jobs');
+        console.error(err);
+      } finally {
         setLoading(false);
-        console.error('Error fetching jobs:', err);
+      }
+    };
+
+    const fetchLogs = async () => {
+      try {
+        const response = await http.get('/logs');
+        setAuditLogs(response.data);
+      } catch (err) {
+        console.error('Error fetching logs:', err);
       }
     };
 
     fetchJobs();
+    fetchLogs();
   }, []);
 
   const handleCreateJob = () => {
     navigate('/jobs/create');
   };
 
-  const handleDeleteJob = async (jobId) => {
+  const confirmDeleteJob = (jobId) => {
+    setJobToDelete(jobId);
+    setOpenConfirm(true);
+  };
+
+  const handleDeleteJob = async () => {
     try {
-      await http.delete(`/jobs/${jobId}`);
-      setJobs(jobs.filter(job => job._id !== jobId));
+      await http.delete(`/jobs/${jobToDelete}`);
+      setJobs(jobs.filter(job => job._id !== jobToDelete));
+      // refresh logs
+      const res = await http.get('/logs');
+      setAuditLogs(res.data);
+      setOpenConfirm(false);
+      setJobToDelete(null);
     } catch (err) {
       console.error('Error deleting job:', err);
       alert('Failed to delete job');
     }
   };
 
+  const toggleJobStatus = async (jobId, currentStatus) => {
+    const newStatus = currentStatus === 'active' ? 'closed' : 'active';
+    try {
+      const res = await http.patch(`/jobs/${jobId}/status`, { status: newStatus });
+      setJobs(jobs.map(j => j._id === jobId ? res.data : j));
+
+      // refresh logs
+      const logsRes = await http.get('/logs');
+      setAuditLogs(logsRes.data);
+    } catch (err) {
+      console.error('Error updating job status:', err);
+    }
+  };
+
   const filteredJobs = jobs.filter((job) => {
     const matchesSearch = (job?.role || '').toLowerCase().includes(searchTerm.toLowerCase());
-
     const matchesStatus =
       !statusFilter || (job?.status || '').toLowerCase() === statusFilter.toLowerCase();
 
@@ -61,18 +116,14 @@ const JobManagement = () => {
     return matchesSearch && matchesStatus && matchesApplicants;
   });
 
-  if (loading) {
-    return <div className="loading">Loading jobs...</div>;
-  }
-
-  if (error) {
-    return <div className="error">Error: {error}</div>;
-  }
+  if (loading) return <div className="loading">Loading jobs...</div>;
+  if (error) return <div className="error">Error: {error}</div>;
 
   return (
     <div className="job-management">
       <h1>Job Management Overview</h1>
 
+      {/* Search + Filters */}
       <div className="layout">
         <div className="search-container">
           <div className="search-box">
@@ -90,7 +141,7 @@ const JobManagement = () => {
             <h2>Job Roles ({filteredJobs.length})</h2>
             <div className="user-actions">
               <div className="filters" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                
+
                 {/* STATUS FILTER */}
                 <FormControl variant="outlined" size="small" sx={{ minWidth: 140 }}>
                   <InputLabel id="status-filter-label">Status</InputLabel>
@@ -102,9 +153,10 @@ const JobManagement = () => {
                   >
                     <MenuItem value="">All Statuses</MenuItem>
                     <MenuItem value="active">Active</MenuItem>
-                    <MenuItem value="closed">Closed</MenuItem>
+                    <MenuItem value="inactive">Inactive</MenuItem>
                   </Select>
                 </FormControl>
+
 
                 {/* APPLICANT FILTER */}
                 <FormControl variant="outlined" size="small" sx={{ minWidth: 160 }}>
@@ -128,6 +180,7 @@ const JobManagement = () => {
             </div>
           </div>
 
+          {/* JOB TABLE */}
           <div className="job-table">
             <div className="table-row header">
               <div>Job Role</div>
@@ -144,20 +197,41 @@ const JobManagement = () => {
                   <div>{job.role}</div>
                   <div>{new Date(job.createdAt).toLocaleDateString()}</div>
                   <div>{job.applicants || 0}</div>
-                  <div>{job.status || 'Active'}</div>
+                  <div>
+                    <Chip
+                      label={job.status.charAt(0).toUpperCase() + job.status.slice(1)} // Capitalize first letter
+                      color={job.status.toLowerCase() === 'inactive' ? 'error' : 'success'}
+                      size="small"
+                      clickable
+                      onClick={() =>
+                        toggleJobStatus(
+                          job._id,
+                          job.status.toLowerCase() === 'active' ? 'inactive' : 'active'
+                        )
+                      }
+                    />
+
+
+                  </div>
                   <div className="action-cell">
                     <button
                       className="action-btn edit"
-                      onClick={() => navigate(`/jobs/edit/${job._id}`)}
+                      onClick={async () => {
+                        await navigate(`/jobs/edit/${job._id}`);
+                        // refresh audit logs after returning
+                        const logsRes = await http.get('/logs');
+                        setAuditLogs(logsRes.data);
+                      }}
                       title="Edit"
                     >
                       &#9998;
                     </button>
+
                   </div>
                   <div className="action-cell">
                     <button
                       className="action-btn delete"
-                      onClick={() => handleDeleteJob(job._id)}
+                      onClick={() => confirmDeleteJob(job._id)}
                       title="Delete"
                     >
                       &#128465;
@@ -173,6 +247,26 @@ const JobManagement = () => {
           </div>
         </div>
       </div>
+
+      <Divider sx={{ margin: '2rem 0' }} />
+
+
+
+      {/* DELETE CONFIRM */}
+      <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this job? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenConfirm(false)}>Cancel</Button>
+          <Button onClick={handleDeleteJob} color="error" variant="contained">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
